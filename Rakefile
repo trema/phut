@@ -1,6 +1,8 @@
+task :travis => [:spec, :cucumber]
+
 require 'rspec/core'
 require 'rspec/core/rake_task'
-
-task :travis => :spec
-
 RSpec::Core::RakeTask.new
+
+require 'cucumber/rake/task'
+Cucumber::Rake::Task.new
