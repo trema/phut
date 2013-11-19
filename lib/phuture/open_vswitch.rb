@@ -15,8 +15,7 @@ module Phuture
     private
 
     def executable
-      phuture_dir = File.join(File.dirname(__FILE__), '..', '..')
-      "#{phuture_dir}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
+      "#{Phuture::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
     end
 
     def dpid_zero_filled
