@@ -6,3 +6,9 @@ RSpec::Core::RakeTask.new
 
 require 'cucumber/rake/task'
 Cucumber::Rake::Task.new
+
+if RUBY_VERSION >= '1.9.0'
+  task :travis => :rubocop
+  require 'rubocop/rake_task'
+  Rubocop::RakeTask.new
+end
