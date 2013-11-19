@@ -14,11 +14,12 @@ guard :bundler do
 end
 
 guard :rubocop do
+  watch(%r{^bin/phut})
   watch(%r{.+\.rb$})
   watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
 end
 
-guard 'cucumber' do
+guard 'cucumber', :cli => '--tags ~@sudo' do
   watch(%r{^bin/phut}) { 'features' }
   watch(%r{^features/.+\.feature$})
   watch(%r{^features/support/.+$})          { 'features' }
