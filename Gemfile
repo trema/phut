@@ -9,6 +9,7 @@ group :development, :test do
   gem 'guard-bundler', '~> 2.0.0' if RUBY_VERSION >= '1.9.0'
   gem 'guard-rspec', '~> 3.1.0' if RUBY_VERSION < '1.9.0'
   gem 'guard-rspec', '~> 4.0.4' if RUBY_VERSION >= '1.9.0'
+  gem 'guard-rubocop', '~> 1.0.0' if RUBY_VERSION >= '1.9.0'
   gem 'mime-types' if RUBY_VERSION >= '1.9.0'
   gem 'mime-types', '~> 1.25' if RUBY_VERSION < '1.9.0'
   gem 'rspec', '~> 2.14.1'
