@@ -17,7 +17,11 @@ module Phuture
     private
 
     def load_config
-      Hash[config_file.read.scan(/^(.+): ['"]?(.+?)['"]?$/)]
+      if config_file.exist?
+        Hash[config_file.read.scan(/^(.+): ['"]?(.+?)['"]?$/)]
+      else
+        {}
+      end
     end
 
     def config_file
