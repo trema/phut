@@ -10,5 +10,6 @@ module Phuture
 end
 
 require 'phuture/open_vswitch'
+require 'phuture/parser'
 require 'phuture/settings'
 require 'phuture/version'
