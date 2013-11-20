@@ -4,6 +4,8 @@ require 'phuture/settings'
 module Phuture
   # Open vSwitch controller.
   class OpenVswitch
+    attr_reader :dpid
+
     def initialize(dpid)
       @dpid = dpid
     end
