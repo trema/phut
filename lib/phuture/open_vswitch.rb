@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'phuture/setting'
+require 'phuture/settings'
 
 module Phuture
   # Open vSwitch controller.
@@ -27,12 +27,12 @@ module Phuture
          --inactivity-probe=180
          --rate-limit=40000
          --burst-limit=20000
-         --pidfile=#{Phuture.setting['PID_DIR']}/open_vswitch.#{@dpid}.pid
+         --pidfile=#{Phuture.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid
          --verbose=ANY:file:dbg
          --verbose=ANY:console:err
-         --log-file=#{Phuture.setting['LOG_DIR']}/openflowd.#{@dpid}.log
+         --log-file=#{Phuture.settings['LOG_DIR']}/openflowd.#{@dpid}.log
          --datapath-id=#{dpid_zero_filled}
-         --unixctl=#{Phuture.setting['SOCKET_DIR']}/ovs-openflowd.#{@dpid}.ctl
+         --unixctl=#{Phuture.settings['SOCKET_DIR']}/ovs-openflowd.#{@dpid}.ctl
          netdev@vsw_#{@dpid} tcp:127.0.0.1:6633)
     end
     # rubocop:enable MethodLength

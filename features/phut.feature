@@ -2,7 +2,13 @@ Feature: phut command
 
   @sudo
   Scenario: phut run
-    Given a file named "network.conf" with:
+    Given a file named ".phuture/config" with:
+      """
+      PID_DIR: .
+      LOG_DIR: .
+      SOCKET_DIR: .
+      """
+    And a file named "network.conf" with:
       """
       vswitch('0xabc')
       """
