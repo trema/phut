@@ -14,12 +14,7 @@ version Phuture::VERSION
 command :run do |c|
   c.action do |global_options, options, args|
     configuration = Phuture::Parser.new.parse(IO.read(args[0]))
-    configuration.vswitch.each do |each|
-      each.run
-    end
-    configuration.vhost.each do |each|
-      each.run
-    end
+    Phuture::Runner.new(configuration).start
   end
 end
 

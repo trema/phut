@@ -15,7 +15,16 @@ module Phuture
       sleep 1
     end
 
+    def stop
+      pid = IO.read(pid_file)
+      system "sudo kill #{pid}"
+    end
+
     private
+
+    def pid_file
+      "#{Phuture.settings['PID_DIR']}/phost.#{@ip}.pid"
+    end
 
     def executable
       "#{Phuture::ROOT}/vendor/phost/src/phost"

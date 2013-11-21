@@ -15,7 +15,16 @@ module Phuture
       sleep 1
     end
 
+    def stop
+      pid = IO.read(pid_file)
+      system "sudo kill #{pid}"
+    end
+
     private
+
+    def pid_file
+      "#{Phuture.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
+    end
 
     def executable
       "#{Phuture::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
@@ -29,7 +38,7 @@ module Phuture
          --inactivity-probe=180
          --rate-limit=40000
          --burst-limit=20000
-         --pidfile=#{Phuture.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid
+         --pidfile=#{pid_file}
          --verbose=ANY:file:dbg
          --verbose=ANY:console:err
          --log-file=#{Phuture.settings['LOG_DIR']}/openflowd.#{@dpid}.log

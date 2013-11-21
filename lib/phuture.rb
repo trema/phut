@@ -11,5 +11,6 @@ end
 
 require 'phuture/open_vswitch'
 require 'phuture/parser'
+require 'phuture/runner'
 require 'phuture/settings'
 require 'phuture/version'
