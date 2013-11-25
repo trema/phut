@@ -1,10 +1,12 @@
 source 'https://rubygems.org'
 
+# Include dependencies from phuture.gemspec. DRY!
+gemspec
+
 group :development, :test do
   gem 'aruba', '~> 0.5.3'
   gem 'coveralls', '~> 0.7.0', :require => false
   gem 'cucumber', '~> 1.3.10'
-  gem 'gli', '~> 2.8.1'
   if RUBY_VERSION >= '1.9.0'
     gem 'guard', '~> 2.2.4'
     gem 'guard-cucumber', '~> 1.4.0'
