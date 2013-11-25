@@ -4,14 +4,14 @@
 module Phuture
   # Central configuration repository.
   class Settings
-    def initialize
-      @root = '.phuture'
+    def initialize(root)
+      @root = root
       @db = load_config
     end
 
     def [](key)
       value = @db[key]
-      key =~ /.+_DIR/ ? File.expand_path(value) : value
+      key =~ /.+_DIR/ && !value.nil? ? File.expand_path(value) : value
     end
 
     private
