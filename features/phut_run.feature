@@ -1,4 +1,4 @@
-@sudo @announce
+@sudo
 Feature: phut run command
 
   Background:
@@ -9,10 +9,18 @@ Feature: phut run command
       SOCKET_DIR: .
       """
 
-  Scenario: phut run with `vswitch ...`
+  Scenario: phut run with `vswitch { dpid ... }`
     Given a file named "network.conf" with:
       """
       vswitch { dpid '0xabc' }
+      """
+    When I do phut run "network.conf"
+    Then a vswitch named "0xabc" launches
+
+  Scenario: phut run with `vswitch { datapath_id ... }`
+    Given a file named "network.conf" with:
+      """
+      vswitch { datapath_id '0xabc' }
       """
     When I do phut run "network.conf"
     Then a vswitch named "0xabc" launches

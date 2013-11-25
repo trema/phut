@@ -15,6 +15,7 @@ module Phuture
       def dpid(value)
         @attributes[:dpid] = value
       end
+      alias_method :datapath_id, :dpid
 
       def [](key)
         @attributes[key]
