@@ -1,8 +1,10 @@
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), 'lib')
 
+require 'bundler/gem_tasks'
 require 'phuture'
 
-task :default => [:spec, :cucumber]
+task :default => :openvswitch
+task :test => [:spec, :cucumber]
 task :travis => [:spec, 'guard:cucumber']
 
 require 'rspec/core'
