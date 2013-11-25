@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+require 'tmpdir'
+
 # Base module.
 module Phuture
   # Central configuration repository.
@@ -18,9 +20,9 @@ module Phuture
 
     def default_values
       {
-        'PID_DIR' => Pathname.new(@root).expand_path.to_s,
-        'LOG_DIR' => Pathname.new(@root).expand_path.to_s,
-        'SOCKET_DIR' => Pathname.new(@root).expand_path.to_s,
+        'PID_DIR' => Dir.tmpdir,
+        'LOG_DIR' => Dir.tmpdir,
+        'SOCKET_DIR' => Dir.tmpdir,
       }
     end
 
