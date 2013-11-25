@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-require 'phuture/settings'
+require 'phuture'
 
 describe Phuture::Settings do
   describe '.new' do
@@ -8,7 +8,8 @@ describe Phuture::Settings do
 
     context %{with '.test'} do
       let(:root) { '.test' }
-      its(['PID_DIR']) { should be_nil }
+
+      its(['PID_DIR']) { should eq Pathname('.test').expand_path.to_s }
     end
   end
 end

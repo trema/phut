@@ -10,17 +10,25 @@ module Phuture
     end
 
     def [](key)
-      value = @db[key]
+      value = default_values.merge(@db)[key]
       key =~ /.+_DIR/ && !value.nil? ? File.expand_path(value) : value
     end
 
     private
 
+    def default_values
+      {
+        'PID_DIR' => Pathname(@root).expand_path,
+        'LOG_DIR' => Pathname(@root).expand_path,
+        'SOCKET_DIR' => Pathname(@root).expand_path,
+      }
+    end
+
     def load_config
       if config_file.exist?
         Hash[config_file.read.scan(/^(.+): ['"]?(.+?)['"]?$/)]
       else
-        {}
+        default_values
       end
     end
 
