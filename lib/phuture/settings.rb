@@ -18,9 +18,9 @@ module Phuture
 
     def default_values
       {
-        'PID_DIR' => Pathname(@root).expand_path,
-        'LOG_DIR' => Pathname(@root).expand_path,
-        'SOCKET_DIR' => Pathname(@root).expand_path,
+        'PID_DIR' => Pathname(@root).expand_path.to_s,
+        'LOG_DIR' => Pathname(@root).expand_path.to_s,
+        'SOCKET_DIR' => Pathname(@root).expand_path.to_s,
       }
     end
 
