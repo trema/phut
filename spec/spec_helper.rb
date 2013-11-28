@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
 require 'coveralls'
-Coveralls.wear!
+Coveralls.wear_merged!

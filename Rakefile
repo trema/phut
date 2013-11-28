@@ -1,5 +1,8 @@
+require 'coveralls/rake/task'
+Coveralls::RakeTask.new
+
 task :default => [:spec, :cucumber]
-task :travis => [:spec, 'guard:cucumber']
+task :travis => [:spec, 'guard:cucumber', 'coveralls:push']
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
