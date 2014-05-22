@@ -9,21 +9,11 @@ Coveralls::RakeTask.new
 
 task default: :openvswitch
 task test: [:spec, :cucumber]
-task travis: [:spec, 'guard:cucumber', 'coveralls:push']
+task travis: [:spec, 'cucumber:travis', 'coveralls:push']
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new
-
-require 'cucumber/rake/task'
-
-task cucumber: :openvswitch
-Cucumber::Rake::Task.new
-
-task 'guard:cucumber' => :openvswitch
-Cucumber::Rake::Task.new('guard:cucumber') do |task|
-  task.cucumber_opts = '--tags ~@sudo'
-end
 
 ovs_openflowd = './vendor/openvswitch-1.2.2.trema1/tests/test-openflowd'
 
