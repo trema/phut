@@ -1,10 +1,9 @@
-# A sample Guardfile
-# More info at https://github.com/guard/guard#readme
+# encoding: utf-8
 
 guard :rspec do
   watch(%r{^spec/phuture/.+_spec\.rb$})
-  watch(%r{^lib/phuture/(.+)\.rb$})     { |m| "spec/lib/phuture/#{m[1]}_spec.rb" }
-  watch('spec/spec_helper.rb')  { "spec" }
+  watch(%r{^lib/phuture/(.+)\.rb$})     { |m| "spec/phuture/#{m[1]}_spec.rb" }
+  watch('spec/spec_helper.rb')  { 'spec' }
 end
 
 guard :bundler do
@@ -13,15 +12,21 @@ guard :bundler do
   # watch(/^.+\.gemspec/)
 end
 
-guard :rubocop do
-  watch(%r{^bin/phut})
-  watch(%r{.+\.rb$})
-  watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
+guard :rubocop, all_on_start: false do
+  watch('Gemfile')
+  watch('Guardfile')
+  watch('Rakefile')
+  watch('bin/phut')
+  watch(/.+\.rake$/)
+  watch(/.+\.rb$/)
+  watch(/{(?:.+\/)?\.rubocop\.yml$/) { |m| File.dirname(m[0]) }
 end
 
-guard 'cucumber', :cli => '--tags ~@sudo' do
-  watch(%r{^bin/phut}) { 'features' }
-  watch(%r{^features/.+\.feature$})
-  watch(%r{^features/support/.+$})          { 'features' }
-  watch(%r{^features/step_definitions/(.+)_steps\.rb$}) { |m| Dir[File.join("**/#{m[1]}.feature")][0] || 'features' }
+guard 'cucumber', cli: '--tags ~@sudo' do
+  watch('bin/phut') { 'features' }
+  watch(/^features\/.+\.feature$/)
+  watch(%r{^features/support/.+$}) { 'features' }
+  watch(%r{^features/step_definitions/(.+)_steps\.rb$}) do |m|
+    Dir[File.join("**/#{m[1]}.feature")][0] || 'features'
+  end
 end
