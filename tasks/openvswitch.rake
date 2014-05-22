@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-require 'phuture'
+require 'phut'
 require 'tmpdir'
 
 def ovs_openflowd
-  File.join(Phuture::ROOT,
+  File.join(Phut::ROOT,
             'vendor/openvswitch-1.2.2.trema1/tests/test-openflowd')
 end
 

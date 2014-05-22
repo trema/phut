@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Phuture
+module Phut
   # Network virtual link.
   class VirtualLink
     attr_reader :peer_a

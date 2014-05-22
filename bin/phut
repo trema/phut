@@ -3,18 +3,18 @@
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'gli'
-require 'phuture'
+require 'phut'
 
 include GLI::App
 
 program_desc 'Virtual network in seconds'
 
-version Phuture::VERSION
+version Phut::VERSION
 
 command :run do |c|
   c.action do |_global_options, _options, args|
-    configuration = Phuture::Parser.new.parse(IO.read(args[0]))
-    Phuture::Runner.new(configuration).start
+    configuration = Phut::Parser.new.parse(IO.read(args[0]))
+    Phut::Runner.new(configuration).start
   end
 end
 

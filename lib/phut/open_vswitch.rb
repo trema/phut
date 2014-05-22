@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-require 'phuture/settings'
+require 'phut/settings'
 
-module Phuture
+module Phut
   # Open vSwitch controller.
   class OpenVswitch
     attr_reader :dpid
@@ -23,11 +23,11 @@ module Phuture
     private
 
     def pid_file
-      "#{Phuture.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
+      "#{Phut.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
     end
 
     def executable
-      "#{Phuture::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
+      "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
     end
 
     # rubocop:disable MethodLength
@@ -41,9 +41,9 @@ module Phuture
          --pidfile=#{pid_file}
          --verbose=ANY:file:dbg
          --verbose=ANY:console:err
-         --log-file=#{Phuture.settings['LOG_DIR']}/openflowd.#{@dpid}.log
+         --log-file=#{Phut.settings['LOG_DIR']}/openflowd.#{@dpid}.log
          --datapath-id=#{dpid_zero_filled}
-         --unixctl=#{Phuture.settings['SOCKET_DIR']}/ovs-openflowd.#{@dpid}.ctl
+         --unixctl=#{Phut.settings['SOCKET_DIR']}/ovs-openflowd.#{@dpid}.ctl
          netdev@vsw_#{@dpid} tcp:127.0.0.1:6633)
     end
     # rubocop:enable MethodLength

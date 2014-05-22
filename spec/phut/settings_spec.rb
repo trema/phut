@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-require 'phuture'
+require 'phut'
 require 'tmpdir'
 
-describe Phuture::Settings do
+describe Phut::Settings do
   describe '.new' do
-    subject { Phuture::Settings.new(root) }
+    subject { Phut::Settings.new(root) }
 
     context %(with '.test') do
       let(:root) { '.test' }

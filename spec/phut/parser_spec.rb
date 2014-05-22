@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-require 'phuture/parser'
+require 'phut/parser'
 
-describe Phuture::Parser do
+describe Phut::Parser do
   describe '#parse' do
-    subject { Phuture::Parser.new.parse configuration }
+    subject { Phut::Parser.new.parse configuration }
 
     context "with 'vswitch { dpid '0xabc' }'" do
       let(:configuration) { "vswitch { dpid '0xabc' }" }

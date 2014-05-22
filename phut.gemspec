@@ -2,11 +2,11 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'phuture/version'
+require 'phut/version'
 
 Gem::Specification.new do | gem |
-  gem.name = 'phuture'
-  gem.version = Phuture::VERSION
+  gem.name = 'phut'
+  gem.version = Phut::VERSION
   gem.summary = 'Virtual network in seconds.'
   gem.description = 'A simple ruby network emulator'\
                     'with capabilities similar to mininet.'
@@ -15,7 +15,7 @@ Gem::Specification.new do | gem |
 
   gem.authors = ['Yasuhito Takamiya']
   gem.email = ['yasuhito@gmail.com']
-  gem.homepage = 'http://github.com/trema/phuture'
+  gem.homepage = 'http://github.com/trema/phut'
 
   gem.files = `git ls-files`.split("\n")
 

@@ -1,8 +1,8 @@
 # encoding: utf-8
 
 guard :rspec do
-  watch(%r{^spec/phuture/.+_spec\.rb$})
-  watch(%r{^lib/phuture/(.+)\.rb$})     { |m| "spec/phuture/#{m[1]}_spec.rb" }
+  watch(%r{^spec/phut/.+_spec\.rb$})
+  watch(%r{^lib/phut/(.+)\.rb$})     { |m| "spec/phut/#{m[1]}_spec.rb" }
   watch('spec/spec_helper.rb')  { 'spec' }
 end
 

@@ -3,7 +3,7 @@
 require 'tmpdir'
 
 # Base module.
-module Phuture
+module Phut
   # Central configuration repository.
   class Settings
     def initialize(root)

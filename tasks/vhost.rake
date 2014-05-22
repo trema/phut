@@ -1,9 +1,9 @@
 # encoding: utf-8
 
-require 'phuture'
+require 'phut'
 
 def phost_src
-  File.join Phuture::ROOT, 'vendor', 'phost', 'src'
+  File.join Phut::ROOT, 'vendor', 'phost', 'src'
 end
 
 def phost_objects

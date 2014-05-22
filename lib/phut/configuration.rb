@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Phuture
+module Phut
   # Parsed DSL data.
   class Configuration
     attr_reader :vswitch

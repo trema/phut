@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-require 'phuture/configuration'
-require 'phuture/syntax'
+require 'phut/configuration'
+require 'phut/syntax'
 
-module Phuture
+module Phut
   # Configuration DSL parser.
   class Parser
     def initialize

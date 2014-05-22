@@ -6,6 +6,6 @@ AllCops:
     - bin/*
     - features/**/*.rb
     - lib/**/*.rb
-    - phuture.gemspec
+    - phut.gemspec
     - spec/**/*.rb
     - tasks/*.rake

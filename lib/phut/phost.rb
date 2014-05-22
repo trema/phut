@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-require 'phuture/settings'
+require 'phut/settings'
 
-module Phuture
+module Phut
   # An interface class to phost emulation utility program.
   class Phost
     attr_reader :ip
@@ -23,16 +23,16 @@ module Phuture
     private
 
     def pid_file
-      "#{Phuture.settings['PID_DIR']}/phost.#{@ip}.pid"
+      "#{Phut.settings['PID_DIR']}/phost.#{@ip}.pid"
     end
 
     def executable
-      "#{Phuture::ROOT}/vendor/phost/src/phost"
+      "#{Phut::ROOT}/vendor/phost/src/phost"
     end
 
     def options
-      %W(-p #{Phuture.settings['PID_DIR']}
-         -l #{Phuture.settings['LOG_DIR']}
+      %W(-p #{Phut.settings['PID_DIR']}
+         -l #{Phut.settings['LOG_DIR']}
          -n #{@ip}
          -D)
     end

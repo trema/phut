@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-# Include dependencies from phuture.gemspec. DRY!
+# Include dependencies from phut.gemspec. DRY!
 gemspec
 
 group :docs do

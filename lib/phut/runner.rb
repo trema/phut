@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-module Phuture
+module Phut
   # Runs vswitch and vhost processes and creates virtual links.
   class Runner
     def initialize(configuration)

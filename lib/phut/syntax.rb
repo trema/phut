@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-require 'phuture/open_vswitch'
-require 'phuture/phost'
-require 'phuture/virtual_link'
+require 'phut/open_vswitch'
+require 'phut/phost'
+require 'phut/virtual_link'
 
-module Phuture
+module Phut
   # DSL syntax definitions.
   class Syntax
     # The 'vswitch(name) { ...attributes...}' directive.

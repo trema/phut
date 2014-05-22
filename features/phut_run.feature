@@ -2,7 +2,7 @@
 Feature: phut run command
 
   Background:
-    Given a file named ".phuture/config" with:
+    Given a file named ".phut/config" with:
       """
       PID_DIR: .
       LOG_DIR: .
