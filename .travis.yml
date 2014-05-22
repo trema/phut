@@ -19,3 +19,11 @@ matrix:
     - rvm: 2.1.0
     - rvm: ruby-head
   fast_finish: true
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/adcc5723bad8796268d6
+    on_success: always
+    on_failure: always
+    on_start: always
