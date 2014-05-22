@@ -2,10 +2,7 @@
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), 'lib')
 
-require 'phuture'
 require 'bundler/gem_tasks'
-require 'coveralls/rake/task'
-Coveralls::RakeTask.new
 
 task default: :openvswitch
 task test: [:spec, :cucumber]
