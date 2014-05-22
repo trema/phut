@@ -24,7 +24,7 @@ group :test do
   gem 'rake'
   gem 'aruba', '~> 0.5.4'
   gem 'codeclimate-test-reporter', require: nil
-  gem 'coveralls', '~> 0.7.0', :require => false
+  gem 'coveralls', '~> 0.7.0', require: false
   gem 'cucumber', '~> 1.3.15'
   gem 'fuubar', '~> 1.3.3'
   gem 'rspec', '~> 2.14.1'
