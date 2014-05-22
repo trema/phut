@@ -25,12 +25,6 @@ Cucumber::Rake::Task.new('guard:cucumber') do |task|
   task.cucumber_opts = '--tags ~@sudo'
 end
 
-if RUBY_VERSION >= '1.9.0'
-  task travis: :rubocop
-  require 'rubocop/rake_task'
-  Rubocop::RakeTask.new
-end
-
 ovs_openflowd = './vendor/openvswitch-1.2.2.trema1/tests/test-openflowd'
 
 require 'tmpdir'
@@ -74,3 +68,5 @@ file phost_cli_vendor_binary do
     sh 'make'
   end
 end
+
+Dir.glob('tasks/*.rake').each { |each| import each }
