@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'phut/parser'
+require 'phut'
 
 describe Phut::Parser do
   describe '#parse' do

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-require 'phut/settings'
 
 module Phut
   # Open vSwitch controller.
   class OpenVswitch
+    EXECUTABLE =
+      "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
+
     attr_reader :dpid
 
     def initialize(dpid)
@@ -11,7 +13,7 @@ module Phut
     end
 
     def run
-      system "sudo #{executable} #{options.join ' '}"
+      system "sudo #{EXECUTABLE} #{options.join ' '}"
       sleep 1
     end
 
@@ -24,10 +26,6 @@ module Phut
 
     def pid_file
       "#{Phut.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
-    end
-
-    def executable
-      "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
     end
 
     # rubocop:disable MethodLength
