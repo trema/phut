@@ -1,5 +1,4 @@
-# A sample Guardfile
-# More info at https://github.com/guard/guard#readme
+# encoding: utf-8
 
 guard :rspec do
   watch(%r{^spec/phuture/.+_spec\.rb$})
