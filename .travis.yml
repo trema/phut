@@ -2,6 +2,10 @@ language: ruby
 
 bundler_args: --without development
 
+env:
+  global:
+    - "IaTyG4H1eYWG9/TxquLRqZjCdlU8SrMe6XavjW+d4KxxlkNUxdZxHnAlQ3UNlJEsH6rNBnkKhrV3OQEVvlmJ+zRs2LFeNNuNnDs/YsTpiVVtQKs3ePipAbCevDoHoL3IOyYjpBdbyaMJAJLi7rzXHhWoM1Z9nL0RbAzy393C9aw="
+
 script: bundle exec rake travis
 
 rvm:
