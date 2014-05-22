@@ -3,8 +3,10 @@
 module Phut
   # Open vSwitch controller.
   class OpenVswitch
-    EXECUTABLE =
+    OPENFLOWD =
       "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
+    OFCTL =
+      "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/utilities/ovs-ofctl"
 
     attr_reader :dpid
 
@@ -13,7 +15,7 @@ module Phut
     end
 
     def run
-      system "sudo #{EXECUTABLE} #{options.join ' '}"
+      system "sudo #{OPENFLOWD} #{options.join ' '}"
       sleep 1
     end
 
