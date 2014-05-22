@@ -11,10 +11,6 @@ task default: :openvswitch
 task test: [:spec, :cucumber]
 task travis: [:spec, 'cucumber:travis', 'coveralls:push']
 
-require 'rspec/core'
-require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new
-
 ovs_openflowd = './vendor/openvswitch-1.2.2.trema1/tests/test-openflowd'
 
 require 'tmpdir'
