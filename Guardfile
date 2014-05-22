@@ -8,8 +8,7 @@ end
 
 guard :bundler do
   watch('Gemfile')
-  # Uncomment next line if your Gemfile contains the `gemspec' command.
-  # watch(/^.+\.gemspec/)
+  watch(/^.+\.gemspec/)
 end
 
 guard :rubocop, all_on_start: false do
