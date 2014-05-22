@@ -13,7 +13,7 @@ guard :bundler do
   # watch(/^.+\.gemspec/)
 end
 
-guard :rubocop do
+guard :rubocop, all_on_start: false do
   watch(%r{^bin/phut})
   watch(%r{.+\.rb$})
   watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }

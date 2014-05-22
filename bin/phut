@@ -12,7 +12,7 @@ program_desc 'Virtual network in seconds'
 version Phuture::VERSION
 
 command :run do |c|
-  c.action do |global_options, options, args|
+  c.action do |_global_options, _options, args|
     configuration = Phuture::Parser.new.parse(IO.read(args[0]))
     Phuture::Runner.new(configuration).start
   end

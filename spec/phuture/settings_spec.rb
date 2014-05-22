@@ -7,7 +7,7 @@ describe Phuture::Settings do
   describe '.new' do
     subject { Phuture::Settings.new(root) }
 
-    context %{with '.test'} do
+    context %(with '.test') do
       let(:root) { '.test' }
 
       its(['PID_DIR']) { should eq Dir.tmpdir }

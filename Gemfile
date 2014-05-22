@@ -1,24 +1,32 @@
+# encoding: utf-8
+
 source 'https://rubygems.org'
 
 # Include dependencies from phuture.gemspec. DRY!
 gemspec
 
-group :development, :test do
-  gem 'aruba', '~> 0.5.3'
+group :docs do
+  gem 'relish', '~> 0.7'
+  gem 'yard', '~> 0.8.7.4'
+end
+
+group :development do
+  gem 'byebug', '~> 3.1.2', platforms: :ruby_20
+  gem 'guard', '~> 2.6.1'
+  gem 'guard-bundler', '~> 2.0.0'
+  gem 'guard-cucumber', '~> 1.4.1'
+  gem 'guard-rspec', '~> 4.2.9'
+  gem 'guard-rubocop', '~> 1.1.0'
+  gem 'pry', '~> 0.9.12.6'
+end
+
+group :test do
+  gem 'rake'
+  gem 'aruba', '~> 0.5.4'
+  gem 'codeclimate-test-reporter', require: nil
   gem 'coveralls', '~> 0.7.0', :require => false
-  gem 'cucumber', '~> 1.3.10'
-  gem 'fuubar', '~> 1.2.1'
-  gem 'gli', '~> 2.8.1'
-  if RUBY_VERSION >= '1.9.0'
-    gem 'guard', '~> 2.2.4'
-    gem 'guard-cucumber', '~> 1.4.0'
-    gem 'guard-bundler', '~> 2.0.0'
-    gem 'guard-rspec', '~> 4.0.4'
-    gem 'guard-rubocop', '~> 1.0.0'
-  end
-  gem 'json', '~> 1.8.1'
-  gem 'mime-types', '~> 1.25' if RUBY_VERSION < '1.9.0'
-  gem 'mime-types', '~> 2.0' if RUBY_VERSION >= '1.9.0'
+  gem 'cucumber', '~> 1.3.15'
+  gem 'fuubar', '~> 1.3.3'
   gem 'rspec', '~> 2.14.1'
-  gem 'rubocop', '~> 0.15.0' if RUBY_VERSION >= '1.9.0'
+  gem 'rubocop', '~> 0.22.0', platforms: [:ruby_19, :ruby_20, :ruby_21]
 end

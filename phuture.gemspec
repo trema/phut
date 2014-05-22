@@ -6,7 +6,8 @@ Gem::Specification.new do | gem |
   gem.name = 'phuture'
   gem.version = Phuture::VERSION
   gem.summary = 'Virtual network in seconds.'
-  gem.description = 'A simple ruby network emulator with capabilities similar to mininet.'
+  gem.description = 'A simple ruby network emulator'\
+                    'with capabilities similar to mininet.'
 
   gem.license = 'GPL3'
 
@@ -22,7 +23,7 @@ Gem::Specification.new do | gem |
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
-  gem.add_dependency 'gli', '~> 2.8.1'
+  gem.add_dependency 'gli', '~> 2.10.0'
 end
 
 ### Local variables:

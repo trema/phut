@@ -22,7 +22,7 @@ module Phuture
       {
         'PID_DIR' => Dir.tmpdir,
         'LOG_DIR' => Dir.tmpdir,
-        'SOCKET_DIR' => Dir.tmpdir,
+        'SOCKET_DIR' => Dir.tmpdir
       }
     end
 
