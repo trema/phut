@@ -21,9 +21,12 @@ module Phut
     end
 
     def stop
+      fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       pid = IO.read(pid_file)
       system "sudo kill #{pid}"
+      loop { break unless running? }
     end
+    alias_method :shutdown, :stop
 
     private
 
