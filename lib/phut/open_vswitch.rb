@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# encoding: utf-8
 
 module Phut
   # Open vSwitch controller.
@@ -15,8 +15,9 @@ module Phut
     end
 
     def run
+      fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
       system "sudo #{OPENFLOWD} #{options.join ' '}"
-      sleep 1
+      loop { break if running? }
     end
 
     def stop
@@ -25,6 +26,10 @@ module Phut
     end
 
     private
+
+    def running?
+      FileTest.exists?(pid_file)
+    end
 
     def pid_file
       "#{Phut.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
@@ -41,15 +46,15 @@ module Phut
          --pidfile=#{pid_file}
          --verbose=ANY:file:dbg
          --verbose=ANY:console:err
-         --log-file=#{Phut.settings['LOG_DIR']}/openflowd.#{@dpid}.log
+         --log-file=#{Phut.settings['LOG_DIR']}/open_vswitch.#{@dpid}.log
          --datapath-id=#{dpid_zero_filled}
-         --unixctl=#{Phut.settings['SOCKET_DIR']}/ovs-openflowd.#{@dpid}.ctl
+         --unixctl=#{Phut.settings['SOCKET_DIR']}/open_vswitch.#{@dpid}.ctl
          netdev@vsw_#{@dpid} tcp:127.0.0.1:6633)
     end
     # rubocop:enable MethodLength
 
     def dpid_zero_filled
-      no_0x = @dpid.gsub(/^0x/, '')
+      no_0x = @dpid.to_s.gsub(/^0x/, '')
       '0' * (16 - no_0x.length) + no_0x
     end
   end

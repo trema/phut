@@ -8,7 +8,9 @@ end
 
 After('@sudo') do
   in_current_dir do
-    configuration = Phut::Parser.new.parse(IO.read(@configuration_file))
-    Phut::Runner.new(configuration).stop
+    Dir.glob(File.join(Phut.settings['PID_DIR'], '*.pid')).each do |each|
+      pid = IO.read(each).to_i
+      system "sudo kill #{pid}"
+    end
   end
 end

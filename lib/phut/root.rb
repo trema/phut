@@ -13,6 +13,6 @@ module Phut
   end
 
   def self.settings
-    @settings ||= Settings.new(config_root)
+    Settings.new(config_root)
   end
 end

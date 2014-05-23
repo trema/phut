@@ -6,7 +6,7 @@ require 'rake/clean'
 require 'bundler/gem_tasks'
 
 task default: :openvswitch
-task test: [:spec, :cucumber]
+task test: [:spec, :cucumber, :rubocop]
 task travis: [:spec, 'cucumber:travis', 'coveralls:push']
 
 Dir.glob('tasks/*.rake').each { |each| import each }
