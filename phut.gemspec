@@ -26,6 +26,7 @@ Gem::Specification.new do | gem |
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
   gem.add_dependency 'gli', '~> 2.10.0'
+  gem.add_dependency 'pry', '~> 0.9.12.6'
 end
 
 ### Local variables:

@@ -17,7 +17,6 @@ group :development do
   gem 'guard-cucumber', '~> 1.4.1'
   gem 'guard-rspec', '~> 4.2.9'
   gem 'guard-rubocop', '~> 1.1.0'
-  gem 'pry', '~> 0.9.12.6'
 end
 
 group :test do

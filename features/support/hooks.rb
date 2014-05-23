@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 require 'phut'
 
+Before do
+  @aruba_timeout_seconds = 5
+end
+
 Before('@sudo') do
   system 'sudo -v'
-  @aruba_timeout_seconds = 5
 end
 
 After('@sudo') do
