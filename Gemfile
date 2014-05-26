@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gemspec
 
 # Add dependencies required to use your gem here.
+gem 'paper_house', '~> 0.6.1'
 gem 'switch_manager', github: 'trema/switch_manager', branch: 'develop'
 
 group :docs do
