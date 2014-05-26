@@ -5,6 +5,9 @@ source 'https://rubygems.org'
 # Include dependencies from phut.gemspec. DRY!
 gemspec
 
+# Add dependencies required to use your gem here.
+gem 'switch_manager', github: 'trema/switch_manager', branch: 'develop'
+
 group :docs do
   gem 'relish', '~> 0.7'
   gem 'yard', '~> 0.8.7.4'
