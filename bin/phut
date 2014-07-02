@@ -19,10 +19,10 @@ command :shell do |c|
         proc { 'phut> ' },
         proc { 'phut* ' }
       ]
-    Pry.commands.block_command 'vswitch' do |dpid|
+    Pry::Commands.block_command 'vswitch' do |dpid|
       Phut::OpenVswitch.new(dpid.hex).run
     end
-    Pry.commands.block_command 'kill' do |dpid|
+    Pry::Commands.block_command 'kill' do |dpid|
       Phut::OpenVswitch.new(dpid.hex).shutdown
     end
     pry

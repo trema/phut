@@ -10,9 +10,20 @@ describe Phut::Settings do
     context %(with '.test') do
       let(:root) { '.test' }
 
-      its(['PID_DIR']) { should eq Dir.tmpdir }
-      its(['LOG_DIR']) { should eq Dir.tmpdir }
-      its(['SOCKET_DIR']) { should eq Dir.tmpdir }
+      describe "['PID_DIR']" do
+        subject { super()['PID_DIR'] }
+        it { is_expected.to eq Dir.tmpdir }
+      end
+
+      describe "['LOG_DIR']" do
+        subject { super()['LOG_DIR'] }
+        it { is_expected.to eq Dir.tmpdir }
+      end
+
+      describe "['SOCKET_DIR']" do
+        subject { super()['SOCKET_DIR'] }
+        it { is_expected.to eq Dir.tmpdir }
+      end
     end
   end
 end

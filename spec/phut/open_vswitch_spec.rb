@@ -5,15 +5,15 @@ describe Phut::OpenVswitch do
     context 'with 0xabc' do
       Given(:open_vswitch) do
         open_vswitch = Phut::OpenVswitch.new(0xabc)
-        open_vswitch.stub(:running?).and_return(false, true)
-        open_vswitch.stub(:system)
+        allow(open_vswitch).to receive(:running?).and_return(false, true)
+        allow(open_vswitch).to receive(:system)
         open_vswitch
       end
 
       describe '#run' do
         When { open_vswitch.run }
         Then do
-          open_vswitch.should have_received(:system).with(/test-openflowd/)
+          expect(open_vswitch).to have_received(:system).with(/test-openflowd/)
         end
       end
     end
