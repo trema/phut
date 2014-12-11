@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'phut/version'
@@ -50,9 +48,3 @@ Gem::Specification.new do | gem |
   gem.add_development_dependency 'rspec-given', '~> 3.5.4'
   gem.add_development_dependency 'rubocop', '~> 0.28.0'
 end
-
-### Local variables:
-### mode: Ruby
-### coding: utf-8-unix
-### indent-tabs-mode: nil
-### End:

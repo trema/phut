@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 require 'phut/configuration'
 require 'phut/syntax'
 

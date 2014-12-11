@@ -9,7 +9,6 @@ env:
 script: bundle exec rake travis
 
 rvm:
-  - 1.9.3
   - 2.0.0
   - 2.1.0
   - ruby-head

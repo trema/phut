@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 module Phut
   # Runs vswitch and vhost processes and creates virtual links.
   class Runner
