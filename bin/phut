@@ -6,44 +6,49 @@ require 'gli'
 require 'phut'
 require 'pry'
 
-include GLI::App
+module Phut
+  # /bin/phut command
+  module App
+    extend GLI::App
 
-program_desc 'Virtual network in seconds'
+    program_desc 'Virtual network in seconds'
 
-version Phut::VERSION
+    version Phut::VERSION
 
-command :shell do |c|
-  c.action do |_global_options, _options, _args|
-    Pry.prompt =
-      [
-        proc { 'phut> ' },
-        proc { 'phut* ' }
-      ]
-    Pry::Commands.block_command 'vswitch' do |dpid|
-      Phut::OpenVswitch.new(dpid.hex).run
+    command :shell do |c|
+      c.action do |_global_options, _options, _args|
+        Pry.prompt =
+          [
+            proc { 'phut> ' },
+            proc { 'phut* ' }
+          ]
+        Pry::Commands.block_command 'vswitch' do |dpid|
+          Phut::OpenVswitch.new(dpid.hex).run
+        end
+        Pry::Commands.block_command 'kill' do |dpid|
+          Phut::OpenVswitch.new(dpid.hex).shutdown
+        end
+        pry
+      end
     end
-    Pry::Commands.block_command 'kill' do |dpid|
-      Phut::OpenVswitch.new(dpid.hex).shutdown
+
+    command :run do |c|
+      c.action do |_global_options, _options, args|
+        configuration = Phut::Parser.new.parse(IO.read(args[0]))
+        Phut::Runner.new(configuration).start
+      end
     end
-    pry
+
+    pre do |global, _command, _options, _args|
+      if global[:version]
+        puts "#{exe_name} version #{version_string}"
+        exit_now! nil, 0
+      end
+      true
+    end
+
+    default_command :shell
+
+    exit run(ARGV)
   end
 end
-
-command :run do |c|
-  c.action do |_global_options, _options, args|
-    configuration = Phut::Parser.new.parse(IO.read(args[0]))
-    Phut::Runner.new(configuration).start
-  end
-end
-
-pre do |global, _command, _options, _args|
-  if global[:version]
-    puts "#{exe_name} version #{version_string}"
-    exit_now! nil, 0
-  end
-  true
-end
-
-default_command :shell
-
-exit run(ARGV)

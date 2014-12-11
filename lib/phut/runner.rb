@@ -8,27 +8,15 @@ module Phut
     end
 
     def start
-      @configuration.vswitch.each do |each|
-        each.run
-      end
-      @configuration.vhost.each do |each|
-        each.run
-      end
-      @configuration.link.each do |each|
-        each.run
-      end
+      @configuration.vswitch.each(&:run)
+      @configuration.vhost.each(&:run)
+      @configuration.link.each(&:run)
     end
 
     def stop
-      @configuration.vswitch.each do |each|
-        each.stop
-      end
-      @configuration.vhost.each do |each|
-        each.stop
-      end
-      @configuration.link.each do |each|
-        each.stop
-      end
+      @configuration.vswitch.each(&:stop)
+      @configuration.vhost.each(&:stop)
+      @configuration.link.each(&:stop)
     end
   end
 end
