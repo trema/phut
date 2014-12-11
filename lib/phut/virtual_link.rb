@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 module Phut
   # Network virtual link.
   class VirtualLink

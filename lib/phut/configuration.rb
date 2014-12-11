@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 module Phut
   # Parsed DSL data.
   class Configuration

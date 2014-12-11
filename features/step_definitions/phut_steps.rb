@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 require 'phut'
 
 When(/^I do phut run "(.*?)"$/) do |file_name|

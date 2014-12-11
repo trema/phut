@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Phut
   # Open vSwitch controller.
   class OpenVswitch

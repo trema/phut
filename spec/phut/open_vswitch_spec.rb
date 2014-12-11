@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 describe Phut::OpenVswitch do
   describe '.new' do
     context 'with 0xabc' do

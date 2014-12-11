@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 require 'phut/open_vswitch'
 require 'phut/phost'
 require 'phut/virtual_link'

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 require 'phut/root'
 require 'phut/open_vswitch'
 require 'phut/parser'
