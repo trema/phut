@@ -43,6 +43,12 @@ module Phut
       end
     end
 
+    command :dump_flows do |c|
+      c.action do |_global_options, _options, args|
+        args.each { |each| Phut::OpenVswitch.new(each).dump_flows }
+      end
+    end
+
     pre do |global, _command, _options, _args|
       if global[:version]
         puts "#{exe_name} version #{version_string}"

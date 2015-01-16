@@ -8,6 +8,8 @@ require 'socket'
 
 module Trema
   class Controller
+    include Pio
+
     DEFAULT_TCP_PORT = 6633
     READ_CHUNK_SIZE = 1024 * 4
 
@@ -16,41 +18,55 @@ module Trema
     end
 
     def self.start
-      @controller.new.start
+      @controller.new.run
     end
 
-    def start
-      system "./bin/phut run #{ARGV[3]}"
-
-      socket = TCPServer.open('<any>', DEFAULT_TCP_PORT)
-      client = socket.accept
-
-      # Hello
-      data = client.readpartial(READ_CHUNK_SIZE)
-      hello = Pio::Hello.read(data)
-      client.write Pio::Hello.new.to_binary
-
-      # Echo
-      client.write Pio::Echo::Request.new.to_binary
-      data = client.readpartial(READ_CHUNK_SIZE)
-      echo_reply = Pio::Echo::Reply.read(data)
-
-      # Features
-      client.write Pio::Features::Request.new.to_binary
-      data = client.readpartial(READ_CHUNK_SIZE)
-      features_reply = Pio::Features::Reply.read(data)
-
-      __send__ :switch_ready, features_reply.datapath_id
+    def run
+      __send__ :start if respond_to?(:start)
 
       begin
+        system "./bin/phut run #{ARGV[3]}"
+
+        socket = TCPServer.open('<any>', DEFAULT_TCP_PORT)
+        @client = socket.accept
+
+        # Hello
+        data = @client.readpartial(READ_CHUNK_SIZE)
+        hello = Hello.read(data)
+        @client.write Hello.new.to_binary
+
+        # Echo
+        @client.write Echo::Request.new.to_binary
+        data = @client.readpartial(READ_CHUNK_SIZE)
+        echo_reply = Echo::Reply.read(data)
+
+        # Features
+        @client.write Features::Request.new.to_binary
+        data = @client.readpartial(READ_CHUNK_SIZE)
+        features_reply = Features::Reply.read(data)
+
+        __send__ :switch_ready, features_reply.datapath_id
+
         sleep
-      rescue Interrupt
+      ensure
         system "./bin/phut kill 0xabc"
       end
     end
 
+    private
+
     def info(message)
       puts message
+    end
+
+    def send_flow_mod_add(dpid, options)
+      flow_mod = FlowMod.new(
+                   buffer_id: 0xffffffff,
+                   match: options.fetch(:match),
+                   command: :add,
+                   actions: options.fetch(:actions)
+                 )
+      @client.write flow_mod.to_binary
     end
   end
 end

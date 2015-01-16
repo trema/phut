@@ -26,6 +26,10 @@ module Phut
     end
     alias_method :shutdown, :stop
 
+    def dump_flows
+      `sudo #{OFCTL} dump-flows #{Phut.settings['SOCKET_DIR']}/open_vswitch.#{@dpid}.ctl 2>&1`
+    end
+
     private
 
     def running?
