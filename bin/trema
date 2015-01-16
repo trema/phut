@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+
+# mini trema command
+require 'pio'
+require 'pp'
+require 'socket'
+
+module Trema
+  class Controller
+    DEFAULT_TCP_PORT = 6633
+    READ_CHUNK_SIZE = 1024 * 4
+
+    def self.inherited(subclass)
+      @controller = subclass
+    end
+
+    def self.start
+      @controller.new.start
+    end
+
+    def start
+      system "./bin/phut run #{ARGV[3]}"
+
+      socket = TCPServer.open('<any>', DEFAULT_TCP_PORT)
+      client = socket.accept
+
+      # Hello
+      data = client.readpartial(READ_CHUNK_SIZE)
+      hello = Pio::Hello.read(data)
+      client.write Pio::Hello.new.to_binary
+
+      # Echo
+      client.write Pio::Echo::Request.new.to_binary
+      data = client.readpartial(READ_CHUNK_SIZE)
+      echo_reply = Pio::Echo::Reply.read(data)
+
+      # Features
+      client.write Pio::Features::Request.new.to_binary
+      data = client.readpartial(READ_CHUNK_SIZE)
+      features_reply = Pio::Features::Reply.read(data)
+
+      __send__ :switch_ready, features_reply.datapath_id
+
+      begin
+        sleep
+      rescue Interrupt
+        system "./bin/phut kill 0xabc"
+      end
+    end
+
+    def info(message)
+      puts message
+    end
+  end
+end
+
+load ARGV[1]
+Trema::Controller.start
