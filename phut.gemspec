@@ -24,27 +24,27 @@ Gem::Specification.new do | gem |
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
   gem.add_dependency 'gli', '~> 2.12.2'
-  gem.add_dependency 'pry', '~> 0.10.0'
+  gem.add_dependency 'pry', '~> 0.10.1'
 
   # Docs
-  gem.add_development_dependency 'relish', '~> 0.7'
+  gem.add_development_dependency 'relish'
   gem.add_development_dependency 'yard', '~> 0.8.7.6'
 
   # Development
   gem.add_development_dependency 'byebug', '~> 3.5.1'
-  gem.add_development_dependency 'guard', '~> 2.10.2'
-  gem.add_development_dependency 'guard-bundler', '~> 2.0.0'
-  gem.add_development_dependency 'guard-cucumber', '~> 1.5.1'
-  gem.add_development_dependency 'guard-rspec', '~> 4.4.2'
+  gem.add_development_dependency 'guard', '~> 2.11.1'
+  gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
+  gem.add_development_dependency 'guard-cucumber', '~> 1.5.3'
+  gem.add_development_dependency 'guard-rspec', '~> 4.5.0'
   gem.add_development_dependency 'guard-rubocop', '~> 1.2.0'
 
   # Test
-  gem.add_development_dependency 'aruba', '~> 0.6.1'
+  gem.add_development_dependency 'aruba', '~> 0.6.2'
   gem.add_development_dependency 'codeclimate-test-reporter'
   gem.add_development_dependency 'coveralls', '~> 0.7.2'
-  gem.add_development_dependency 'cucumber', '~> 1.3.17'
+  gem.add_development_dependency 'cucumber', '~> 1.3.18'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec', '~> 3.1.0'
-  gem.add_development_dependency 'rspec-given', '~> 3.5.4'
+  gem.add_development_dependency 'rspec-given', '~> 3.6.0'
   gem.add_development_dependency 'rubocop', '~> 0.28.0'
 end
