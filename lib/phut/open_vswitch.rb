@@ -7,21 +7,24 @@ module Phut
       "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/utilities/ovs-ofctl"
 
     attr_reader :dpid
+    alias_method :datapath_id, :dpid
+    attr_reader :name
 
-    def initialize(dpid)
+    def initialize(dpid, name = nil)
       @dpid = dpid
+      @name = name || @dpid
     end
 
     def run
       fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
-      system "sudo #{OPENFLOWD} #{options.join ' '}"
+      system("sudo #{OPENFLOWD} #{options.join ' '}")
       loop { break if running? }
     end
 
     def stop
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       pid = IO.read(pid_file)
-      system "sudo kill #{pid}"
+      system "sudo -n kill #{pid}"
       loop { break unless running? }
     end
     alias_method :shutdown, :stop
@@ -37,7 +40,7 @@ module Phut
     end
 
     def pid_file
-      "#{Phut.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
+      "#{Phut.settings['PID_DIR']}/open_vswitch.#{name}.pid"
     end
 
     def network_device
@@ -55,9 +58,9 @@ module Phut
          --pidfile=#{pid_file}
          --verbose=ANY:file:dbg
          --verbose=ANY:console:err
-         --log-file=#{Phut.settings['LOG_DIR']}/open_vswitch.#{@dpid}.log
+         --log-file=#{Phut.settings['LOG_DIR']}/open_vswitch.#{name}.log
          --datapath-id=#{dpid_zero_filled}
-         --unixctl=#{Phut.settings['SOCKET_DIR']}/open_vswitch.#{@dpid}.ctl
+         --unixctl=#{Phut.settings['SOCKET_DIR']}/open_vswitch.#{name}.ctl
          netdev@#{network_device} tcp:127.0.0.1:6633)
     end
     # rubocop:enable MethodLength

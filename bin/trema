@@ -106,6 +106,14 @@ module Trema
       end
     end
 
+    desc 'Print all flow entries'
+    arg_name 'switches...'
+    command :dump_flows do |c|
+      c.action do |_global_options, _options, args|
+        args.each { |each| Phut::OpenVswitch.new(each).dump_flows }
+      end
+    end
+
     default_command :help
 
     exit run(ARGV)

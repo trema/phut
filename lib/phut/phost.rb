@@ -4,9 +4,11 @@ module Phut
   # An interface class to phost emulation utility program.
   class Phost
     attr_reader :ip
+    attr_reader :name
 
-    def initialize(ip_address)
+    def initialize(ip_address, name = nil)
       @ip = ip_address
+      @name = name || @ip
     end
 
     def run
@@ -22,7 +24,7 @@ module Phut
     private
 
     def pid_file
-      "#{Phut.settings['PID_DIR']}/phost.#{@ip}.pid"
+      "#{Phut.settings['PID_DIR']}/phost.#{name}.pid"
     end
 
     def executable
@@ -32,7 +34,7 @@ module Phut
     def options
       %W(-p #{Phut.settings['PID_DIR']}
          -l #{Phut.settings['LOG_DIR']}
-         -n #{@ip}
+         -n #{name}
          -D)
     end
   end

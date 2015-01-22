@@ -7,27 +7,15 @@ module Phut
     end
 
     def start
-      @configuration.vswitch.each(&:run)
-      @configuration.vhost.each(&:run)
+      @configuration.vswitch.values.each(&:run)
+      @configuration.vhost.values.each(&:run)
       @configuration.link.each(&:run)
     end
 
     def stop
-      @configuration.vswitch.each(&:stop)
-      @configuration.vhost.each(&:stop)
+      @configuration.vswitch.values.each(&:stop)
+      @configuration.vhost.values.each(&:stop)
       @configuration.link.each(&:stop)
-    end
-  end
-
-  def self.run(config_file, &block)
-    dsl = config_file ? IO.read(config_file) : ''
-    config = Phut::Parser.new.parse(dsl)
-    runner = Phut::Runner.new(config)
-    begin
-      runner.start
-      block.call
-    ensure
-      runner.stop
     end
   end
 end

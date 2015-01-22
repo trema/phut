@@ -6,8 +6,8 @@ module Phut
     attr_reader :link
 
     def initialize
-      @vswitch = []
-      @vhost = []
+      @vswitch = {}
+      @vhost = {}
       @link = []
     end
 

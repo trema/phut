@@ -31,6 +31,6 @@ When(/^I shutdown Open vSwitch with dpid = "(.*?)"$/) do |dpid|
 end
 
 Then(/^it should raise "(.*?)"$/) do |error_message|
-  @exception.should_not be_nil
-  @exception.message.should == error_message
+  expect(@exception).not_to be_nil
+  expect(@exception.message).to eq(error_message)
 end
