@@ -27,7 +27,7 @@ module Phut
     alias_method :shutdown, :stop
 
     def dump_flows
-      `sudo #{OFCTL} dump-flows #{Phut.settings['SOCKET_DIR']}/open_vswitch.#{@dpid}.ctl 2>&1`
+      system "sudo #{OFCTL} dump-flows #{network_device} 2>&1"
     end
 
     private
@@ -38,6 +38,10 @@ module Phut
 
     def pid_file
       "#{Phut.settings['PID_DIR']}/open_vswitch.#{@dpid}.pid"
+    end
+
+    def network_device
+      "vsw_#{@dpid}"
     end
 
     # rubocop:disable MethodLength
@@ -54,7 +58,7 @@ module Phut
          --log-file=#{Phut.settings['LOG_DIR']}/open_vswitch.#{@dpid}.log
          --datapath-id=#{dpid_zero_filled}
          --unixctl=#{Phut.settings['SOCKET_DIR']}/open_vswitch.#{@dpid}.ctl
-         netdev@vsw_#{@dpid} tcp:127.0.0.1:6633)
+         netdev@#{network_device} tcp:127.0.0.1:6633)
     end
     # rubocop:enable MethodLength
 
