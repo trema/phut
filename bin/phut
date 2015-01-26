@@ -37,6 +37,13 @@ module Phut
       end
     end
 
+    command :stop do |c|
+      c.action do |_global_options, _options, args|
+        configuration = Phut::Parser.new.parse(IO.read(args[0]))
+        Phut::Runner.new(configuration).stop
+      end
+    end
+
     command :kill do |c|
       c.action do |_global_options, _options, args|
         args.each { |each| Phut::OpenVswitch.new(each).shutdown }

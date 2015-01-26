@@ -31,12 +31,12 @@ module Phut
 
     def add
       system "sudo ip link add name #{@name_a} type veth peer name #{@name_b}"
-      system "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1"
-      system "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1"
+      system "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1 -q"
+      system "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1 -q"
     end
 
     def delete
-      system "sudo ip link delete #{@name_a} 2>/dev/null"
+      system "sudo ip link delete #{@name_a}"
     end
 
     def up

@@ -5,6 +5,7 @@ module Phut
   class Phost
     attr_reader :ip
     attr_reader :name
+    attr_accessor :interface
 
     def initialize(ip_address, name = nil)
       @ip = ip_address
@@ -12,7 +13,7 @@ module Phut
     end
 
     def run
-      system "sudo #{executable} #{options.join ' '}"
+      system("sudo #{executable} #{options.join ' '}")
       sleep 1
     end
 
@@ -35,6 +36,7 @@ module Phut
       %W(-p #{Phut.settings['PID_DIR']}
          -l #{Phut.settings['LOG_DIR']}
          -n #{name}
+         -i #{interface}
          -D)
     end
   end
