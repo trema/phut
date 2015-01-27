@@ -1,6 +1,10 @@
+require 'rake'
+
 module Phut
   # Network virtual link.
   class VirtualLink
+    include FileUtils
+
     attr_reader :peer_a
     attr_reader :peer_b
     attr_reader :name_a
@@ -30,18 +34,18 @@ module Phut
     private
 
     def add
-      system "sudo ip link add name #{@name_a} type veth peer name #{@name_b}"
-      system "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1 -q"
-      system "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1 -q"
+      sh "sudo ip link add name #{@name_a} type veth peer name #{@name_b}"
+      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1 -q"
+      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1 -q"
     end
 
     def delete
-      system "sudo ip link delete #{@name_a}"
+      sh "sudo ip link delete #{@name_a}"
     end
 
     def up
-      system "sudo /sbin/ifconfig #{@name_a} up"
-      system "sudo /sbin/ifconfig #{@name_b} up"
+      sh "sudo /sbin/ifconfig #{@name_a} up"
+      sh "sudo /sbin/ifconfig #{@name_b} up"
     end
   end
 end

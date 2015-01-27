@@ -1,6 +1,10 @@
+require 'rake'
+
 module Phut
   # Open vSwitch controller.
   class OpenVswitch
+    include FileUtils
+
     OPENFLOWD =
       "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
     OFCTL =
@@ -9,28 +13,36 @@ module Phut
     attr_reader :dpid
     alias_method :datapath_id, :dpid
     attr_reader :name
+    attr_writer :interfaces
 
     def initialize(dpid, name = nil)
       @dpid = dpid
       @name = name || @dpid
+      @interfaces = []
     end
 
     def run
       fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
-      system("sudo #{OPENFLOWD} #{options.join ' '}")
+      sh "sudo #{OPENFLOWD} #{options.join ' '}"
       loop { break if running? }
     end
+    alias_method :start, :run
 
     def stop
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
-      pid = IO.read(pid_file)
-      system "sudo kill #{pid}"
+      pid = IO.read(pid_file).chomp
+      sh "sudo kill #{pid}"
       loop { break unless running? }
     end
     alias_method :shutdown, :stop
 
+    def restart
+      stop
+      start
+    end
+
     def dump_flows
-      system "sudo #{OFCTL} dump-flows #{network_device} 2>&1"
+      sh "sudo #{OFCTL} dump-flows #{network_device}"
     end
 
     private
@@ -61,7 +73,8 @@ module Phut
          --log-file=#{Phut.settings['LOG_DIR']}/open_vswitch.#{name}.log
          --datapath-id=#{dpid_zero_filled}
          --unixctl=#{Phut.settings['SOCKET_DIR']}/open_vswitch.#{name}.ctl
-         netdev@#{network_device} tcp:127.0.0.1:6633)
+         netdev@#{network_device} tcp:127.0.0.1:6633) +
+        (@interfaces.empty? ? [] : ["--ports=#{@interfaces.join(',')}"])
     end
     # rubocop:enable MethodLength
 

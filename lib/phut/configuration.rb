@@ -19,6 +19,14 @@ module Phut
       fail "No link found for host #{host_name}"
     end
 
+    def find_interfaces(switch_name)
+      @link.reduce([]) do |result, each|
+        result << each.name_a if switch_name == each.peer_a
+        result << each.name_b if switch_name == each.peer_b
+        result
+      end
+    end
+
     def find_link(peer_a, peer_b)
       @link.select do |each|
         each.peer_a == peer_a && each.peer_b == peer_b

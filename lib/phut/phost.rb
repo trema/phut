@@ -1,25 +1,48 @@
+require 'phut/cli'
 require 'phut/settings'
+require 'pio/mac'
+require 'rake'
 
 module Phut
   # An interface class to phost emulation utility program.
   class Phost
+    include FileUtils
+
     attr_reader :ip
     attr_reader :name
+    attr_reader :mac
     attr_accessor :interface
 
     def initialize(ip_address, name = nil)
       @ip = ip_address
       @name = name || @ip
+      @mac = Pio::Mac.new(rand(0xffffffffffff + 1))
     end
 
     def run
-      system("sudo #{executable} #{options.join ' '}")
+      sh "sudo #{executable} #{options.join ' '}"
       sleep 1
     end
 
     def stop
       pid = IO.read(pid_file)
-      system "sudo kill #{pid}"
+      sh "sudo kill #{pid}"
+    end
+
+    def set_ip_and_mac_address
+      Phut::Cli.new(self).set_ip_and_mac_address
+    end
+
+    def add_arp_entries(hosts)
+      hosts.select do |each|
+        each.name != name
+      end.each do |each|
+        Phut::Cli.new(self).add_arp_entry each
+      end
+    end
+
+    def netmask
+      '255.255.255.255'
     end
 
     private
