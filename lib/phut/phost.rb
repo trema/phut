@@ -1,28 +1,54 @@
+require 'phut/cli'
 require 'phut/settings'
+require 'pio/mac'
+require 'rake'
 
 module Phut
   # An interface class to phost emulation utility program.
   class Phost
-    attr_reader :ip
+    include FileUtils
 
-    def initialize(ip_address)
+    attr_reader :ip
+    attr_reader :name
+    attr_reader :mac
+    attr_accessor :interface
+
+    def initialize(ip_address, name = nil)
       @ip = ip_address
+      @name = name || @ip
+      @mac = Pio::Mac.new(rand(0xffffffffffff + 1))
     end
 
     def run
-      system "sudo #{executable} #{options.join ' '}"
+      sh "sudo #{executable} #{options.join ' '}"
       sleep 1
     end
 
     def stop
       pid = IO.read(pid_file)
-      system "sudo kill #{pid}"
+      sh "sudo kill #{pid}"
+    end
+
+    def set_ip_and_mac_address
+      Phut::Cli.new(self).set_ip_and_mac_address
+    end
+
+    def add_arp_entries(hosts)
+      hosts.select do |each|
+        each.name != name
+      end.each do |each|
+        Phut::Cli.new(self).add_arp_entry each
+      end
+    end
+
+    def netmask
+      '255.255.255.255'
     end
 
     private
 
     def pid_file
-      "#{Phut.settings['PID_DIR']}/phost.#{@ip}.pid"
+      "#{Phut.settings['PID_DIR']}/phost.#{name}.pid"
     end
 
     def executable
@@ -32,7 +58,8 @@ module Phut
     def options
       %W(-p #{Phut.settings['PID_DIR']}
          -l #{Phut.settings['LOG_DIR']}
-         -n #{@ip}
+         -n #{name}
+         -i #{interface}
          -D)
     end
   end

@@ -55,16 +55,16 @@ module Phut
       @configuration = configuration
     end
 
-    def vswitch(&block)
-      vswitch = Vswitch.new
-      vswitch.instance_eval(&block)
-      @configuration.vswitch << OpenVswitch.new(vswitch[:dpid])
+    def vswitch(name = nil, &block)
+      vswitch = Vswitch.new.tap { |vsw| vsw.instance_eval(&block) }
+      @configuration.vswitch[name || vswitch[:dpid]] =
+        OpenVswitch.new(vswitch[:dpid], name)
     end
 
-    def vhost(&block)
-      vhost = Vhost.new
-      vhost.instance_eval(&block)
-      @configuration.vhost << Phost.new(vhost[:ip])
+    def vhost(name = nil, &block)
+      vhost = Vhost.new.tap { |vh| vh.instance_eval(&block) }
+      @configuration.vhost[name || vhost[:ip]] =
+        Phost.new(vhost[:ip], name)
     end
 
     def link(peer_a, peer_b)

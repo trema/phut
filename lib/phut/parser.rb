@@ -5,12 +5,12 @@ module Phut
   # Configuration DSL parser.
   class Parser
     def initialize
-      @configuration = Configuration.new
+      @config = Configuration.new
     end
 
     def parse(dsl)
-      Syntax.new(@configuration).instance_eval dsl
-      @configuration
+      Syntax.new(@config).instance_eval dsl
+      @config
     end
   end
 end

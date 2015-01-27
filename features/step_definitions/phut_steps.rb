@@ -5,9 +5,9 @@ When(/^I do phut run "(.*?)"$/) do |file_name|
   @configuration_file = file_name
 end
 
-Then(/^a vswitch named "(.*?)" launches$/) do |_name|
+Then(/^a vswitch named "(.*?)" launches$/) do |name|
   in_current_dir do
-    pid_file = File.join(Phut.settings['PID_DIR'], 'open_vswitch.0xabc.pid')
+    pid_file = File.join(Phut.settings['PID_DIR'], "open_vswitch.#{name}.pid")
     step %(a file named "#{pid_file}" should exist)
   end
 end
@@ -22,6 +22,6 @@ end
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |peer_a, peer_b|
   in_current_dir do
     configuration = Phut::Parser.new.parse(IO.read(@configuration_file))
-    configuration.find_link(peer_a, peer_b).should be_up
+    expect(configuration.find_link(peer_a, peer_b)).to be_up
   end
 end

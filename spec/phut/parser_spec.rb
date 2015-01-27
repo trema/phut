@@ -2,55 +2,63 @@ require 'phut'
 
 describe Phut::Parser do
   describe '#parse' do
-    subject { Phut::Parser.new.parse configuration }
+    Given(:config) { Phut::Parser.new.parse string }
 
     context "with 'vswitch { dpid '0xabc' }'" do
-      let(:configuration) { "vswitch { dpid '0xabc' }" }
-
-      it { expect { subject }.not_to raise_error }
+      When(:string) { "vswitch { dpid '0xabc' }" }
 
       describe '#vswitch' do
-        subject { super().vswitch }
+        When(:vswitch) { config.vswitch }
 
-        it 'has 1 vswitch' do
-          expect(subject.size).to eq(1)
-        end
+        Then { vswitch.size == 1 }
+        Then { vswitch.fetch('0xabc').datapath_id == '0xabc' }
+        Then { vswitch.fetch('0xabc').dpid == '0xabc' }
       end
+    end
+
+    context "with 'vswitch { datapath_id '0xabc' }" do
+      When(:string) { "vswitch { datapath_id '0xabc' }" }
 
       describe '#vswitch' do
-        subject { super().vswitch }
-        describe '#first' do
-          subject { super().first }
-          describe '#dpid' do
-            subject { super().dpid }
-            it { is_expected.to eq '0xabc' }
-          end
-        end
+        When(:vswitch) { config.vswitch }
+
+        Then { vswitch.size == 1 }
+        Then { vswitch.fetch('0xabc').dpid == '0xabc' }
+        Then { vswitch.fetch('0xabc').datapath_id == '0xabc' }
+      end
+    end
+
+    context "with 'vswitch('my_controller') { dpid '0xabc' }'" do
+      When(:string) { "vswitch('my_controller') { dpid '0xabc' }" }
+
+      describe '#vswitch' do
+        When(:vswitch) { config.vswitch }
+
+        Then { vswitch.size == 1 }
+        Then { vswitch.fetch('my_controller').dpid == '0xabc' }
+        Then { vswitch.fetch('my_controller').datapath_id == '0xabc' }
       end
     end
 
     context "with 'vhost { ip '192.168.0.1' }'" do
-      let(:configuration) { "vhost { ip '192.168.0.1' }" }
-
-      it { expect { subject }.not_to raise_error }
+      When(:string) { "vhost { ip '192.168.0.1' }" }
 
       describe '#vhost' do
-        subject { super().vhost }
+        When(:vhost) { config.vhost }
 
-        it 'has 1 vhost' do
-          expect(subject.size).to eq(1)
-        end
+        Then { vhost.size == 1 }
+        Then { vhost.fetch('192.168.0.1').ip == '192.168.0.1' }
       end
+    end
+
+    context "with 'vhost('host1') { ip '192.168.0.1' }'" do
+      When(:string) { "vhost('host1') { ip '192.168.0.1' }" }
 
       describe '#vhost' do
-        subject { super().vhost }
-        describe '#first' do
-          subject { super().first }
-          describe '#ip' do
-            subject { super().ip }
-            it { is_expected.to eq '192.168.0.1' }
-          end
-        end
+        When(:vhost) { config.vhost }
+
+        Then { vhost.size == 1 }
+        Then { vhost.fetch('host1').ip == '192.168.0.1' }
       end
     end
   end

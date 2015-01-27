@@ -1,4 +1,5 @@
 require 'phut/root'
+require 'phut/cli'
 require 'phut/open_vswitch'
 require 'phut/parser'
 require 'phut/runner'
