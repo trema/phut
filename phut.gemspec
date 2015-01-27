@@ -25,6 +25,7 @@ Gem::Specification.new do | gem |
 
   gem.add_dependency 'gli', '~> 2.12.2'
   gem.add_dependency 'pry', '~> 0.10.1'
+  gem.add_development_dependency 'bundler', '~> 1.7.12'
 
   # Docs
   gem.add_development_dependency 'relish'
