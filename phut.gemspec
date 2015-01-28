@@ -23,9 +23,10 @@ Gem::Specification.new do | gem |
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
-  gem.add_dependency 'gli', '~> 2.12.2'
-  gem.add_dependency 'pry', '~> 0.10.1'
   gem.add_dependency 'bundler', '~> 1.7.12'
+  gem.add_dependency 'gli', '~> 2.12.2'
+  gem.add_dependency 'pio', '~> 0.11.1'
+  gem.add_dependency 'pry', '~> 0.10.1'
 
   # Docs
   gem.add_development_dependency 'relish'
