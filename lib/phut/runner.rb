@@ -12,8 +12,6 @@ module Phut
       @config.vswitch.values.each do |each|
         each.run
         each.interfaces = @config.find_interfaces(each.name)
-        each.stop
-        each.start
       end
 
       @config.vhost.values.each do |each|

@@ -13,7 +13,6 @@ module Phut
     attr_reader :dpid
     alias_method :datapath_id, :dpid
     attr_reader :name
-    attr_writer :interfaces
 
     def initialize(dpid, name = nil)
       @dpid = dpid
@@ -36,9 +35,9 @@ module Phut
     end
     alias_method :shutdown, :stop
 
-    def restart
-      stop
-      start
+    def interfaces=(interfaces)
+      @interfaces = interfaces
+      restart unless interfaces.empty?
     end
 
     def dump_flows
@@ -46,6 +45,11 @@ module Phut
     end
 
     private
+
+    def restart
+      stop
+      start
+    end
 
     def running?
       FileTest.exists?(pid_file)
