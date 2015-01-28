@@ -22,7 +22,7 @@ module Phut
 
     def run
       fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
-      sh "sudo #{OPENFLOWD} #{options.join ' '}"
+      sh "sudo #{OPENFLOWD} #{options.join ' '}", verbose: false
       loop { break if running? }
     end
     alias_method :start, :run
