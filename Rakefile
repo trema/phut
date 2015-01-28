@@ -2,7 +2,7 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), 'lib')
 
 require 'rake/clean'
 
-task default: :openvswitch
+task default: [:openvswitch, :vhost]
 task test: [:spec, :cucumber, :rubocop]
 task travis: [:spec, 'cucumber:travis', 'coveralls:push']
 
