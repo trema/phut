@@ -2,7 +2,7 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'phut/version'
 
-Gem::Specification.new do | gem |
+Gem::Specification.new do |gem|
   gem.name = 'phut'
   gem.version = Phut::VERSION
   gem.summary = 'Virtual network in seconds.'
@@ -17,13 +17,11 @@ Gem::Specification.new do | gem |
 
   gem.files = `git ls-files`.split("\n")
 
-  gem.require_paths = ['lib']
   gem.extensions = ['Rakefile']
 
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
-  gem.add_dependency 'bundler', '~> 1.7.12'
   gem.add_dependency 'gli', '~> 2.12.2'
   gem.add_dependency 'pio', '~> 0.11.1'
   gem.add_dependency 'pry', '~> 0.10.1'
