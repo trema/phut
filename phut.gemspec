@@ -6,7 +6,7 @@ Gem::Specification.new do | gem |
   gem.name = 'phut'
   gem.version = Phut::VERSION
   gem.summary = 'Virtual network in seconds.'
-  gem.description = 'A simple ruby network emulator'\
+  gem.description = 'A simple ruby network emulator '\
                     'with capabilities similar to mininet.'
 
   gem.license = 'GPL3'
