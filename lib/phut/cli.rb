@@ -39,12 +39,12 @@ module Phut
 
     def send_packets_options(options)
       [
-       '--tp_src 1',
-       '--tp_dst 1',
-       '--pps 1',
-       '--length 22',
-       options[:n_pkts] ? nil : '--duration 1',
-       options[:n_pkts] ? "--n_pkts=#{options[:n_pkts]}" : nil
+        '--tp_src 1',
+        '--tp_dst 1',
+        '--pps 1',
+        '--length 22',
+        options[:n_pkts] ? nil : '--duration 1',
+        options[:n_pkts] ? "--n_pkts=#{options[:n_pkts]}" : nil
       ].compact.join(' ')
     end
 
