@@ -5,6 +5,8 @@ module Phut
   def self.config_root
     if ENV['PHUT_CONFIG_ROOT']
       Pathname.new(ENV['PHUT_CONFIG_ROOT'])
+    elsif FileTest.exist?('.trema')
+      Pathname.new('.trema')
     else
       Pathname.new('.phut')
     end.expand_path
