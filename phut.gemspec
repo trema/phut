@@ -23,7 +23,7 @@ Gem::Specification.new do |gem|
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
   gem.add_dependency 'gli', '~> 2.12.2'
-  gem.add_dependency 'pio', '~> 0.11.1'
+  gem.add_dependency 'pio', '~> 0.11.2'
   gem.add_dependency 'pry', '~> 0.10.1'
 
   # Docs
