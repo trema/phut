@@ -20,13 +20,13 @@ module Phut
     end
 
     def run
-      sh "sudo #{executable} #{options.join ' '}"
+      sh "sudo #{executable} #{options.join ' '}", verbose: false
       sleep 1
     end
 
     def stop
       pid = IO.read(pid_file)
-      sh "sudo kill #{pid}"
+      sh "sudo kill #{pid}", verbose: false
     end
 
     def set_ip_and_mac_address

@@ -30,7 +30,7 @@ module Phut
     def stop
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       pid = IO.read(pid_file).chomp
-      sh "sudo kill #{pid}"
+      sh "sudo kill #{pid}", verbose: false
       loop { break unless running? }
     end
     alias_method :shutdown, :stop
@@ -41,7 +41,7 @@ module Phut
     end
 
     def dump_flows
-      sh "sudo #{OFCTL} dump-flows #{network_device}"
+      sh "sudo #{OFCTL} dump-flows #{network_device}", verbose: false
     end
 
     private
