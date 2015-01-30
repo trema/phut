@@ -19,9 +19,11 @@ module Phut
       @mac = Pio::Mac.new(rand(0xffffffffffff + 1))
     end
 
-    def run
+    def run(hosts = [])
       sh "sudo #{executable} #{options.join ' '}", verbose: false
       sleep 1
+      set_ip_and_mac_address
+      add_arp_entries hosts
     end
 
     def stop
@@ -29,22 +31,21 @@ module Phut
       sh "sudo kill #{pid}", verbose: false
     end
 
+    def netmask
+      '255.255.255.255'
+    end
+
+    private
+
     def set_ip_and_mac_address
       Phut::Cli.new(self).set_ip_and_mac_address
     end
 
     def add_arp_entries(hosts)
       hosts.each do |each|
-        next if each.name == name
         Phut::Cli.new(self).add_arp_entry each
       end
     end
-
-    def netmask
-      '255.255.255.255'
-    end
-
-    private
 
     def pid_file
       "#{Phut.settings['PID_DIR']}/phost.#{name}.pid"

@@ -18,9 +18,7 @@ module Phut
         interface = links.find_interface_by_name(each.name)
         fail "No link found for host #{each.name}" if interface.empty?
         each.interface = interface.first
-        each.run
-        each.set_ip_and_mac_address
-        each.add_arp_entries @list.values
+        each.run @list.values
       end
     end
 
