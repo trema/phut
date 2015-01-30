@@ -21,10 +21,10 @@ module Phut
             proc { 'phut* ' }
           ]
         Pry::Commands.block_command 'vswitch' do |dpid|
-          Phut::OpenVswitch.new(dpid.hex).run
+          Phut::OpenVswitch.new(dpid.hex, dpid).run
         end
         Pry::Commands.block_command 'kill' do |dpid|
-          Phut::OpenVswitch.new(dpid.hex).shutdown
+          Phut::OpenVswitch.new(dpid.hex, dpid).shutdown
         end
         pry
       end
@@ -32,15 +32,13 @@ module Phut
 
     command :run do |c|
       c.action do |_global_options, _options, args|
-        configuration = Phut::Parser.new.parse(IO.read(args[0]))
-        Phut::Runner.new(configuration).start
+        Phut::Parser.new.parse(IO.read(args[0])).run
       end
     end
 
     command :stop do |c|
       c.action do |_global_options, _options, args|
-        configuration = Phut::Parser.new.parse(IO.read(args[0]))
-        Phut::Runner.new(configuration).stop
+        Phut::Parser.new.parse(IO.read(args[0])).stop
       end
     end
 

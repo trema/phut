@@ -1,8 +1,8 @@
 require 'phut'
 
 When(/^I do phut run "(.*?)"$/) do |file_name|
-  step %(I successfully run `phut run #{file_name}`)
-  @configuration_file = file_name
+  @config_file = file_name
+  step %(I successfully run `phut run #{@config_file}`)
 end
 
 Then(/^a vswitch named "(.*?)" launches$/) do |name|
@@ -21,7 +21,7 @@ end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |peer_a, peer_b|
   in_current_dir do
-    configuration = Phut::Parser.new.parse(IO.read(@configuration_file))
-    expect(configuration.find_link(peer_a, peer_b)).to be_up
+    config = Phut::Parser.new.parse(IO.read(@config_file))
+    expect(config.find_link(peer_a, peer_b)).to be_up
   end
 end

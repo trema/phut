@@ -3,30 +3,31 @@ Feature: The vhost DSL directive.
 
   Background:
     Given a file named ".phut/config" with:
-      """
-      PID_DIR: .
-      LOG_DIR: .
-      SOCKET_DIR: .
-      """
+    """
+    PID_DIR: .
+    LOG_DIR: .
+    SOCKET_DIR: .
+    """
+    And I successfully run `sudo -v`
 
-  Scenario: phut run with `vhost { ip ... }`
+  Scenario: phut run with "vhost { ip ... }"
     Given a file named "network.conf" with:
-      """
-      vhost { ip '192.168.0.1' }
-      vhost { ip '192.168.0.2' }
-      link '192.168.0.1', '192.168.0.2'
-      """
+    """
+    vhost { ip '192.168.0.1' }
+    vhost { ip '192.168.0.2' }
+    link '192.168.0.1', '192.168.0.2'
+    """
     When I do phut run "network.conf"
     Then a vhost named "192.168.0.1" launches
     And a vhost named "192.168.0.2" launches
 
-  Scenario: phut run with `vhost(alias) { ... }`
+  Scenario: phut run with "vhost(alias) { ... }"
     Given a file named "network.conf" with:
-      """
-      vhost('host1') { ip '192.168.0.1' }
-      vhost('host2') { ip '192.168.0.2' }
-      link 'host1', 'host2'
-      """
+    """
+    vhost('host1') { ip '192.168.0.1' }
+    vhost('host2') { ip '192.168.0.2' }
+    link 'host1', 'host2'
+    """
     When I do phut run "network.conf"
     Then a vhost named "host1" launches
     And a vhost named "host2" launches

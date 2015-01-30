@@ -11,26 +11,52 @@ module Phut
       @link = []
     end
 
-    def find_interface(host_name)
-      @link.each do |each|
-        return each.name_a if host_name == each.peer_a
-        return each.name_b if host_name == each.peer_b
+    def run
+      set_switch_interfaces
+      set_host_interface
+
+      @link.each(&:run)
+      @vswitch.values.each(&:run)
+      @vhost.values.each do |each|
+        each.run
+        each.set_ip_and_mac_address
+        each.add_arp_entries @vhost.values
       end
-      fail "No link found for host #{host_name}"
     end
 
-    def find_interfaces(switch_name)
-      @link.reduce([]) do |result, each|
-        result << each.name_a if switch_name == each.peer_a
-        result << each.name_b if switch_name == each.peer_b
-        result
-      end
+    def stop
+      @vswitch.values.each(&:stop)
+      @vhost.values.each(&:stop)
+      @link.each(&:stop)
     end
 
     def find_link(peer_a, peer_b)
       @link.select do |each|
         each.peer_a == peer_a && each.peer_b == peer_b
       end[0]
+    end
+
+    private
+
+    def set_switch_interfaces
+      @vswitch.values.each do |each|
+        each.interfaces = find_interface_by_name(each.name)
+      end
+    end
+
+    def set_host_interface
+      @vhost.values.each do |each|
+        interface = find_interface_by_name(each.name)
+        fail "No link found for host #{each.name}" if interface.empty?
+        each.interface = interface.first
+      end
+    end
+
+    def find_interface_by_name(name)
+      @link.each_with_object([]) do |each, list|
+        list << each.name_a if name == each.peer_a
+        list << each.name_b if name == each.peer_b
+      end
     end
   end
 end

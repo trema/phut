@@ -34,9 +34,12 @@ module Phut
     private
 
     def add
-      sh "sudo ip link add name #{@name_a} type veth peer name #{@name_b}", verbose: false
-      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1 -q", verbose: false
-      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1 -q", verbose: false
+      sh("sudo ip link add name #{@name_a} type veth peer name #{@name_b}",
+         verbose: false)
+      sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1 -q",
+         verbose: false)
+      sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1 -q",
+         verbose: false)
     end
 
     def delete

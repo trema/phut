@@ -13,6 +13,7 @@ module Phut
     attr_reader :dpid
     alias_method :datapath_id, :dpid
     attr_reader :name
+    attr_writer :interfaces
 
     def initialize(dpid, name = nil)
       @dpid = dpid
@@ -34,11 +35,6 @@ module Phut
       loop { break unless running? }
     end
     alias_method :shutdown, :stop
-
-    def interfaces=(interfaces)
-      @interfaces = interfaces
-      restart unless interfaces.empty?
-    end
 
     def dump_flows
       sh "sudo #{OFCTL} dump-flows #{network_device}", verbose: false

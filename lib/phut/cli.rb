@@ -2,6 +2,7 @@ require 'rake'
 require 'phut/settings'
 
 module Phut
+  # cli command wrapper.
   class Cli
     include FileUtils
 
@@ -24,11 +25,14 @@ module Phut
     end
 
     def add_arp_entry(other)
-      sh "sudo #{executable} -i #{@host.interface} add_arp_entry --ip_addr #{other.ip} --mac_addr #{other.mac}", verbose: false
+      sh "sudo #{executable} -i #{@host.interface} add_arp_entry " \
+         "--ip_addr #{other.ip} --mac_addr #{other.mac}", verbose: false
     end
 
     def set_ip_and_mac_address
-      sh "sudo #{executable} -i #{@host.interface} set_host_addr --ip_addr #{@host.ip} --ip_mask #{@host.netmask} --mac_addr #{@host.mac}", verbose: false
+      sh "sudo #{executable} -i #{@host.interface} set_host_addr " \
+         "--ip_addr #{@host.ip} --ip_mask #{@host.netmask} " \
+         "--mac_addr #{@host.mac}", verbose: false
     end
 
     private

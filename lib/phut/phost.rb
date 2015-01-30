@@ -34,9 +34,8 @@ module Phut
     end
 
     def add_arp_entries(hosts)
-      hosts.select do |each|
-        each.name != name
-      end.each do |each|
+      hosts.each do |each|
+        next if each.name == name
         Phut::Cli.new(self).add_arp_entry each
       end
     end
