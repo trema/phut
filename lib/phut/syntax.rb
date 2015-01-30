@@ -1,4 +1,3 @@
-require 'phut/open_vswitch'
 require 'phut/phost'
 require 'phut/virtual_link'
 
@@ -6,7 +5,7 @@ module Phut
   # DSL syntax definitions.
   class Syntax
     # The 'vswitch(name) { ...attributes...}' directive.
-    class Vswitch
+    class VswitchDirective
       def initialize
         @attributes = {}
       end
@@ -22,7 +21,7 @@ module Phut
     end
 
     # The 'vhost(name) { ...attributes...}' directive.
-    class Vhost
+    class VhostDirective
       def initialize
         @attributes = {}
       end
@@ -36,42 +35,39 @@ module Phut
       end
     end
 
-    # The 'link peer_a, peer_b' directive.
-    class Link
-      attr_reader :peer_a
-      attr_reader :peer_b
-      attr_reader :name_a
-      attr_reader :name_b
+    # The 'link name_a, name_b' directive.
+    class LinkDirective
+      def initialize(name_a, name_b, link_id)
+        @attributes = {}.tap do |attr|
+          attr[:name_a] = name_a
+          attr[:name_b] = name_b
+          attr[:device_a] = "phut#{link_id}-0"
+          attr[:device_b] = "phut#{link_id}-1"
+        end
+      end
 
-      def initialize(peer_a, peer_b, link_id)
-        @peer_a = peer_a
-        @peer_b = peer_b
-        @name_a = "phut#{link_id}-0"
-        @name_b = "phut#{link_id}-1"
+      def [](key)
+        @attributes[key]
       end
     end
 
-    def initialize(configuration)
-      @configuration = configuration
+    def initialize(config)
+      @config = config
     end
 
-    def vswitch(name = nil, &block)
-      vswitch = Vswitch.new.tap { |vsw| vsw.instance_eval(&block) }
-      @configuration.vswitch[name || vswitch[:dpid]] =
-        OpenVswitch.new(vswitch[:dpid], name)
+    def vswitch(alias_name = nil, &block)
+      attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
+      @config.add_vswitch(alias_name || attrs[:dpid], attrs)
     end
 
-    def vhost(name = nil, &block)
-      vhost = Vhost.new.tap { |vh| vh.instance_eval(&block) }
-      @configuration.vhost[name || vhost[:ip]] =
-        Phost.new(vhost[:ip], name)
+    def vhost(alias_name = nil, &block)
+      attrs = VhostDirective.new.tap { |vh| vh.instance_eval(&block) }
+      @config.add_vhost(alias_name || attrs[:ip], attrs)
     end
 
-    def link(peer_a, peer_b)
-      link_id = @configuration.links.size
-      link = Link.new(peer_a, peer_b, link_id)
-      @configuration.links << VirtualLink.new(peer_a, link.name_a,
-                                              peer_b, link.name_b)
+    def link(name_a, name_b)
+      attrs = LinkDirective.new(name_a, name_b, @config.next_link_id)
+      @config.add_link name_a, attrs[:device_a], name_b, attrs[:device_b]
     end
   end
 end

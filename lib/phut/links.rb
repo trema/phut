@@ -20,16 +20,16 @@ module Phut
       @list.each(&:stop)
     end
 
-    def find_by_peers(peer_a, peer_b)
+    def find_by_peers(name_a, name_b)
       @list.find do |each|
-        each.peer_a == peer_a && each.peer_b == peer_b
+        each.name_a == name_a && each.name_b == name_b
       end
     end
 
     def find_interface_by_name(name)
       @list.each_with_object([]) do |each, list|
-        list << each.name_a if name == each.peer_a
-        list << each.name_b if name == each.peer_b
+        list << each.device_a if name == each.name_a
+        list << each.device_b if name == each.name_b
       end
     end
   end

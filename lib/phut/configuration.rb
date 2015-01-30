@@ -1,4 +1,5 @@
 require 'phut/links'
+require 'phut/open_vswitch'
 require 'phut/vhosts'
 require 'phut/vswitches'
 
@@ -25,6 +26,22 @@ module Phut
       @vswitch.stop_all
       @vhost.stop_all
       @links.stop_all
+    end
+
+    def add_vswitch(name, attrs)
+      @vswitch[name] = OpenVswitch.new(attrs[:dpid], name)
+    end
+
+    def add_vhost(name, attrs)
+      @vhost[name] = Phost.new(attrs[:ip], name)
+    end
+
+    def next_link_id
+      @links.size
+    end
+
+    def add_link(name_a, device_a, name_b, device_b)
+      @links << VirtualLink.new(name_a, device_a, name_b, device_b)
     end
   end
 end

@@ -5,16 +5,16 @@ module Phut
   class VirtualLink
     include FileUtils
 
-    attr_reader :peer_a
-    attr_reader :peer_b
     attr_reader :name_a
     attr_reader :name_b
+    attr_reader :device_a
+    attr_reader :device_b
 
-    def initialize(peer_a, name_a, peer_b, name_b)
-      @peer_a = peer_a
+    def initialize(name_a, device_a, name_b, device_b)
       @name_a = name_a
-      @peer_b = peer_b
+      @device_a = device_a
       @name_b = name_b
+      @device_b = device_b
     end
 
     def run
@@ -34,21 +34,21 @@ module Phut
     private
 
     def add
-      sh("sudo ip link add name #{@name_a} type veth peer name #{@name_b}",
+      sh("sudo ip link add name #{@device_a} type veth peer name #{@device_b}",
          verbose: false)
-      sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@name_a}.disable_ipv6=1 -q",
+      sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@device_a}.disable_ipv6=1 -q",
          verbose: false)
-      sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@name_b}.disable_ipv6=1 -q",
+      sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@device_b}.disable_ipv6=1 -q",
          verbose: false)
     end
 
     def delete
-      sh "sudo ip link delete #{@name_a}", verbose: false
+      sh "sudo ip link delete #{@device_a}", verbose: false
     end
 
     def up
-      sh "sudo /sbin/ifconfig #{@name_a} up", verbose: false
-      sh "sudo /sbin/ifconfig #{@name_b} up", verbose: false
+      sh "sudo /sbin/ifconfig #{@device_a} up", verbose: false
+      sh "sudo /sbin/ifconfig #{@device_b} up", verbose: false
     end
   end
 end
