@@ -68,10 +68,10 @@ module Phut
     end
 
     def link(peer_a, peer_b)
-      link_id = @configuration.link.size
+      link_id = @configuration.links.size
       link = Link.new(peer_a, peer_b, link_id)
-      @configuration.link << VirtualLink.new(peer_a, link.name_a,
-                                             peer_b, link.name_b)
+      @configuration.links << VirtualLink.new(peer_a, link.name_a,
+                                              peer_b, link.name_b)
     end
   end
 end
