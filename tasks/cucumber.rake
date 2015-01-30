@@ -6,7 +6,7 @@ begin
 
   task 'cucumber:travis' => :openvswitch
   Cucumber::Rake::Task.new('cucumber:travis') do |task|
-    task.cucumber_opts = '--tags ~@sudo'
+    task.cucumber_opts = '--tags ~@sudo --tags ~@shell'
   end
 rescue LoadError
   task :cucumber do

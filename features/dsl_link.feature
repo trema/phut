@@ -1,3 +1,4 @@
+@sudo
 Feature: The link DSL directive.
   Background:
     Given a file named ".phut/config" with:
@@ -8,7 +9,6 @@ Feature: The link DSL directive.
     """
     And I successfully run `sudo -v`
 
-  @sudo
   Scenario: phut run with "link ..."
     Given a file named "network.conf" with:
     """
@@ -19,7 +19,6 @@ Feature: The link DSL directive.
     When I do phut run "network.conf"
     Then a link is created between "0xabc" and "192.168.0.1"
 
-  @sudo
   Scenario: phut run with "link alias1, alias2"
     Given a file named "network.conf" with:
     """

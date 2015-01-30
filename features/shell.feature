@@ -10,11 +10,6 @@ Feature: Shell
     """
     And I successfully run `sudo -v`
 
-  Scenario: Prompt
-    When I run `phut` interactively
-    And I type "quit"
-    Then the output should contain "phut>"
-
   Scenario: Run a vswitch
     Given I run `phut` interactively
     When I type "vswitch 0xabc"
