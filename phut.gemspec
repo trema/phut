@@ -23,7 +23,7 @@ Gem::Specification.new do |gem|
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
   gem.add_dependency 'gli', '~> 2.12.2'
-  gem.add_dependency 'pio', '~> 0.11.2'
+  gem.add_dependency 'pio', '~> 0.12.0'
   gem.add_dependency 'pry', '~> 0.10.1'
 
   # Docs
@@ -41,12 +41,12 @@ Gem::Specification.new do |gem|
   # Test
   gem.add_development_dependency 'aruba', '~> 0.6.2'
   gem.add_development_dependency 'codeclimate-test-reporter'
-  gem.add_development_dependency 'coveralls', '~> 0.7.2'
+  gem.add_development_dependency 'coveralls', '~> 0.7.9'
   gem.add_development_dependency 'cucumber', '~> 1.3.18'
-  gem.add_development_dependency 'flog', '~> 4.3.1'
+  gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'reek', '~> 1.6.4'
-  gem.add_development_dependency 'rspec', '~> 3.1.0'
+  gem.add_development_dependency 'rspec', '~> 3.2.0'
   gem.add_development_dependency 'rspec-given', '~> 3.6.0'
   gem.add_development_dependency 'rubocop', '~> 0.28.0'
 end
