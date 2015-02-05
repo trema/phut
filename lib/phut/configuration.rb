@@ -33,7 +33,7 @@ module Phut
     end
 
     def add_vhost(name, attrs)
-      @vhost[name] = Phost.new(attrs[:ip], name)
+      @vhost[name] = Phost.new(attrs[:ip], attrs[:promisc], name)
     end
 
     def next_link_id

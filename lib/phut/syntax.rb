@@ -30,6 +30,10 @@ module Phut
         @attributes[:ip] = value
       end
 
+      def promisc(on_off)
+        @attributes[:promisc] = on_off
+      end
+
       def [](key)
         @attributes[key]
       end

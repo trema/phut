@@ -35,6 +35,10 @@ module Phut
          "--mac_addr #{@host.mac}", verbose: false
     end
 
+    def enable_promisc
+      sh "sudo #{executable} -i #{@host.interface} enable_promisc"
+    end
+
     private
 
     def executable
