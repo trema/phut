@@ -36,7 +36,8 @@ module Phut
     end
 
     def enable_promisc
-      sh "sudo #{executable} -i #{@host.interface} enable_promisc"
+      sh "sudo #{executable} -i #{@host.interface} enable_promisc",
+         verbose: false
     end
 
     private
