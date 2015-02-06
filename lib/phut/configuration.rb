@@ -20,6 +20,7 @@ module Phut
       @links.run_all
       @vswitch.run_all(@links)
       @vhost.run_all(@links)
+      self
     end
 
     def stop
