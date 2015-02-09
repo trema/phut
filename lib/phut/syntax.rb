@@ -60,17 +60,17 @@ module Phut
     end
 
     def vswitch(alias_name = nil, &block)
-      if block
-        attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
-        @config.add_vswitch(alias_name || attrs[:dpid], attrs)
-      else
-        @config.add_vswitch(alias_name, VswitchDirective.new)
-      end
+      attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
+      @config.add_vswitch(alias_name || attrs[:dpid], attrs)
     end
 
     def vhost(alias_name = nil, &block)
-      attrs = VhostDirective.new.tap { |vh| vh.instance_eval(&block) }
-      @config.add_vhost(alias_name || attrs[:ip], attrs)
+      if block
+        attrs = VhostDirective.new.tap { |vh| vh.instance_eval(&block) }
+        @config.add_vhost(alias_name || attrs[:ip], attrs)
+      else
+        @config.add_vhost(alias_name, VhostDirective.new)
+      end
     end
 
     def link(name_a, name_b)
