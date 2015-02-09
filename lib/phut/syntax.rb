@@ -69,7 +69,8 @@ module Phut
         attrs = VhostDirective.new.tap { |vh| vh.instance_eval(&block) }
         @config.add_vhost(alias_name || attrs[:ip], attrs)
       else
-        @config.add_vhost(alias_name, VhostDirective.new)
+        @vhost_id ||= 0
+        @config.add_vhost(alias_name, ip: "192.168.0.#{@vhost_id += 1}")
       end
     end
 
