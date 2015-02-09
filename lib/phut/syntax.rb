@@ -60,8 +60,12 @@ module Phut
     end
 
     def vswitch(alias_name = nil, &block)
-      attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
-      @config.add_vswitch(alias_name || attrs[:dpid], attrs)
+      if block
+        attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
+        @config.add_vswitch(alias_name || attrs[:dpid], attrs)
+      else
+        @config.add_vswitch(alias_name, VswitchDirective.new)
+      end
     end
 
     def vhost(alias_name = nil, &block)
