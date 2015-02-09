@@ -6,6 +6,7 @@ module Phut
     extend Forwardable
 
     def_delegator :@list, :[]=
+    def_delegator :@list, :[]
     def_delegator :@list, :fetch
     def_delegator :@list, :size
 
@@ -21,7 +22,9 @@ module Phut
     end
 
     def stop_all
-      @list.values.each(&:stop)
+      @list.values.each do |each|
+        each.stop if each.running?
+      end
     end
   end
 end

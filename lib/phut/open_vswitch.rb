@@ -40,15 +40,15 @@ module Phut
       sh "sudo #{OFCTL} dump-flows #{network_device}", verbose: false
     end
 
+    def running?
+      FileTest.exists?(pid_file)
+    end
+
     private
 
     def restart
       stop
       start
-    end
-
-    def running?
-      FileTest.exists?(pid_file)
     end
 
     def pid_file

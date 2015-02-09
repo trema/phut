@@ -61,7 +61,7 @@ module Phut
 
     def vswitch(alias_name = nil, &block)
       attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
-      @config.add_vswitch(alias_name || attrs[:dpid], attrs)
+      @config.add_vswitch(alias_name || format('%#x', attrs[:dpid]), attrs)
     end
 
     def vhost(alias_name = nil, &block)
