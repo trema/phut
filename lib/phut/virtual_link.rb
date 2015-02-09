@@ -34,7 +34,7 @@ module Phut
     private
 
     def add
-      delete if /^#{@device_a}\s+/=~ `ifconfig`
+      delete if /^#{@device_a}\s+/ =~ `ifconfig`
       sh("sudo ip link add name #{@device_a} type veth peer name #{@device_b}",
          verbose: false)
       sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@device_a}.disable_ipv6=1 -q",
