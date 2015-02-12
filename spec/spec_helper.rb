@@ -12,4 +12,3 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[*formatters]
 SimpleCov.start { add_filter '/vendor/' }
 
 require 'rspec/given'
-require 'phut'

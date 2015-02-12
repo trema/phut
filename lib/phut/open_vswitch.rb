@@ -1,3 +1,4 @@
+require 'phut/settings'
 require 'rake'
 
 module Phut
@@ -17,13 +18,14 @@ module Phut
 
     def initialize(dpid, name = nil)
       @dpid = dpid
-      @name = name || @dpid
+      @name = name || format('%#x', @dpid)
       @interfaces = []
     end
 
     def run
       fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
-      sh "sudo #{OPENFLOWD} #{options.join ' '}", verbose: false
+      sh "sudo #{OPENFLOWD} #{options.join ' '}",
+         verbose: Phut.settings[:verbose]
       loop { break if running? }
     end
     alias_method :start, :run
@@ -31,13 +33,24 @@ module Phut
     def stop
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       pid = IO.read(pid_file).chomp
-      sh "sudo kill #{pid}", verbose: false
+      sh "sudo kill #{pid}", verbose: Phut.settings[:verbose]
       loop { break unless running? }
     end
     alias_method :shutdown, :stop
 
+    def bring_port_up(port_number)
+      sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} up",
+         verbose: Phut.settings[:verbose]
+    end
+
+    def bring_port_down(port_number)
+      sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} down",
+         verbose: Phut.settings[:verbose]
+    end
+
     def dump_flows
-      sh "sudo #{OFCTL} dump-flows #{network_device}", verbose: false
+      sh "sudo #{OFCTL} dump-flows #{network_device}",
+         verbose: Phut.settings[:verbose]
     end
 
     def running?
@@ -52,11 +65,11 @@ module Phut
     end
 
     def pid_file
-      "#{Phut.settings['PID_DIR']}/open_vswitch.#{name}.pid"
+      "#{Phut.settings[:pid_dir]}/open_vswitch.#{name}.pid"
     end
 
     def network_device
-      "vsw_#{@dpid}"
+      "vsw_#{name}"
     end
 
     # rubocop:disable MethodLength
@@ -70,17 +83,17 @@ module Phut
          --pidfile=#{pid_file}
          --verbose=ANY:file:dbg
          --verbose=ANY:console:err
-         --log-file=#{Phut.settings['LOG_DIR']}/open_vswitch.#{name}.log
+         --log-file=#{Phut.settings[:log_dir]}/open_vswitch.#{name}.log
          --datapath-id=#{dpid_zero_filled}
-         --unixctl=#{Phut.settings['SOCKET_DIR']}/open_vswitch.#{name}.ctl
+         --unixctl=#{Phut.settings[:socket_dir]}/open_vswitch.#{name}.ctl
          netdev@#{network_device} tcp:127.0.0.1:6633) +
         (@interfaces.empty? ? [] : ["--ports=#{@interfaces.join(',')}"])
     end
     # rubocop:enable MethodLength
 
     def dpid_zero_filled
-      no_0x = @dpid.to_s.gsub(/^0x/, '')
-      '0' * (16 - no_0x.length) + no_0x
+      hex = format('%x', @dpid)
+      '0' * (16 - hex.length) + hex
     end
   end
 end

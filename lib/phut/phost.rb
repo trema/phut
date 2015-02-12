@@ -21,7 +21,8 @@ module Phut
     end
 
     def run(hosts = [])
-      sh "sudo #{executable} #{options.join ' '}", verbose: false
+      sh "sudo #{executable} #{options.join ' '}",
+         verbose: Phut.settings[:verbose]
       sleep 1
       set_ip_and_mac_address
       maybe_enable_promisc
@@ -30,7 +31,7 @@ module Phut
 
     def stop
       pid = IO.read(pid_file)
-      sh "sudo kill #{pid}", verbose: false
+      sh "sudo kill #{pid}", verbose: Phut.settings[:verbose]
     end
 
     def netmask
@@ -55,7 +56,7 @@ module Phut
     end
 
     def pid_file
-      "#{Phut.settings['PID_DIR']}/phost.#{name}.pid"
+      "#{Phut.settings[:pid_dir]}/phost.#{name}.pid"
     end
 
     def executable
@@ -63,8 +64,8 @@ module Phut
     end
 
     def options
-      %W(-p #{Phut.settings['PID_DIR']}
-         -l #{Phut.settings['LOG_DIR']}
+      %W(-p #{Phut.settings[:pid_dir]}
+         -l #{Phut.settings[:log_dir]}
          -n #{name}
          -i #{interface}
          -D)

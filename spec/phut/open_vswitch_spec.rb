@@ -1,3 +1,5 @@
+require 'phut/open_vswitch'
+
 describe Phut::OpenVswitch do
   describe '.new' do
     context 'with 0xabc' do

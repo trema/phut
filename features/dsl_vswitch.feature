@@ -1,16 +1,6 @@
-@sudo
 Feature: The vswitch DSL directive.
-
-  Background:
-    Given a file named ".phut/config" with:
-    """
-    PID_DIR: .
-    LOG_DIR: .
-    SOCKET_DIR: .
-    """
-    And I successfully run `sudo -v`
-
-  Scenario: phut run with "vswitch { dpid ... }"
+  @sudo
+  Scenario: phut run with "vswitch { dpid STRING }"
     Given a file named "network.conf" with:
     """
     vswitch { dpid '0xabc' }
@@ -18,7 +8,17 @@ Feature: The vswitch DSL directive.
     When I do phut run "network.conf"
     Then a vswitch named "0xabc" launches
 
-  Scenario: phut run with "vswitch { datapath_id ... }"
+  @sudo
+  Scenario: phut run with "vswitch { dpid NUMBER }"
+    Given a file named "network.conf" with:
+    """
+    vswitch { dpid 0xabc }
+    """
+    When I do phut run "network.conf"
+    Then a vswitch named "0xabc" launches
+
+  @sudo
+  Scenario: phut run with "vswitch { datapath_id STRING }"
     Given a file named "network.conf" with:
     """
     vswitch { datapath_id '0xabc' }
@@ -26,6 +26,16 @@ Feature: The vswitch DSL directive.
     When I do phut run "network.conf"
     Then a vswitch named "0xabc" launches
 
+  @sudo
+  Scenario: phut run with "vswitch { datapath_id NUMBER }"
+    Given a file named "network.conf" with:
+    """
+    vswitch { datapath_id 0xabc }
+    """
+    When I do phut run "network.conf"
+    Then a vswitch named "0xabc" launches
+
+  @sudo
   Scenario: phut run with "vswitch(alias) { ... }"
     Given a file named "network.conf" with:
     """

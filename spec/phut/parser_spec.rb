@@ -11,8 +11,8 @@ describe Phut::Parser do
         When(:vswitch) { config.vswitch }
 
         Then { vswitch.size == 1 }
-        Then { vswitch.fetch('0xabc').datapath_id == '0xabc' }
-        Then { vswitch.fetch('0xabc').dpid == '0xabc' }
+        Then { vswitch.fetch('0xabc').datapath_id == 0xabc }
+        Then { vswitch.fetch('0xabc').dpid == 0xabc }
       end
     end
 
@@ -23,8 +23,8 @@ describe Phut::Parser do
         When(:vswitch) { config.vswitch }
 
         Then { vswitch.size == 1 }
-        Then { vswitch.fetch('0xabc').dpid == '0xabc' }
-        Then { vswitch.fetch('0xabc').datapath_id == '0xabc' }
+        Then { vswitch.fetch('0xabc').dpid == 0xabc }
+        Then { vswitch.fetch('0xabc').datapath_id == 0xabc }
       end
     end
 
@@ -35,8 +35,8 @@ describe Phut::Parser do
         When(:vswitch) { config.vswitch }
 
         Then { vswitch.size == 1 }
-        Then { vswitch.fetch('my_controller').dpid == '0xabc' }
-        Then { vswitch.fetch('my_controller').datapath_id == '0xabc' }
+        Then { vswitch.fetch('my_controller').dpid == 0xabc }
+        Then { vswitch.fetch('my_controller').datapath_id == 0xabc }
       end
     end
 

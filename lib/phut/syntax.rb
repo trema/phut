@@ -11,7 +11,12 @@ module Phut
       end
 
       def dpid(value)
-        @attributes[:dpid] = value
+        @attributes[:dpid] = case value
+                             when String
+                               /^0x/ =~ value ? value.hex : value.to_i
+                             else
+                               value.to_i
+                             end
       end
       alias_method :datapath_id, :dpid
 
@@ -45,8 +50,8 @@ module Phut
         @attributes = {}.tap do |attr|
           attr[:name_a] = name_a
           attr[:name_b] = name_b
-          attr[:device_a] = "phut#{link_id}-0"
-          attr[:device_b] = "phut#{link_id}-1"
+          attr[:device_a] = "link#{link_id}-0"
+          attr[:device_b] = "link#{link_id}-1"
         end
       end
 

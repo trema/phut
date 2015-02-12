@@ -36,20 +36,20 @@ module Phut
     def add
       delete if /^#{@device_a}\s+/ =~ `ifconfig`
       sh("sudo ip link add name #{@device_a} type veth peer name #{@device_b}",
-         verbose: false)
+         verbose: Phut.settings[:verbose])
       sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@device_a}.disable_ipv6=1 -q",
-         verbose: false)
+         verbose: Phut.settings[:verbose])
       sh("sudo /sbin/sysctl -w net.ipv6.conf.#{@device_b}.disable_ipv6=1 -q",
-         verbose: false)
+         verbose: Phut.settings[:verbose])
     end
 
     def delete
-      sh "sudo ip link delete #{@device_a}", verbose: false
+      sh "sudo ip link delete #{@device_a}", verbose: Phut.settings[:verbose]
     end
 
     def up
-      sh "sudo /sbin/ifconfig #{@device_a} up", verbose: false
-      sh "sudo /sbin/ifconfig #{@device_b} up", verbose: false
+      sh "sudo /sbin/ifconfig #{@device_a} up", verbose: Phut.settings[:verbose]
+      sh "sudo /sbin/ifconfig #{@device_b} up", verbose: Phut.settings[:verbose]
     end
   end
 end

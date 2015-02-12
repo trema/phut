@@ -1,15 +1,5 @@
-@sudo
 Feature: The vhost DSL directive.
-
-  Background:
-    Given a file named ".phut/config" with:
-    """
-    PID_DIR: .
-    LOG_DIR: .
-    SOCKET_DIR: .
-    """
-    And I successfully run `sudo -v`
-
+  @sudo
   Scenario: phut run with "vhost { ip ... }"
     Given a file named "network.conf" with:
     """
@@ -21,6 +11,7 @@ Feature: The vhost DSL directive.
     Then a vhost named "192.168.0.1" launches
     And a vhost named "192.168.0.2" launches
 
+  @sudo
   Scenario: phut run with "vhost(alias) { ... }"
     Given a file named "network.conf" with:
     """
