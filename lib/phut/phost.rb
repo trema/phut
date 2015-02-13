@@ -32,10 +32,15 @@ module Phut
     def stop
       pid = IO.read(pid_file)
       sh "sudo kill #{pid}", verbose: Phut.settings[:verbose]
+      loop { break unless running? }
     end
 
     def netmask
       '255.255.255.255'
+    end
+
+    def running?
+      FileTest.exists?(pid_file)
     end
 
     private
