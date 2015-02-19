@@ -13,11 +13,15 @@ module Phut
     end
 
     def run_all
-      @list.each(&:run)
+      @list.map do |each|
+        Thread.start { each.run }
+      end.each(&:join)
     end
 
     def stop_all
-      @list.each(&:stop)
+      @list.map do |each|
+        Thread.start { each.stop }
+      end.each(&:join)
     end
 
     def find_by_peers(name_a, name_b)

@@ -1,28 +1,29 @@
 require 'phut/cli'
+require 'phut/null_logger'
 require 'phut/settings'
+require 'phut/shell_runner'
 require 'pio/mac'
-require 'rake'
 
 module Phut
   # An interface class to phost emulation utility program.
   class Phost
-    include FileUtils
+    include ShellRunner
 
     attr_reader :ip
     attr_reader :name
     attr_reader :mac
     attr_accessor :interface
 
-    def initialize(ip_address, promisc, name = nil)
+    def initialize(ip_address, promisc, name = nil, logger = NullLogger.new)
       @ip = ip_address
       @promisc = promisc
       @name = name || @ip
       @mac = Pio::Mac.new(rand(0xffffffffffff + 1))
+      @logger = logger
     end
 
     def run(hosts = [])
-      sh "sudo #{executable} #{options.join ' '}",
-         verbose: Phut.settings[:verbose]
+      sh "sudo #{executable} #{options.join ' '}"
       sleep 1
       set_ip_and_mac_address
       maybe_enable_promisc
@@ -31,7 +32,7 @@ module Phut
 
     def stop
       pid = IO.read(pid_file)
-      sh "sudo kill #{pid}", verbose: Phut.settings[:verbose]
+      sh "sudo kill #{pid}"
       loop { break unless running? }
     end
 
@@ -46,7 +47,7 @@ module Phut
     private
 
     def set_ip_and_mac_address
-      Phut::Cli.new(self).set_ip_and_mac_address
+      Phut::Cli.new(self, @logger).set_ip_and_mac_address
     end
 
     def maybe_enable_promisc

@@ -13,8 +13,7 @@ describe Phut::OpenVswitch do
       describe '#run' do
         When { vswitch.run }
         Then do
-          expect(vswitch).to have_received(:sh).with(/test-openflowd/,
-                                                     verbose: false)
+          expect(vswitch).to have_received(:sh).with(/test-openflowd/)
         end
       end
     end

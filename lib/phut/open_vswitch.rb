@@ -1,10 +1,11 @@
+require 'phut/null_logger'
 require 'phut/settings'
-require 'rake'
+require 'phut/shell_runner'
 
 module Phut
   # Open vSwitch controller.
   class OpenVswitch
-    include FileUtils
+    include ShellRunner
 
     OPENFLOWD =
       "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
@@ -16,16 +17,16 @@ module Phut
     attr_reader :name
     attr_writer :interfaces
 
-    def initialize(dpid, name = nil)
+    def initialize(dpid, name = nil, logger = NullLogger.new)
       @dpid = dpid
       @name = name || format('%#x', @dpid)
       @interfaces = []
+      @logger = logger
     end
 
     def run
       fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
-      sh "sudo #{OPENFLOWD} #{options.join ' '}",
-         verbose: Phut.settings[:verbose]
+      sh "sudo #{OPENFLOWD} #{options.join ' '}"
       loop { break if running? }
     end
     alias_method :start, :run
@@ -33,24 +34,21 @@ module Phut
     def stop
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       pid = IO.read(pid_file).chomp
-      sh "sudo kill #{pid}", verbose: Phut.settings[:verbose]
+      sh "sudo kill #{pid}"
       loop { break unless running? }
     end
     alias_method :shutdown, :stop
 
     def bring_port_up(port_number)
-      sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} up",
-         verbose: Phut.settings[:verbose]
+      sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} up"
     end
 
     def bring_port_down(port_number)
-      sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} down",
-         verbose: Phut.settings[:verbose]
+      sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} down"
     end
 
     def dump_flows
-      sh "sudo #{OFCTL} dump-flows #{network_device}",
-         verbose: Phut.settings[:verbose]
+      sh "sudo #{OFCTL} dump-flows #{network_device}"
     end
 
     def running?
@@ -81,19 +79,27 @@ module Phut
          --rate-limit=40000
          --burst-limit=20000
          --pidfile=#{pid_file}
-         --verbose=ANY:file:dbg
+         --verbose=ANY:file:#{logging_level}
          --verbose=ANY:console:err
          --log-file=#{Phut.settings[:log_dir]}/open_vswitch.#{name}.log
          --datapath-id=#{dpid_zero_filled}
          --unixctl=#{Phut.settings[:socket_dir]}/open_vswitch.#{name}.ctl
          netdev@#{network_device} tcp:127.0.0.1:6633) +
-        (@interfaces.empty? ? [] : ["--ports=#{@interfaces.join(',')}"])
+        ports_option
     end
     # rubocop:enable MethodLength
 
     def dpid_zero_filled
       hex = format('%x', @dpid)
       '0' * (16 - hex.length) + hex
+    end
+
+    def logging_level
+      @logger.level == Logger::DEBUG ? 'dbg' : 'info'
+    end
+
+    def ports_option
+      @interfaces.empty? ? [] : ["--ports=#{@interfaces.join(',')}"]
     end
   end
 end

@@ -7,7 +7,6 @@ module Phut
   # Central configuration repository.
   class Settings
     DEFAULTS = {
-      verbose: false,
       pid_dir: Dir.tmpdir,
       log_dir: Dir.tmpdir,
       socket_dir: Dir.tmpdir

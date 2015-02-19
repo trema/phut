@@ -1,19 +1,21 @@
-require 'rake'
+require 'phut/null_logger'
 require 'phut/settings'
+require 'phut/shell_runner'
 
 module Phut
   # cli command wrapper.
   class Cli
-    include FileUtils
+    include ShellRunner
 
-    def initialize(host)
+    def initialize(host, logger = NullLogger.new)
       @host = host
+      @logger = logger
     end
 
     def send_packets(dest, options = {})
       sh("#{executable} -i #{@host.interface} send_packets " \
          "--ip_src #{@host.ip} --ip_dst #{dest.ip} " +
-         send_packets_options(options), verbose: false)
+         send_packets_options(options))
     end
 
     def show_tx_stats
@@ -26,18 +28,17 @@ module Phut
 
     def add_arp_entry(other)
       sh "sudo #{executable} -i #{@host.interface} add_arp_entry " \
-         "--ip_addr #{other.ip} --mac_addr #{other.mac}", verbose: false
+         "--ip_addr #{other.ip} --mac_addr #{other.mac}"
     end
 
     def set_ip_and_mac_address
       sh "sudo #{executable} -i #{@host.interface} set_host_addr " \
          "--ip_addr #{@host.ip} --ip_mask #{@host.netmask} " \
-         "--mac_addr #{@host.mac}", verbose: false
+         "--mac_addr #{@host.mac}"
     end
 
     def enable_promisc
-      sh "sudo #{executable} -i #{@host.interface} enable_promisc",
-         verbose: false
+      sh "sudo #{executable} -i #{@host.interface} enable_promisc"
     end
 
     private

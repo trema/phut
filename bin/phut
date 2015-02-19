@@ -1,8 +1,11 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'gli'
+require 'logger'
 require 'phut'
 require 'pry'
+
+$stdout.sync = true
 
 module Phut
   # /bin/phut command
@@ -56,8 +59,12 @@ module Phut
       c.flag [:s, :socket_dir], default_value: Phut.settings[:socket_dir]
 
       c.action do |global_options, options, args|
+        stdout_logger = Logger.new($stderr).tap do |logger|
+          logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
+          logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
+        end
         Phut.options = global_options.merge(options)
-        Phut::Parser.new.parse(IO.read(args[0])).run
+        Phut::Parser.new(stdout_logger).parse(IO.read(args[0])).run
       end
     end
 
@@ -74,8 +81,12 @@ module Phut
       c.flag [:s, :socket_dir], default_value: Phut.settings[:socket_dir]
 
       c.action do |global_options, _options, args|
+        stdout_logger = Logger.new($stderr).tap do |logger|
+          logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
+          logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
+        end
         Phut.options = global_options.merge(options)
-        Phut::Parser.new.parse(IO.read(args[0])).stop
+        Phut::Parser.new(stdout_logger).parse(IO.read(args[0])).stop
       end
     end
 
