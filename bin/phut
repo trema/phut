@@ -64,7 +64,7 @@ module Phut
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
         Phut.options = global_options.merge(options)
-        Phut::Parser.new(stdout_logger).parse(IO.read(args[0])).run
+        Phut::Parser.new(stdout_logger).parse(args[0]).run
       end
     end
 
@@ -86,7 +86,7 @@ module Phut
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
         Phut.options = global_options.merge(options)
-        Phut::Parser.new(stdout_logger).parse(IO.read(args[0])).stop
+        Phut::Parser.new(stdout_logger).parse(args[0]).stop
       end
     end
 

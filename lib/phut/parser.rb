@@ -9,8 +9,8 @@ module Phut
       @config = Configuration.new(logger)
     end
 
-    def parse(dsl)
-      Syntax.new(@config).instance_eval dsl
+    def parse(file)
+      Syntax.new(@config).instance_eval IO.read(file), file
       @config
     end
   end

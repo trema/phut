@@ -17,7 +17,7 @@ After('@sudo') do
       log_dir: @log_dir,
       socket_dir: @socket_dir
     }
-    Phut::Parser.new.parse(IO.read(@config_file)).stop
+    Phut::Parser.new.parse(@config_file).stop
   end
 end
 

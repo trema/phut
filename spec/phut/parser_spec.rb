@@ -1,8 +1,10 @@
 require 'phut'
+require 'stringio'
 
 describe Phut::Parser do
   describe '#parse' do
-    Given(:config) { Phut::Parser.new.parse string }
+    Given { allow(IO).to receive(:read).with('CONFIG_FILE').and_return(string) }
+    Given(:config) { Phut::Parser.new.parse 'CONFIG_FILE' }
 
     context "with 'vswitch { dpid '0xabc' }'" do
       When(:string) { "vswitch { dpid '0xabc' }" }
