@@ -14,20 +14,16 @@ module Phut
     end
 
     def run_all(links)
-      @list.values.map do |each|
-        Thread.start do
-          interface = links.find_interface_by_name(each.name)
-          fail "No link found for host #{each.name}" if interface.empty?
-          each.interface = interface.first
-          each.run @list.values
-        end
-      end.each(&:join)
+      @list.values.each do |each|
+        interface = links.find_interface_by_name(each.name)
+        fail "No link found for host #{each.name}" if interface.empty?
+        each.interface = interface.first
+        each.run @list.values
+      end
     end
 
     def stop_all
-      @list.values.map do |each|
-        Thread.start { each.stop }
-      end.each(&:join)
+      @list.values.map(&:stop)
     end
   end
 end
