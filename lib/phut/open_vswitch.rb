@@ -1,5 +1,5 @@
 require 'phut/null_logger'
-require 'phut/settings'
+require 'phut/setting'
 require 'phut/shell_runner'
 
 module Phut
@@ -63,7 +63,7 @@ module Phut
     end
 
     def pid_file
-      "#{Phut.settings[:pid_dir]}/open_vswitch.#{name}.pid"
+      "#{Phut.pid_dir}/open_vswitch.#{name}.pid"
     end
 
     def network_device
@@ -81,9 +81,9 @@ module Phut
          --pidfile=#{pid_file}
          --verbose=ANY:file:#{logging_level}
          --verbose=ANY:console:err
-         --log-file=#{Phut.settings[:log_dir]}/open_vswitch.#{name}.log
+         --log-file=#{Phut.log_dir}/open_vswitch.#{name}.log
          --datapath-id=#{dpid_zero_filled}
-         --unixctl=#{Phut.settings[:socket_dir]}/open_vswitch.#{name}.ctl
+         --unixctl=#{Phut.socket_dir}/open_vswitch.#{name}.ctl
          netdev@#{network_device} tcp:127.0.0.1:6633) +
         ports_option
     end

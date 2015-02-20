@@ -20,20 +20,20 @@ module Phut
     switch [:v, :verbose], negatable: false
 
     command :shell do |c|
-      c.action do |global_options, _options, _args|
+      c.action do |_global_options, _options, _args|
         Pry.prompt =
           [
             proc { 'phut> ' },
             proc { 'phut* ' }
           ]
         Pry::Commands.block_command 'pid_dir' do |dir|
-          Phut.options = Phut.options.merge(pid_dir: dir)
+          Phut.pid_dir = dir
         end
         Pry::Commands.block_command 'log_dir' do |dir|
-          Phut.options = Phut.options.merge(log_dir: dir)
+          Phut.log_dir = dir
         end
         Pry::Commands.block_command 'socket_dir' do |dir|
-          Phut.options = Phut.options.merge(socket_dir: dir)
+          Phut.socket_dir = dir
         end
         Pry::Commands.block_command 'vswitch' do |dpid|
           Phut::OpenVswitch.new(dpid).run
@@ -41,7 +41,6 @@ module Phut
         Pry::Commands.block_command 'kill' do |dpid|
           Phut::OpenVswitch.new(dpid).shutdown
         end
-        Phut.options = global_options
         pry
       end
     end
@@ -50,20 +49,22 @@ module Phut
     arg_name 'FILE'
     command :run do |c|
       c.desc 'Location to put pid files'
-      c.flag [:p, :pid_dir], default_value: Phut.settings[:pid_dir]
+      c.flag [:p, :pid_dir], default_value: Phut.pid_dir
 
       c.desc 'Location to put log files'
-      c.flag [:l, :log_dir], default_value: Phut.settings[:log_dir]
+      c.flag [:l, :log_dir], default_value: Phut.log_dir
 
       c.desc 'Location to put socket files'
-      c.flag [:s, :socket_dir], default_value: Phut.settings[:socket_dir]
+      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
 
       c.action do |global_options, options, args|
         stdout_logger = Logger.new($stderr).tap do |logger|
           logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
-        Phut.options = global_options.merge(options)
+        Phut.pid_dir = options[:pid_dir]
+        Phut.log_dir = options[:log_dir]
+        Phut.socket_dir = options[:socket_dir]
         Phut::Parser.new(stdout_logger).parse(args[0]).run
       end
     end
@@ -72,20 +73,19 @@ module Phut
     arg_name 'FILE'
     command :stop do |c|
       c.desc 'Location to put pid files'
-      c.flag [:p, :pid_dir], default_value: Phut.settings[:pid_dir]
+      c.flag [:p, :pid_dir], default_value: Phut.pid_dir
 
       c.desc 'Location to put log files'
-      c.flag [:l, :log_dir], default_value: Phut.settings[:log_dir]
+      c.flag [:l, :log_dir], default_value: Phut.log_dir
 
       c.desc 'Location to put socket files'
-      c.flag [:s, :socket_dir], default_value: Phut.settings[:socket_dir]
+      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
 
       c.action do |global_options, _options, args|
         stdout_logger = Logger.new($stderr).tap do |logger|
           logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
-        Phut.options = global_options.merge(options)
         Phut::Parser.new(stdout_logger).parse(args[0]).stop
       end
     end

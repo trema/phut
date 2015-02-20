@@ -12,11 +12,9 @@ end
 
 After('@sudo') do
   in_current_dir do
-    Phut.options = {
-      pid_dir: @pid_dir,
-      log_dir: @log_dir,
-      socket_dir: @socket_dir
-    }
+    Phut.pid_dir = '.'
+    Phut.log_dir = '.'
+    Phut.socket_dir = '.'
     Phut::Parser.new.parse(@config_file).stop
   end
 end

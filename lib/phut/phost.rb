@@ -1,6 +1,6 @@
 require 'phut/cli'
 require 'phut/null_logger'
-require 'phut/settings'
+require 'phut/setting'
 require 'phut/shell_runner'
 require 'pio/mac'
 
@@ -62,7 +62,7 @@ module Phut
     end
 
     def pid_file
-      "#{Phut.settings[:pid_dir]}/phost.#{name}.pid"
+      "#{Phut.pid_dir}/phost.#{name}.pid"
     end
 
     def executable
@@ -70,8 +70,8 @@ module Phut
     end
 
     def options
-      %W(-p #{Phut.settings[:pid_dir]}
-         -l #{Phut.settings[:log_dir]}
+      %W(-p #{Phut.pid_dir}
+         -l #{Phut.log_dir}
          -n #{name}
          -i #{interface}
          -D)

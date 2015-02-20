@@ -1,5 +1,5 @@
 require 'phut/null_logger'
-require 'phut/settings'
+require 'phut/setting'
 require 'phut/shell_runner'
 
 module Phut
