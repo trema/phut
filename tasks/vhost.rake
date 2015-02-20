@@ -1,7 +1,7 @@
 require 'phut'
 
 def phost_src
-  File.join Phut::ROOT, 'vendor', 'phost', 'src'
+  File.join Phut.root, 'vendor', 'phost', 'src'
 end
 
 def phost_objects

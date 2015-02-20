@@ -44,7 +44,7 @@ module Phut
     private
 
     def executable
-      "#{Phut::ROOT}/vendor/phost/src/cli"
+      "#{Phut.root}/vendor/phost/src/cli"
     end
 
     def send_packets_options(options)

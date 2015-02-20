@@ -2,8 +2,6 @@ require 'tmpdir'
 
 # Base module.
 module Phut
-  ROOT = File.expand_path File.join(File.dirname(__FILE__), '..', '..')
-
   # Central configuration repository.
   class Setting
     DEFAULTS = {
@@ -44,6 +42,10 @@ module Phut
   SettingSingleton = Setting.new
 
   class << self
+    def root
+      File.expand_path File.join(File.dirname(__FILE__), '..', '..')
+    end
+
     def pid_dir
       SettingSingleton.pid_dir
     end

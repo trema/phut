@@ -2,7 +2,7 @@ require 'phut'
 require 'tmpdir'
 
 def openvswitch_srcdir
-  File.join Phut::ROOT, 'vendor/openvswitch-1.2.2.trema1'
+  File.join Phut.root, 'vendor/openvswitch-1.2.2.trema1'
 end
 
 desc 'Build Open vSwitch'

@@ -8,9 +8,9 @@ module Phut
     include ShellRunner
 
     OPENFLOWD =
-      "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
+      "#{Phut.root}/vendor/openvswitch-1.2.2.trema1/tests/test-openflowd"
     OFCTL =
-      "#{Phut::ROOT}/vendor/openvswitch-1.2.2.trema1/utilities/ovs-ofctl"
+      "#{Phut.root}/vendor/openvswitch-1.2.2.trema1/utilities/ovs-ofctl"
 
     attr_reader :dpid
     alias_method :datapath_id, :dpid

@@ -66,7 +66,7 @@ module Phut
     end
 
     def executable
-      "#{Phut::ROOT}/vendor/phost/src/phost"
+      "#{Phut.root}/vendor/phost/src/phost"
     end
 
     def options
