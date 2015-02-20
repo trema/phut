@@ -5,6 +5,7 @@ module Phut
   # Central configuration repository.
   class Setting
     DEFAULTS = {
+      root: File.expand_path(File.join(__dir__, '..', '..')),
       pid_dir: Dir.tmpdir,
       log_dir: Dir.tmpdir,
       socket_dir: Dir.tmpdir
@@ -12,6 +13,10 @@ module Phut
 
     def initialize
       @options = DEFAULTS.dup
+    end
+
+    def root
+      @options.fetch :root
     end
 
     def pid_dir
@@ -42,32 +47,8 @@ module Phut
   SettingSingleton = Setting.new
 
   class << self
-    def root
-      File.expand_path File.join(File.dirname(__FILE__), '..', '..')
-    end
-
-    def pid_dir
-      SettingSingleton.pid_dir
-    end
-
-    def pid_dir=(path)
-      SettingSingleton.pid_dir = path
-    end
-
-    def log_dir
-      SettingSingleton.log_dir
-    end
-
-    def log_dir=(path)
-      SettingSingleton.log_dir = path
-    end
-
-    def socket_dir
-      SettingSingleton.socket_dir
-    end
-
-    def socket_dir=(path)
-      SettingSingleton.socket_dir = path
+    def method_missing(method, *args)
+      SettingSingleton.__send__ method, *args
     end
   end
 end
