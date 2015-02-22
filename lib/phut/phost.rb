@@ -10,20 +10,23 @@ module Phut
     include ShellRunner
 
     attr_reader :ip
-    attr_reader :name
     attr_reader :mac
     attr_accessor :interface
 
     def initialize(ip_address, promisc, name = nil, logger = NullLogger.new)
       @ip = ip_address
       @promisc = promisc
-      @name = name || @ip
+      @name = name
       @mac = Pio::Mac.new(rand(0xffffffffffff + 1))
       @logger = logger
     end
 
+    def name
+      @name || @ip
+    end
+
     def to_s
-      "vhost (name = #{@name}, ip = #{@ip})"
+      "vhost (name = #{name}, ip = #{@ip})"
     end
 
     def run(hosts = [])
@@ -35,10 +38,9 @@ module Phut
     end
 
     def stop
-      fail "phost (name = #{@name}) is not running!" unless running?
+      fail "phost (name = #{name}) is not running!" unless running?
       pid = IO.read(pid_file)
       sh "sudo kill #{pid}"
-      loop { break unless running? }
     end
 
     def maybe_stop

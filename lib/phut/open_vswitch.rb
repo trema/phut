@@ -14,14 +14,17 @@ module Phut
 
     attr_reader :dpid
     alias_method :datapath_id, :dpid
-    attr_reader :name
     attr_writer :interfaces
 
     def initialize(dpid, name = nil, logger = NullLogger.new)
       @dpid = dpid
-      @name = name || format('%#x', @dpid)
+      @name = name
       @interfaces = []
       @logger = logger
+    end
+
+    def name
+      @name || format('%#x', @dpid)
     end
 
     def to_s
@@ -29,9 +32,9 @@ module Phut
     end
 
     def run
-      fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
       sh "sudo #{OPENFLOWD} #{options.join ' '}"
-      loop { break if running? }
+    rescue
+      raise "Open vSwitch (dpid = #{@dpid}) is already running!"
     end
     alias_method :start, :run
 
@@ -39,7 +42,6 @@ module Phut
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       pid = IO.read(pid_file).chomp
       sh "sudo kill #{pid}"
-      loop { break unless running? }
     end
     alias_method :shutdown, :stop
 
