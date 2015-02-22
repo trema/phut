@@ -11,6 +11,10 @@ Before('@sudo') do
   @aruba_timeout_seconds = 10
 end
 
+Before('@shell') do
+  fail 'sudo authentication failed' unless system 'sudo -v'
+end
+
 After('@sudo') do
   in_current_dir do
     Phut.pid_dir = @pid_dir

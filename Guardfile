@@ -19,7 +19,7 @@ guard :rubocop, all_on_start: false do
   watch(/{(?:.+\/)?\.rubocop\.yml$/) { |m| File.dirname(m[0]) }
 end
 
-guard 'cucumber', cli: '--tags ~@sudo' do
+guard 'cucumber', cli: '--tags ~@sudo --tags ~@shell' do
   watch('bin/phut') { 'features' }
   watch(/^features\/.+\.feature$/)
   watch(%r{^features/support/.+$}) { 'features' }
