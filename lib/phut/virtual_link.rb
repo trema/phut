@@ -20,13 +20,15 @@ module Phut
     end
 
     def run
+      stop if up?
       add
       up
     end
 
     def stop
-      fail "link #{@name_a}-#{@name_b} does not exist!" unless up?
       sh "sudo ip link delete #{@device_a}"
+    rescue
+      raise "link #{@name_a}-#{@name_b} does not exist!"
     end
 
     def maybe_stop
@@ -41,7 +43,6 @@ module Phut
     private
 
     def add
-      stop if up?
       sh "sudo ip link add name #{@device_a} type veth peer name #{@device_b}"
       sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@device_a}.disable_ipv6=1 -q"
       sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@device_b}.disable_ipv6=1 -q"
