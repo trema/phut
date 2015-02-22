@@ -22,7 +22,9 @@ end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |name_a, name_b|
   in_current_dir do
-    config = Phut::Parser.new.parse(@config_file)
-    expect(config.links.find_by_peers(name_a, name_b)).to be_up
+    link = Phut::Parser.new.parse(@config_file).links.find do |each|
+      each.name_a == name_a && each.name_b == name_b
+    end
+    expect(link).to be_up
   end
 end
