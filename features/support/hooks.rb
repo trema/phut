@@ -4,6 +4,10 @@ Before do
   @pid_dir = '.'
   @log_dir = '.'
   @socket_dir = '.'
+end
+
+Before('@sudo') do
+  fail 'sudo authentication failed' unless system 'sudo -v'
   @aruba_timeout_seconds = 10
 end
 
