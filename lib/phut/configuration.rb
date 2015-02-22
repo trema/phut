@@ -1,6 +1,5 @@
 require 'phut/null_logger'
 require 'phut/open_vswitch'
-require 'phut/vhosts'
 
 module Phut
   # Parsed DSL data.
@@ -11,7 +10,7 @@ module Phut
 
     def initialize(logger = NullLogger.new)
       @vswitch = {}
-      @vhost = Vhosts.new
+      @vhost = {}
       @links = []
       @logger = logger
     end
@@ -19,12 +18,12 @@ module Phut
     def run
       @links.map(&:run)
       @vswitch.values.map(&:run)
-      @vhost.run_all
+      @vhost.values.each { |each| each.run @vhost.values }
     end
 
     def stop
       @vswitch.values.select(&:running?).each(&:stop)
-      @vhost.stop_all
+      @vhost.values.map(&:stop)
       @links.map(&:stop)
     end
 
