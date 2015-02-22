@@ -7,6 +7,7 @@ module Phut
 
     def_delegator :@all, :[]=
     def_delegator :@all, :[]
+    def_delegator :@all, :values
     def_delegator :@all, :fetch
     def_delegator :@all, :size
 
@@ -15,11 +16,8 @@ module Phut
     end
 
     # This code smells of :reek:FeatureEnvy
-    def run_all(links)
-      @all.values.each do |each|
-        each.interfaces = links.find_interfaces_by_name(each.name)
-        each.run
-      end
+    def run_all
+      @all.values.each(&:run)
     end
 
     def stop_all

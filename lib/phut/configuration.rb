@@ -20,7 +20,7 @@ module Phut
 
     def run
       @links.run_all
-      @vswitch.run_all(@links)
+      @vswitch.run_all
       @vhost.run_all(@links)
     end
 
@@ -44,6 +44,12 @@ module Phut
 
     def add_link(name_a, device_a, name_b, device_b)
       @links << VirtualLink.new(name_a, device_a, name_b, device_b, @logger)
+    end
+
+    def set_host_and_switch_interfaces
+      @vswitch.values.each do |each|
+        each.interfaces = @links.find_interfaces_by_name(each.name)
+      end
     end
   end
 end

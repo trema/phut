@@ -11,6 +11,7 @@ module Phut
 
     def parse(file)
       Syntax.new(@config).instance_eval IO.read(file), file
+      @config.set_host_and_switch_interfaces
       @config
     end
   end
