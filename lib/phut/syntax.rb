@@ -4,19 +4,21 @@ require 'phut/virtual_link'
 module Phut
   # DSL syntax definitions.
   class Syntax
-    # The 'vswitch(name) { ...attributes...}' directive.
+    # The 'vswitch(name) { ...attributes... }' directive.
     class VswitchDirective
-      def initialize
-        @attributes = {}
+      def initialize(alias_name, &block)
+        @attributes = { name: alias_name }
+        instance_eval(&block)
       end
 
       def dpid(value)
-        @attributes[:dpid] = case value
-                             when String
-                               /^0x/ =~ value ? value.hex : value.to_i
-                             else
-                               value.to_i
-                             end
+        dpid = if value.is_a?(String) && /^0x/=~ value
+                 value.hex
+               else
+                 value.to_i
+               end
+        @attributes[:dpid] = dpid
+        @attributes[:name] ||= format('%#x', @attributes[:dpid])
       end
       alias_method :datapath_id, :dpid
 
@@ -25,14 +27,34 @@ module Phut
       end
     end
 
-    # The 'vhost(name) { ...attributes...}' directive.
+    # The 'vhost(name) { ...attributes... }' directive.
     class VhostDirective
-      def initialize
-        @attributes = {}
+      # Generates an unused IP address
+      class UnusedIpAddress
+        def initialize
+          @index = 0
+        end
+
+        def generate
+          @index += 1
+          "192.168.0.#{@index}"
+        end
+      end
+
+      UnusedIpAddressSingleton = UnusedIpAddress.new
+
+      def initialize(alias_name, &block)
+        @attributes = { name: alias_name }
+        if block
+          instance_eval(&block) if block
+        else
+          @attributes[:ip] = UnusedIpAddressSingleton.generate
+        end
       end
 
       def ip(value)
         @attributes[:ip] = value
+        @attributes[:name] ||= value
       end
 
       def promisc(on_off)
@@ -46,13 +68,25 @@ module Phut
 
     # The 'link name_a, name_b' directive.
     class LinkDirective
-      def initialize(name_a, name_b, link_id)
-        @attributes = {}.tap do |attr|
-          attr[:name_a] = name_a
-          attr[:name_b] = name_b
-          attr[:device_a] = "link#{link_id}-0"
-          attr[:device_b] = "link#{link_id}-1"
+      # Generates an unique Link ID
+      class LinkId
+        def initialize
+          @index = 0
         end
+
+        def generate
+          @index += 1
+        end
+      end
+
+      LinkIdSingleton = LinkId.new
+
+      def initialize(name_a, name_b, link_id)
+        @attributes[:name_a] = name_a
+        @attributes[:name_b] = name_b
+        link_id = LinkIdSingleton.generate
+        @attributes[:device_a] = "link#{link_id}-0"
+        @attributes[:device_b] = "link#{link_id}-1"
       end
 
       def [](key)
@@ -65,18 +99,13 @@ module Phut
     end
 
     def vswitch(alias_name = nil, &block)
-      attrs = VswitchDirective.new.tap { |vsw| vsw.instance_eval(&block) }
-      @config.add_vswitch(alias_name || format('%#x', attrs[:dpid]), attrs)
+      attrs = VswitchDirective.new(alias_name, &block).tap
+      @config.add_vswitch attrs[:name], attrs
     end
 
     def vhost(alias_name = nil, &block)
-      if block
-        attrs = VhostDirective.new.tap { |vh| vh.instance_eval(&block) }
-        @config.add_vhost alias_name || attrs[:ip], attrs
-      else
-        @vhost_id ||= 0
-        @config.add_vhost(alias_name, ip: "192.168.0.#{@vhost_id += 1}")
-      end
+      attrs = VhostDirective.new(alias_name, &block)
+      @config.add_vhost attrs[:name], attrs
     end
 
     def link(name_a, name_b)
