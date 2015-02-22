@@ -43,6 +43,11 @@ module Phut
     end
     alias_method :shutdown, :stop
 
+    def maybe_stop
+      return unless running?
+      stop
+    end
+
     def bring_port_up(port_number)
       sh "sudo #{OFCTL} mod-port #{network_device} #{port_number} up"
     end

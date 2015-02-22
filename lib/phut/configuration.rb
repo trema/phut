@@ -33,9 +33,9 @@ module Phut
     end
 
     def stop
-      vswitches.select(&:running?).each(&:stop)
-      vhosts.each(&:stop)
-      links.each(&:stop)
+      vswitches.each(&:maybe_stop)
+      vhosts.each(&:maybe_stop)
+      links.each(&:maybe_stop)
     end
 
     def add_vswitch(name, attrs)

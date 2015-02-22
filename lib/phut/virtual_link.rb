@@ -25,26 +25,26 @@ module Phut
     end
 
     def stop
-      delete
+      fail "link #{@name_a}-#{@name_b} does not exist!" unless up?
+      sh "sudo ip link delete #{@device_a}"
     end
 
-    # @todo Use ifconfig command.
+    def maybe_stop
+      return unless up?
+      stop
+    end
+
     def up?
-      true
+      /^#{@device_a}\s+/ =~ `ifconfig -a`
     end
 
     private
 
     def add
-      delete if /^#{@device_a}\s+/ =~ `ifconfig -a`
+      stop if up?
       sh "sudo ip link add name #{@device_a} type veth peer name #{@device_b}"
       sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@device_a}.disable_ipv6=1 -q"
       sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@device_b}.disable_ipv6=1 -q"
-    end
-
-    def delete
-      return unless /^#{@device_a}\s+/ =~ `ifconfig -a`
-      sh "sudo ip link delete #{@device_a}"
     end
 
     def up

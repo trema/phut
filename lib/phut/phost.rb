@@ -35,9 +35,15 @@ module Phut
     end
 
     def stop
+      fail "phost (name = #{@name}) is not running!" unless running?
       pid = IO.read(pid_file)
       sh "sudo kill #{pid}"
       loop { break unless running? }
+    end
+
+    def maybe_stop
+      return unless running?
+      stop
     end
 
     def netmask
