@@ -15,7 +15,7 @@ module Phut
 
     def run_all(links)
       @list.values.each do |each|
-        interface = links.find_interface_by_name(each.name)
+        interface = links.find_interfaces_by_name(each.name)
         fail "No link found for host #{each.name}" if interface.empty?
         each.interface = interface.first
         each.run @list.values
