@@ -1,4 +1,3 @@
-require 'phut/links'
 require 'phut/null_logger'
 require 'phut/open_vswitch'
 require 'phut/vhosts'
@@ -14,12 +13,12 @@ module Phut
     def initialize(logger = NullLogger.new)
       @vswitch = Vswitches.new
       @vhost = Vhosts.new
-      @links = Links.new
+      @links = []
       @logger = logger
     end
 
     def run
-      @links.run_all
+      @links.map(&:run)
       @vswitch.run_all
       @vhost.run_all
     end
@@ -27,7 +26,7 @@ module Phut
     def stop
       @vswitch.stop_all
       @vhost.stop_all
-      @links.stop_all
+      @links.map(&:stop)
     end
 
     def add_vswitch(name, attrs)
