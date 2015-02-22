@@ -71,6 +71,10 @@ module Phut
       # Generates an unique Link ID
       class LinkId
         def initialize
+          init
+        end
+
+        def init
           @index = 0
         end
 
@@ -82,6 +86,7 @@ module Phut
       LinkIdSingleton = LinkId.new
 
       def initialize(name_a, name_b, link_id)
+        @attributes = {}
         @attributes[:name_a] = name_a
         @attributes[:name_b] = name_b
         link_id = LinkIdSingleton.generate
@@ -96,10 +101,11 @@ module Phut
 
     def initialize(config)
       @config = config
+      LinkDirective::LinkIdSingleton.init
     end
 
     def vswitch(alias_name = nil, &block)
-      attrs = VswitchDirective.new(alias_name, &block).tap
+      attrs = VswitchDirective.new(alias_name, &block)
       @config.add_vswitch attrs[:name], attrs
     end
 

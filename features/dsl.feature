@@ -1,4 +1,3 @@
-@announce
 Feature: DSL parser
   Scenario: name conflict (vsiwtch and vswitch)
     Given a file named "network.conf" with:

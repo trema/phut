@@ -23,7 +23,7 @@ Feature: The vhost DSL directive.
     Then a vhost named "host1" launches
     And a vhost named "host2" launches
 
-  @sudo @announce
+  @sudo
   Scenario: phut run with "vhost(alias)"
     Given a file named "network.conf" with:
     """
