@@ -42,24 +42,36 @@ describe Phut::Parser do
       end
     end
 
-    context "with 'vhost { ip '192.168.0.1' }'" do
-      When(:string) { "vhost { ip '192.168.0.1' }" }
+    context "with 'vhost { ip '192.168.0.1' }' ..." do
+      When(:string) do
+        <<-CONFIG
+        vhost { ip '192.168.0.1' }
+        vhost { ip '192.168.0.2' }
+        link '192.168.0.1', '192.168.0.2'
+CONFIG
+      end
 
       describe '#vhost' do
         When(:vhost) { config.vhost }
 
-        Then { vhost.size == 1 }
+        Then { vhost.size == 2 }
         Then { vhost.fetch('192.168.0.1').ip == '192.168.0.1' }
       end
     end
 
-    context "with 'vhost('host1') { ip '192.168.0.1' }'" do
-      When(:string) { "vhost('host1') { ip '192.168.0.1' }" }
+    context "with 'vhost('host1') { ip '192.168.0.1' }' ..." do
+      When(:string) do
+        <<-CONFIG
+        vhost('host1') { ip '192.168.0.1' }
+        vhost('host2') { ip '192.168.0.2' }
+        link 'host1', 'host2'
+CONFIG
+      end
 
       describe '#vhost' do
         When(:vhost) { config.vhost }
 
-        Then { vhost.size == 1 }
+        Then { vhost.size == 2 }
         Then { vhost.fetch('host1').ip == '192.168.0.1' }
       end
     end

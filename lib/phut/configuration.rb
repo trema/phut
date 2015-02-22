@@ -21,7 +21,7 @@ module Phut
     def run
       @links.run_all
       @vswitch.run_all
-      @vhost.run_all(@links)
+      @vhost.run_all
     end
 
     def stop
@@ -46,9 +46,20 @@ module Phut
       @links << VirtualLink.new(name_a, device_a, name_b, device_b, @logger)
     end
 
-    def set_host_and_switch_interfaces
+    def set_vswitch_interfaces
       @vswitch.values.each do |each|
         each.interfaces = @links.find_interfaces_by_name(each.name)
+      end
+    end
+
+    def set_vhost_interface
+      @vhost.values.each do |each|
+        interface = links.find_interfaces_by_name(each.name)
+        fail "No link found for host #{each.name}" if interface.empty?
+        if interface.size > 1
+          fail "Multiple links are connected to host #{each.name}"
+        end
+        each.interface = interface.first
       end
     end
   end

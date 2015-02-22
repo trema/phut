@@ -5,25 +5,22 @@ module Phut
   class Vhosts
     extend Forwardable
 
-    def_delegator :@list, :[]=
-    def_delegator :@list, :fetch
-    def_delegator :@list, :size
+    def_delegator :@all, :[]=
+    def_delegator :@all, :values
+    def_delegator :@all, :fetch
+    def_delegator :@all, :size
 
     def initialize
-      @list = {}
+      @all = {}
     end
 
-    def run_all(links)
-      @list.values.each do |each|
-        interface = links.find_interfaces_by_name(each.name)
-        fail "No link found for host #{each.name}" if interface.empty?
-        each.interface = interface.first
-        each.run @list.values
-      end
+    def run_all
+      all_hosts = @all.values
+      all_hosts.each { |each| each.run all_hosts }
     end
 
     def stop_all
-      @list.values.map(&:stop)
+      @all.values.map(&:stop)
     end
   end
 end
