@@ -22,6 +22,10 @@ module Phut
       @logger = logger
     end
 
+    def to_s
+      "vhost (name = #{@name}, ip = #{@ip})"
+    end
+
     def run(hosts = [])
       sh "sudo #{executable} #{options.join ' '}"
       sleep 1

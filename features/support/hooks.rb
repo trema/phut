@@ -1,20 +1,17 @@
 require 'phut'
 
 Before do
-  @aruba_timeout_seconds = 10
-end
-
-Before('@sudo') do
   @pid_dir = '.'
   @log_dir = '.'
   @socket_dir = '.'
+  @aruba_timeout_seconds = 10
 end
 
 After('@sudo') do
   in_current_dir do
-    Phut.pid_dir = '.'
-    Phut.log_dir = '.'
-    Phut.socket_dir = '.'
+    Phut.pid_dir = @pid_dir
+    Phut.log_dir = @log_dir
+    Phut.socket_dir = @socket_dir
     Phut::Parser.new.parse(@config_file).stop
   end
 end

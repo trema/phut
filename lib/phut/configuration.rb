@@ -1,68 +1,64 @@
+require 'forwardable'
 require 'phut/null_logger'
 require 'phut/open_vswitch'
 
 module Phut
   # Parsed DSL data.
   class Configuration
-    attr_reader :vswitch
-    attr_reader :vhost
-    attr_reader :links
+    extend Forwardable
+
+    def_delegators :@all, :fetch
 
     def initialize(logger = NullLogger.new)
-      @vswitch = {}
-      @vhost = {}
-      @links = []
+      @all = {}
       @logger = logger
     end
 
+    def vswitches
+      @all.values.select { |each| each.is_a? OpenVswitch }
+    end
+
+    def vhosts
+      @all.values.select { |each| each.is_a? Phost }
+    end
+
+    def links
+      @all.values.select { |each| each.is_a? VirtualLink }
+    end
+
     def run
-      @links.map(&:run)
-      @vswitch.values.map(&:run)
-      @vhost.values.each { |each| each.run @vhost.values }
+      links.each(&:run)
+      vswitches.each(&:run)
+      vhosts.each { |each| each.run vhosts }
     end
 
     def stop
-      @vswitch.values.select(&:running?).each(&:stop)
-      @vhost.values.map(&:stop)
-      @links.map(&:stop)
+      vswitches.select(&:running?).each(&:stop)
+      vhosts.each(&:stop)
+      links.each(&:stop)
     end
 
     def add_vswitch(name, attrs)
-      @vswitch[name] = OpenVswitch.new(attrs[:dpid], name, @logger)
+      check_name_conflict name
+      @all[name] = OpenVswitch.new(attrs[:dpid], name, @logger)
     end
 
     def add_vhost(name, attrs)
-      @vhost[name] = Phost.new(attrs[:ip], attrs[:promisc], name, @logger)
+      check_name_conflict name
+      @all[name] = Phost.new(attrs[:ip], attrs[:promisc], name, @logger)
     end
 
-    def next_link_id
-      @links.size
-    end
-
+    # This method smells of :reek:LongParameterList
     def add_link(name_a, device_a, name_b, device_b)
-      @links << VirtualLink.new(name_a, device_a, name_b, device_b, @logger)
+      @all[[name_a, name_b]] =
+        VirtualLink.new(name_a, device_a, name_b, device_b, @logger)
     end
 
-    def set_vswitch_interfaces
-      @vswitch.values.each do |each|
-        each.interfaces = find_interfaces_by_name(each.name)
-      end
-    end
+    private
 
-    def set_vhost_interface
-      @vhost.values.each do |each|
-        interface = find_interfaces_by_name(each.name)
-        fail "No link found for host #{each.name}" if interface.empty?
-        if interface.size > 1
-          fail "Multiple links are connected to host #{each.name}"
-        end
-        each.interface = interface.first
-      end
-    end
-
-    def find_interfaces_by_name(name)
-      interfaces = @links.select { |each| each.name_a == name }.map(&:device_a)
-      interfaces + @links.select { |each| each.name_b == name }.map(&:device_b)
+    def check_name_conflict(name)
+      conflict = @all[name]
+      fail "The name #{name} conflicts with #{conflict}." if conflict
     end
   end
 end

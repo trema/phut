@@ -10,11 +10,9 @@ describe Phut::Parser do
       When(:string) { "vswitch { dpid '0xabc' }" }
 
       describe '#vswitch' do
-        When(:vswitch) { config.vswitch }
-
-        Then { vswitch.size == 1 }
-        Then { vswitch.fetch('0xabc').datapath_id == 0xabc }
-        Then { vswitch.fetch('0xabc').dpid == 0xabc }
+        Then { config.vswitches.size == 1 }
+        Then { config.fetch('0xabc').datapath_id == 0xabc }
+        Then { config.fetch('0xabc').dpid == 0xabc }
       end
     end
 
@@ -22,11 +20,9 @@ describe Phut::Parser do
       When(:string) { "vswitch { datapath_id '0xabc' }" }
 
       describe '#vswitch' do
-        When(:vswitch) { config.vswitch }
-
-        Then { vswitch.size == 1 }
-        Then { vswitch.fetch('0xabc').dpid == 0xabc }
-        Then { vswitch.fetch('0xabc').datapath_id == 0xabc }
+        Then { config.vswitches.size == 1 }
+        Then { config.fetch('0xabc').dpid == 0xabc }
+        Then { config.fetch('0xabc').datapath_id == 0xabc }
       end
     end
 
@@ -34,11 +30,9 @@ describe Phut::Parser do
       When(:string) { "vswitch('my_controller') { dpid '0xabc' }" }
 
       describe '#vswitch' do
-        When(:vswitch) { config.vswitch }
-
-        Then { vswitch.size == 1 }
-        Then { vswitch.fetch('my_controller').dpid == 0xabc }
-        Then { vswitch.fetch('my_controller').datapath_id == 0xabc }
+        Then { config.vswitches.size == 1 }
+        Then { config.fetch('my_controller').dpid == 0xabc }
+        Then { config.fetch('my_controller').datapath_id == 0xabc }
       end
     end
 
@@ -52,10 +46,8 @@ CONFIG
       end
 
       describe '#vhost' do
-        When(:vhost) { config.vhost }
-
-        Then { vhost.size == 2 }
-        Then { vhost.fetch('192.168.0.1').ip == '192.168.0.1' }
+        Then { config.vhosts.size == 2 }
+        Then { config.fetch('192.168.0.1').ip == '192.168.0.1' }
       end
     end
 
@@ -69,10 +61,8 @@ CONFIG
       end
 
       describe '#vhost' do
-        When(:vhost) { config.vhost }
-
-        Then { vhost.size == 2 }
-        Then { vhost.fetch('host1').ip == '192.168.0.1' }
+        Then { config.vhosts.size == 2 }
+        Then { config.fetch('host1').ip == '192.168.0.1' }
       end
     end
   end

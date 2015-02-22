@@ -3,7 +3,7 @@ require 'phut'
 When(/^I do phut run "(.*?)"$/) do |file_name|
   @config_file = file_name
   run_opts = "-p #{@pid_dir} -l #{@log_dir} -s #{@socket_dir}"
-  step %(I successfully run `phut -v run #{run_opts} #{@config_file}`)
+  step %(I run `phut -v run #{run_opts} #{@config_file}`)
 end
 
 Then(/^a vswitch named "(.*?)" launches$/) do |name|

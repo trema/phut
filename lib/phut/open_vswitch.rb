@@ -24,6 +24,10 @@ module Phut
       @logger = logger
     end
 
+    def to_s
+      "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
+    end
+
     def run
       fail "Open vSwitch (dpid = #{@dpid}) is already running!" if running?
       sh "sudo #{OPENFLOWD} #{options.join ' '}"

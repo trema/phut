@@ -72,7 +72,7 @@ module Phut
     def vhost(alias_name = nil, &block)
       if block
         attrs = VhostDirective.new.tap { |vh| vh.instance_eval(&block) }
-        @config.add_vhost(alias_name || attrs[:ip], attrs)
+        @config.add_vhost alias_name || attrs[:ip], attrs
       else
         @vhost_id ||= 0
         @config.add_vhost(alias_name, ip: "192.168.0.#{@vhost_id += 1}")
@@ -80,7 +80,8 @@ module Phut
     end
 
     def link(name_a, name_b)
-      attrs = LinkDirective.new(name_a, name_b, @config.next_link_id)
+      link_id = @config.links.size
+      attrs = LinkDirective.new(name_a, name_b, link_id)
       @config.add_link name_a, attrs[:device_a], name_b, attrs[:device_b]
     end
   end
