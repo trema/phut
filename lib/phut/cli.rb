@@ -13,9 +13,16 @@ module Phut
     end
 
     def send_packets(dest, options = {})
-      sh("#{executable} -i #{@host.interface} send_packets " \
-         "--ip_src #{@host.ip} --ip_dst #{dest.ip} " +
-         send_packets_options(options))
+      n_pkts = options[:n_pkts]
+      sh [executable,
+          "-i #{@host.interface} send_packets",
+          "--ip_dst #{dest.ip}",
+          "--ip_src #{@host.ip}",
+          '--tp_src 1',
+          '--tp_dst 1',
+          '--pps 1',
+          '--length 22',
+          n_pkts ? "--n_pkts=#{n_pkts}" : '--duration 1'].join(' ')
     end
 
     def show_tx_stats
@@ -45,17 +52,6 @@ module Phut
 
     def executable
       "#{Phut.root}/vendor/phost/src/cli"
-    end
-
-    def send_packets_options(options)
-      [
-        '--tp_src 1',
-        '--tp_dst 1',
-        '--pps 1',
-        '--length 22',
-        options[:n_pkts] ? nil : '--duration 1',
-        options[:n_pkts] ? "--n_pkts=#{options[:n_pkts]}" : nil
-      ].compact.join(' ')
     end
 
     def stats(type)
