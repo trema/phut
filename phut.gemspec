@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.email = ['yasuhito@gmail.com']
   gem.homepage = 'http://github.com/trema/phut'
 
+  gem.executables = %w(phut)
   gem.files = `git ls-files`.split("\n")
 
   gem.extensions = ['Rakefile']
