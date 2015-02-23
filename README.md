@@ -14,3 +14,36 @@ Virtual network in seconds
 [coveralls]: https://coveralls.io/r/trema/phut
 [gemnasium]: https://gemnasium.com/trema/phut
 [gitter]: https://gitter.im/trema/phut
+
+
+Install
+-------
+
+```
+$ git clone https://github.com/trema/phut.git
+$ cd phut
+$ bundle install
+```
+
+
+Play
+----
+
+With Phut network DSL, you can describe the network topology in which
+your OpenFlow controller is executed.
+
+```ruby
+# phut.conf
+# One virtual switch + two virtual hosts.
+vswitch { dpid 0xabc }
+vhost 'host1'
+vhost 'host2'
+link '0xabc', 'host1'
+link '0xabc', 'host2'
+```
+
+Then you can pass the network configuration to `phut run`.
+
+```
+$ bundle exec phut run phut.conf
+```
