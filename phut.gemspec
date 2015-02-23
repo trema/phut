@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
-  gem.add_dependency 'gli', '~> 2.12.2'
+  gem.add_dependency 'gli', '~> 2.12.3'
   gem.add_dependency 'pio', '~> 0.15.2'
   gem.add_dependency 'pry', '~> 0.10.1'
 
@@ -32,7 +32,7 @@ Gem::Specification.new do |gem|
 
   # Development
   gem.add_development_dependency 'byebug', '~> 3.5.1'
-  gem.add_development_dependency 'guard', '~> 2.12.1'
+  gem.add_development_dependency 'guard', '~> 2.12.3'
   gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
   gem.add_development_dependency 'guard-cucumber', '~> 1.5.3'
   gem.add_development_dependency 'guard-rspec', '~> 4.5.0'
@@ -41,7 +41,7 @@ Gem::Specification.new do |gem|
   # Test
   gem.add_development_dependency 'aruba', '~> 0.6.2'
   gem.add_development_dependency 'codeclimate-test-reporter'
-  gem.add_development_dependency 'coveralls', '~> 0.7.9'
+  gem.add_development_dependency 'coveralls', '~> 0.7.10'
   gem.add_development_dependency 'cucumber', '~> 1.3.19'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
