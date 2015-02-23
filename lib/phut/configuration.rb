@@ -19,7 +19,7 @@ module Phut
     end
 
     def vhosts
-      @all.values.select { |each| each.is_a? Phost }
+      @all.values.select { |each| each.is_a? Vhost }
     end
 
     def links
@@ -45,7 +45,7 @@ module Phut
 
     def add_vhost(name, attrs)
       check_name_conflict name
-      @all[name] = Phost.new(attrs[:ip], attrs[:promisc], name, @logger)
+      @all[name] = Vhost.new(attrs[:ip], attrs[:promisc], name, @logger)
     end
 
     # This method smells of :reek:LongParameterList

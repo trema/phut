@@ -1,4 +1,4 @@
-require 'phut/phost'
+require 'phut/vhost'
 require 'phut/virtual_link'
 
 module Phut

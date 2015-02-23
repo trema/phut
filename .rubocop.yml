@@ -9,3 +9,9 @@ AllCops:
     - phut.gemspec
     - spec/**/*.rb
     - tasks/*.rake
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+Style/DotPosition:
+  EnforcedStyle: trailing

@@ -5,7 +5,7 @@ module Phut
   # Central configuration repository.
   class Setting
     DEFAULTS = {
-      root: File.expand_path(File.join(__dir__, '..', '..')),
+      root: File.expand_path(File.join(File.dirname(__FILE__), '..', '..')),
       pid_dir: Dir.tmpdir,
       log_dir: Dir.tmpdir,
       socket_dir: Dir.tmpdir
