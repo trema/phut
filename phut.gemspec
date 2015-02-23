@@ -23,6 +23,8 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
+  gem.required_ruby_version = '>= 2.0.0'
+
   gem.add_dependency 'gli', '~> 2.12.3'
   gem.add_dependency 'pio', '~> 0.15.2'
   gem.add_dependency 'pry', '~> 0.10.1'
