@@ -1,0 +1,11 @@
+AllCops:
+  Include:
+    - Gemfile
+    - Guardfile
+    - Rakefile
+    - bin/*
+    - features/**/*.rb
+    - lib/**/*.rb
+    - phut.gemspec
+    - spec/**/*.rb
+    - tasks/*.rake

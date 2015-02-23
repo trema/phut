@@ -1,0 +1,111 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'gli'
+require 'logger'
+require 'phut'
+require 'pry'
+
+$stdout.sync = true
+
+module Phut
+  # /bin/phut command
+  module App
+    extend GLI::App
+
+    program_desc 'Virtual network in seconds'
+
+    version Phut::VERSION
+
+    desc 'Be verbose'
+    switch [:v, :verbose], negatable: false
+
+    command :shell do |c|
+      c.action do |_global_options, _options, _args|
+        Pry.prompt =
+          [
+            proc { 'phut> ' },
+            proc { 'phut* ' }
+          ]
+        Pry::Commands.block_command 'pid_dir' do |dir|
+          Phut.pid_dir = dir
+        end
+        Pry::Commands.block_command 'log_dir' do |dir|
+          Phut.log_dir = dir
+        end
+        Pry::Commands.block_command 'socket_dir' do |dir|
+          Phut.socket_dir = dir
+        end
+        Pry::Commands.block_command 'vswitch' do |dpid|
+          Phut::OpenVswitch.new(dpid).run
+        end
+        Pry::Commands.block_command 'kill' do |dpid|
+          Phut::OpenVswitch.new(dpid).shutdown
+        end
+        pry
+      end
+    end
+
+    desc 'Starts a virtual network'
+    arg_name 'FILE'
+    command :run do |c|
+      c.desc 'Location to put pid files'
+      c.flag [:p, :pid_dir], default_value: Phut.pid_dir
+
+      c.desc 'Location to put log files'
+      c.flag [:l, :log_dir], default_value: Phut.log_dir
+
+      c.desc 'Location to put socket files'
+      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+
+      c.action do |global_options, options, args|
+        stdout_logger = Logger.new($stderr).tap do |logger|
+          logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
+          logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
+        end
+        Phut.pid_dir = options[:pid_dir]
+        Phut.log_dir = options[:log_dir]
+        Phut.socket_dir = options[:socket_dir]
+        Phut::Parser.new(stdout_logger).parse(args[0]).run
+      end
+    end
+
+    desc 'Stops a virtual network'
+    arg_name 'FILE'
+    command :stop do |c|
+      c.desc 'Location to put pid files'
+      c.flag [:p, :pid_dir], default_value: Phut.pid_dir
+
+      c.desc 'Location to put log files'
+      c.flag [:l, :log_dir], default_value: Phut.log_dir
+
+      c.desc 'Location to put socket files'
+      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+
+      c.action do |global_options, _options, args|
+        stdout_logger = Logger.new($stderr).tap do |logger|
+          logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
+          logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
+        end
+        Phut::Parser.new(stdout_logger).parse(args[0]).stop
+      end
+    end
+
+    command :kill do |c|
+      c.action do |_global_options, _options, args|
+        args.each { |each| Phut::OpenVswitch.new(each).shutdown }
+      end
+    end
+
+    pre do |global, _command, _options, _args|
+      if global[:version]
+        puts "#{exe_name} version #{version_string}"
+        exit_now! nil, 0
+      end
+      true
+    end
+
+    default_command :shell
+
+    exit run(ARGV)
+  end
+end
