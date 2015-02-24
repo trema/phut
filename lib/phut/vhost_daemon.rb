@@ -51,20 +51,30 @@ module Phut
       @stop = true
     end
 
-    # rubocop:disable AbcSize
-    def send_packets(dest, send_options)
-      return unless @options.fetch(:arp_table)[dest.ip_address]
-      udp = VhostUdp.new(source_mac: @options[:mac_address],
-                         destination_mac: dest.mac_address,
-                         ip_source_address: @options.fetch(:ip_address),
-                         ip_destination_address: dest.ip_address)
-      send_options[:npackets].to_i.times do
-        @packets_sent << udp.snapshot
-        @raw_socket.write udp.to_binary_s
+    def send_packets(dest, npackets)
+      return unless lookup_arp_table(dest.ip_address)
+      udp = create_udp_packet(dest)
+      npackets.times do
+        write_to_raw_socket udp
         @logger.info "Sent to #{dest.name}: #{udp}"
       end
     end
-    # rubocop:enable AbcSize
+
+    def lookup_arp_table(ip_address)
+      @options.fetch(:arp_table)[ip_address]
+    end
+
+    def write_to_raw_socket(packet)
+      @packets_sent << packet.snapshot
+      @raw_socket.write packet.to_binary_s
+    end
+
+    def create_udp_packet(dest)
+      VhostUdp.new(source_mac: @options.fetch(:mac_address),
+                   destination_mac: dest.mac_address,
+                   ip_source_address: @options.fetch(:ip_address),
+                   ip_destination_address: dest.ip_address)
+    end
 
     def stats
       { tx: @packets_sent, rx: @packets_received }
