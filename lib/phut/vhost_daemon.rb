@@ -30,31 +30,19 @@ module Phut
       DRbObject.new_with_uri(unix_domain_socket(name, socket_dir))
     end
 
-    # rubocop:disable AbcSize
-    # rubocop:disable MethodLength
     def initialize(options)
-      @name = options.fetch(:name)
-      @interface = options.fetch(:interface)
-      @ip_address = options.fetch(:ip_address)
-      @mac_address = options.fetch(:mac_address)
-      @arp_entries = options.fetch(:arp_entries)
-      @arp_table = options.fetch(:arp_table)
-      @promisc = options.fetch(:promisc)
-      @pid_dir = options.fetch(:pid_dir)
-      @log_dir = options.fetch(:log_dir)
-      @socket_dir = options.fetch(:socket_dir)
+      @options = options
       @packets_sent = []
       @packets_received = []
     end
-    # rubocop:enable AbcSize
-    # rubocop:enable MethodLength
 
     def run
-      @logger = Logger.new("#{@log_dir}/vhost.#{@name}.log")
-      @logger.info("#{@name} started (interface = #{@interface}, " \
-                   "IP address = #{@ip_address}, " \
-                   "MAC address = #{@mac_address}, " \
-                   "arp_entries = #{@arp_entries})")
+      @logger = Logger.new(log_file)
+      @logger.info("#{@options.fetch(:name)} started " \
+                   "(interface = #{@options.fetch(:interface)}, " \
+                   "IP address = #{@options.fetch(:ip_address)}, " \
+                   "MAC address = #{@options[:mac_address]}, " \
+                   "arp_entries = #{@options.fetch(:arp_entries)})")
       @raw_socket = create_raw_socket
       run_as_daemon { start_main_loop }
     end
@@ -63,24 +51,30 @@ module Phut
       @stop = true
     end
 
-    def send_packets(dest, options)
-      return unless @arp_table[dest.ip_address]
-      udp = VhostUdp.new(source_mac: @mac_address,
+    # rubocop:disable AbcSize
+    def send_packets(dest, send_options)
+      return unless @options.fetch(:arp_table)[dest.ip_address]
+      udp = VhostUdp.new(source_mac: @options[:mac_address],
                          destination_mac: dest.mac_address,
-                         ip_source_address: @ip_address,
+                         ip_source_address: @options.fetch(:ip_address),
                          ip_destination_address: dest.ip_address)
-      options[:npackets].to_i.times do
+      send_options[:npackets].to_i.times do
         @packets_sent << udp.snapshot
         @raw_socket.write udp.to_binary_s
         @logger.info "Sent to #{dest.name}: #{udp}"
       end
     end
+    # rubocop:enable AbcSize
 
     def stats
       { tx: @packets_sent, rx: @packets_received }
     end
 
     private
+
+    def log_file
+      "#{@options.fetch(:log_dir)}/vhost.#{@options.fetch(:name)}.log"
+    end
 
     def shutdown
       @logger.info 'Shutting down.'
@@ -89,14 +83,18 @@ module Phut
     end
 
     # rubocop:disable MethodLength
+    # rubocop:disable AbcSize
     def start_main_loop
-      DRb.start_service(self.class.unix_domain_socket(@name, @socket_dir),
-                        self, UNIXFileMode: 0666)
+      unix_socket =
+        self.class.unix_domain_socket(@options.fetch(:name),
+                                      @options.fetch(:socket_dir))
+      DRb.start_service(unix_socket, self, UNIXFileMode: 0666)
       read_thread = Thread.start do
         loop do
           begin
             raw_data, = @raw_socket.recvfrom(8192)
             udp = VhostUdp.read(raw_data)
+            # TODO: Check @options[:promisc]
             @packets_received << udp.snapshot
             @logger.info "Received: #{udp}"
           rescue Errno::ENETDOWN
@@ -108,6 +106,7 @@ module Phut
       DRb.thread.join
     end
     # rubocop:enable MethodLength
+    # rubocop:enable AbcSize
 
     def run_as_daemon
       fork do
@@ -144,7 +143,7 @@ module Phut
     def create_raw_socket
       sock = Socket.new(Socket::PF_PACKET, Socket::SOCK_RAW, ETH_P_ALL)
 
-      ifreq = [@interface].pack 'a32'
+      ifreq = [@options.fetch(:interface)].pack 'a32'
       sock.ioctl(SIOCGIFINDEX, ifreq)
 
       sll = [Socket::AF_PACKET].pack 's'
@@ -160,7 +159,7 @@ module Phut
     end
 
     def create_pid_file
-      fail "#{@name} is already running." if running?
+      fail "#{@options.fetch(:name)} is already running." if running?
       update_pid_file
     end
 
@@ -169,7 +168,7 @@ module Phut
     end
 
     def pid_file
-      File.join @pid_dir, "vhost.#{@name}.pid"
+      File.join @options.fetch(:pid_dir), "vhost.#{@options.fetch(:name)}.pid"
     end
   end
   # rubocop:enable ClassLength
