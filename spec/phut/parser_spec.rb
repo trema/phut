@@ -47,7 +47,7 @@ CONFIG
 
       describe '#vhost' do
         Then { config.vhosts.size == 2 }
-        Then { config.fetch('192.168.0.1').ip == '192.168.0.1' }
+        Then { config.fetch('192.168.0.1').ip_address == '192.168.0.1' }
       end
     end
 
@@ -62,7 +62,7 @@ CONFIG
 
       describe '#vhost' do
         Then { config.vhosts.size == 2 }
-        Then { config.fetch('host1').ip == '192.168.0.1' }
+        Then { config.fetch('host1').ip_address == '192.168.0.1' }
       end
     end
   end
