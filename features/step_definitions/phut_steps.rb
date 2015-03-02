@@ -15,7 +15,7 @@ end
 
 Then(/^a vhost named "(.*?)" launches$/) do |name|
   in_current_dir do
-    pid_file = File.join(File.expand_path(@pid_dir), "phost.#{name}.pid")
+    pid_file = File.join(File.expand_path(@pid_dir), "vhost.#{name}.pid")
     step %(a file named "#{pid_file}" should exist)
   end
 end
