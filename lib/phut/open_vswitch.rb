@@ -59,7 +59,7 @@ module Phut
     end
 
     def dump_flows
-      sh "sudo #{OFCTL} dump-flows #{network_device}"
+      `sudo #{OFCTL} dump-flows #{network_device}`
     end
 
     def running?
