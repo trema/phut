@@ -85,7 +85,9 @@ module Phut
       loop do
         raw_data, = raw_socket.recvfrom(8192)
         udp = Pio::Udp.read(raw_data)
-        # TODO: Check @options[:promisc]
+        unless @options[:promisc]
+          next if udp.ip_destination_address != @options.fetch(:ip_address)
+        end
         @logger.info "Received: #{udp}"
         @packets_received << udp.snapshot
       end
