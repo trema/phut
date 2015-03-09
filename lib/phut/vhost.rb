@@ -12,11 +12,12 @@ module Phut
     attr_reader :mac_address
     attr_accessor :interface
 
-    def initialize(ip_address, promisc, name = nil, logger = NullLogger.new)
+    def initialize(ip_address, mac_address, promisc,
+                   name = nil, logger = NullLogger.new)
       @ip_address = ip_address
       @promisc = promisc
       @name = name
-      @mac_address = Pio::Mac.new(rand(0xffffffffffff + 1))
+      @mac_address = mac_address
       @logger = logger
     end
 

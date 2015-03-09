@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.2.2 (3/9/2015)
+### New features
+* Add `mac` attribute to vhost.
+
+
 ## 0.2.0 (3/2/2015)
 ### New features
 * [#19](https://github.com/trema/phut/pull/19): Add `bin/vhost`.
