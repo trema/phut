@@ -1,6 +1,9 @@
 # Change log
 
 ## develop (unreleased)
+
+
+## 0.2.2 (3/9/2015)
 ### New features
 * Add `mac` attribute to vhost.
 
