@@ -26,7 +26,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.0.0'
 
   gem.add_dependency 'gli', '~> 2.13.0'
-  gem.add_dependency 'pio', '~> 0.17.0'
+  gem.add_dependency 'pio', '~> 0.18.0'
   gem.add_dependency 'pry', '~> 0.10.1'
 
   # Docs
@@ -37,7 +37,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'byebug', '~> 3.5.1'
   gem.add_development_dependency 'guard', '~> 2.12.4'
   gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
-  gem.add_development_dependency 'guard-cucumber', '~> 1.5.3'
+  gem.add_development_dependency 'guard-cucumber', '~> 1.5.4'
   gem.add_development_dependency 'guard-rspec', '~> 4.5.0'
   gem.add_development_dependency 'guard-rubocop', '~> 1.2.0'
 

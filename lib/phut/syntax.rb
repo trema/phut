@@ -44,7 +44,8 @@ module Phut
       UnusedIpAddressSingleton = UnusedIpAddress.new
 
       def initialize(alias_name, &block)
-        @attributes = { name: alias_name }
+        @attributes =
+          { name: alias_name, mac: Pio::Mac.new(rand(0xffffffffffff + 1)) }
         if block
           instance_eval(&block) if block
         else
@@ -55,6 +56,10 @@ module Phut
       def ip(value)
         @attributes[:ip] = value
         @attributes[:name] ||= value
+      end
+
+      def mac(value)
+        @attributes[:mac] = value
       end
 
       def promisc(on_off)
