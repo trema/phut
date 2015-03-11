@@ -7,7 +7,7 @@ module Phut
   class Configuration
     extend Forwardable
 
-    def_delegators :@all, :fetch
+    def_delegators :@all, :fetch, :[]
 
     def initialize(logger = NullLogger.new)
       @all = {}
