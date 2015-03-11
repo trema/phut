@@ -1,6 +1,8 @@
 # Change log
 
 ## develop (unreleased)
+### New features
+* Add `Pio::Configuration#[]`.
 
 
 ## 0.2.2 (3/9/2015)
