@@ -28,7 +28,7 @@ module Phut
     def stop
       sh "sudo ip link delete #{@device_a}"
     rescue
-      raise "link #{@name_a}-#{@name_b} does not exist!"
+      raise "link #{@name_a} #{@name_b} does not exist!"
     end
 
     def maybe_stop
