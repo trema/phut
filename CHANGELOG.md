@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.2.4 (3/12/2015)
+### Misc
+* Pio 0.18.2.
+
+
 ## 0.2.3 (3/11/2015)
 ### New features
 * Add `Pio::Configuration#[]`.
