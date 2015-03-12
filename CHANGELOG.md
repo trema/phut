@@ -1,6 +1,8 @@
 # Change log
 
 ## develop (unreleased)
+### Misc
+* Pio 0.18.2.
 
 
 ## 0.2.3 (3/11/2015)
