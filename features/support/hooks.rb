@@ -11,10 +11,6 @@ Before('@sudo') do
   @aruba_timeout_seconds = 10
 end
 
-Before('@shell') do
-  fail 'sudo authentication failed' unless system 'sudo -v'
-end
-
 After('@sudo') do
   in_current_dir do
     Phut.pid_dir = @pid_dir
@@ -24,11 +20,12 @@ After('@sudo') do
   end
 end
 
+Before('@shell') do
+  fail 'sudo authentication failed' unless system 'sudo -v'
+end
+
 After('@shell') do
-  in_current_dir do
-    Dir.glob(File.join(Dir.getwd, '*.pid')).each do |each|
-      pid = IO.read(each).to_i
-      run "sudo kill #{pid}"
-    end
+  `sudo ovs-vsctl list-br`.split("\n").each do |each|
+    run "sudo ovs-vsctl del-br #{each}"
   end
 end

@@ -18,8 +18,6 @@ Gem::Specification.new do |gem|
   gem.executables = %w(phut vhost)
   gem.files = `git ls-files`.split("\n")
 
-  gem.extensions = ['Rakefile']
-
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
@@ -34,8 +32,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'yard', '~> 0.8.7.6'
 
   # Development
-  gem.add_development_dependency 'byebug', '~> 3.5.1'
-  gem.add_development_dependency 'guard', '~> 2.12.4'
+  gem.add_development_dependency 'byebug', '~> 4.0.2'
+  gem.add_development_dependency 'guard', '~> 2.12.5'
   gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
   gem.add_development_dependency 'guard-cucumber', '~> 1.5.4'
   gem.add_development_dependency 'guard-rspec', '~> 4.5.0'
@@ -48,7 +46,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'cucumber', '~> 1.3.19'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'reek', '~> 2.0.1'
+  gem.add_development_dependency 'reek', '~> 2.0.2'
   gem.add_development_dependency 'rspec', '~> 3.2.0'
   gem.add_development_dependency 'rspec-given', '~> 3.7.0'
   gem.add_development_dependency 'rubocop', '~> 0.29.1'

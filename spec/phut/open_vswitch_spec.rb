@@ -13,7 +13,8 @@ describe Phut::OpenVswitch do
       describe '#run' do
         When { vswitch.run }
         Then do
-          expect(vswitch).to have_received(:sh).with(/test-openflowd/)
+          expect(vswitch).to(have_received(:sh).
+                             with('sudo ovs-vsctl add-br 0xabc'))
         end
       end
     end

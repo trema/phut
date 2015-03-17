@@ -6,7 +6,7 @@ Feature: The vswitch DSL directive.
     vswitch { dpid '0xabc' }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" launches
+    Then a vswitch named "0xabc" should be running
 
   @sudo
   Scenario: phut run with "vswitch { dpid NUMBER }"
@@ -15,7 +15,7 @@ Feature: The vswitch DSL directive.
     vswitch { dpid 0xabc }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" launches
+    Then a vswitch named "0xabc" should be running
 
   @sudo
   Scenario: phut run with "vswitch { datapath_id STRING }"
@@ -24,7 +24,7 @@ Feature: The vswitch DSL directive.
     vswitch { datapath_id '0xabc' }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" launches
+    Then a vswitch named "0xabc" should be running
 
   @sudo
   Scenario: phut run with "vswitch { datapath_id NUMBER }"
@@ -33,7 +33,7 @@ Feature: The vswitch DSL directive.
     vswitch { datapath_id 0xabc }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" launches
+    Then a vswitch named "0xabc" should be running
 
   @sudo
   Scenario: phut run with "vswitch(alias) { ... }"
@@ -42,4 +42,4 @@ Feature: The vswitch DSL directive.
     vswitch('my_switch') { datapath_id '0xabc' }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "my_switch" launches
+    Then a vswitch named "my_switch" should be running

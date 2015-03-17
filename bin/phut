@@ -38,6 +38,9 @@ module Phut
         Pry::Commands.block_command 'vswitch' do |dpid|
           Phut::OpenVswitch.new(dpid).run
         end
+        Pry::Commands.block_command 'dump_flows' do |dpid|
+          puts Phut::OpenVswitch.new(dpid).dump_flows
+        end
         Pry::Commands.block_command 'kill' do |dpid|
           Phut::OpenVswitch.new(dpid).shutdown
         end
