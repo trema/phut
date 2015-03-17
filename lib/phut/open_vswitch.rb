@@ -31,10 +31,10 @@ module Phut
       sh "sudo ovs-vsctl add-br #{name}"
       sh "sudo /sbin/sysctl -w net.ipv6.conf.#{name}.disable_ipv6=1 -q"
       @interfaces.each { |each| sh "sudo ovs-vsctl add-port #{name} #{each}" }
+      sh "sudo ovs-vsctl set bridge #{name} protocols=OpenFlow10" \
+      " other-config:datapath-id=#{dpid_zero_filled}"
       sh "sudo ovs-vsctl set-controller #{name} tcp:127.0.0.1:6633"\
          " -- set controller #{name} connection-mode=out-of-band"
-      sh "sudo ovs-vsctl set bridge #{name} protocols=OpenFlow10" \
-         " other-config:datapath-id=#{dpid_zero_filled}"
       sh "sudo ovs-vsctl set-fail-mode #{name} secure"
     rescue
       raise "Open vSwitch (dpid = #{@dpid}) is already running!"

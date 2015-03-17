@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.3.1 (3/17/2015)
+### Bugs fixed
+* Set switch's dpid before connecting to a controller.
+
+
 ## 0.3.0 (3/17/2015)
 ### Changes
 * [#20](https://github.com/trema/phut/pull/20): Use apt installed version of Open vSwitch.
