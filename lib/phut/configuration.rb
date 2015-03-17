@@ -28,8 +28,8 @@ module Phut
 
     def run
       links.each(&:run)
-      vswitches.each(&:run)
       vhosts.each { |each| each.run vhosts }
+      vswitches.each(&:run)
     end
 
     def stop

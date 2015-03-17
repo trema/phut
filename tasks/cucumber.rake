@@ -1,10 +1,8 @@
 begin
   require 'cucumber/rake/task'
 
-  task cucumber: :openvswitch
   Cucumber::Rake::Task.new
 
-  task 'cucumber:travis' => :openvswitch
   Cucumber::Rake::Task.new('cucumber:travis') do |task|
     task.cucumber_opts = '--tags ~@sudo --tags ~@shell'
   end
