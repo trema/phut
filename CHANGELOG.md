@@ -1,6 +1,8 @@
 # Change log
 
 ## develop (unreleased)
+### Changes
+* [#20](https://github.com/trema/phut/pull/20): Use apt installed version of Open vSwitch.
 
 
 ## 0.2.4 (3/12/2015)
