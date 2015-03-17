@@ -6,11 +6,12 @@ When(/^I do phut run "(.*?)"$/) do |file_name|
   step %(I run `phut -v run #{run_opts} #{@config_file}`)
 end
 
-Then(/^a vswitch named "(.*?)" launches$/) do |name|
-  in_current_dir do
-    pid_file = File.join(File.expand_path(@pid_dir), "open_vswitch.#{name}.pid")
-    step %(a file named "#{pid_file}" should exist)
-  end
+Then(/^a vswitch named "(.*?)" should be running$/) do |name|
+  expect(system("sudo ovs-vsctl br-exists #{name}")).to be(true)
+end
+
+Then(/^a vswitch named "(.*?)" should not be running$/) do |name|
+  expect(system("sudo ovs-vsctl br-exists #{name}")).to be(false)
 end
 
 Then(/^a vhost named "(.*?)" launches$/) do |name|

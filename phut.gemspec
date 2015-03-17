@@ -18,8 +18,6 @@ Gem::Specification.new do |gem|
   gem.executables = %w(phut vhost)
   gem.files = `git ls-files`.split("\n")
 
-  gem.extensions = ['Rakefile']
-
   gem.extra_rdoc_files = ['README.md']
   gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
 
