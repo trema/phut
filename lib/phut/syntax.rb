@@ -1,4 +1,3 @@
-require 'phut/syntax/link_directive'
 require 'phut/vhost'
 require 'phut/virtual_link'
 
