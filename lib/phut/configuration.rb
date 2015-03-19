@@ -49,10 +49,9 @@ module Phut
         Vhost.new(attrs[:ip], attrs[:mac], attrs[:promisc], name, @logger)
     end
 
-    # This method smells of :reek:LongParameterList
-    def add_link(name_a, device_a, name_b, device_b)
-      @all[[name_a, name_b]] =
-        VirtualLink.new(name_a, device_a, name_b, device_b, @logger)
+    def add_link(name_a, name_b, peers)
+      @all[[name_a, name_b].sort] =
+        VirtualLink.new(name_a, peers.device_a, name_b, peers.device_b, @logger)
     end
 
     private

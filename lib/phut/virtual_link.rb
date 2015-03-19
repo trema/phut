@@ -37,7 +37,7 @@ module Phut
     end
 
     def up?
-      /^#{@device_a}\s+/ =~ `ifconfig -a`
+      /^#{@device_a}\s+Link encap:Ethernet/ =~ `ifconfig -a`
     end
 
     private
