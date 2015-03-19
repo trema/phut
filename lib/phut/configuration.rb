@@ -21,7 +21,7 @@ module Phut
         @links.each do |each|
           return each if [each.name_a, each.name_b].sort == key.sort
         end
-        fail KeyError, "key not found: #{key.inspect}"
+        fail "link #{key.join ' '} not found."
       else
         fail "Invalid key: #{key.inspect}"
       end
