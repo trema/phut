@@ -72,6 +72,14 @@ module Phut
       end
     end
 
+    desc 'Shows information on switch'
+    arg_name 'SWITCH'
+    command :show do |c|
+      c.action do |_global_options, _options, args|
+        system "sudo ovs-ofctl show br#{args[0]}"
+      end
+    end
+
     desc 'Stops a virtual network'
     arg_name 'FILE'
     command :stop do |c|

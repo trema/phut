@@ -1,17 +1,39 @@
-require 'forwardable'
 require 'phut/null_logger'
 require 'phut/open_vswitch'
 
 module Phut
   # Parsed DSL data.
   class Configuration
-    extend Forwardable
-
-    def_delegators :@all, :fetch, :[]
+    attr_reader :links
 
     def initialize(logger = NullLogger.new)
       @all = {}
+      @links = []
       @logger = logger
+    end
+
+    # rubocop:disable MethodLength
+    def fetch(key)
+      case key
+      when String
+        @all.fetch(key)
+      when Array
+        @links.each do |each|
+          return each if [each.name_a, each.name_b].sort == key.sort
+        end
+        fail KeyError, "key not found: #{key.inspect}"
+      else
+        fail "Invalid key: #{key.inspect}"
+      end
+    end
+    # rubocop:enable MethodLength
+
+    def find_network_device_by_name(name)
+      @links.each do |each|
+        device = each.find_network_device_by_name(name)
+        return device if device
+      end
+      fail "No network device found for #{name}."
     end
 
     def vswitches
@@ -20,10 +42,6 @@ module Phut
 
     def vhosts
       @all.values.select { |each| each.is_a? Vhost }
-    end
-
-    def links
-      @all.values.select { |each| each.is_a? VirtualLink }
     end
 
     def run
@@ -49,10 +67,8 @@ module Phut
         Vhost.new(attrs[:ip], attrs[:mac], attrs[:promisc], name, @logger)
     end
 
-    # This method smells of :reek:LongParameterList
-    def add_link(name_a, device_a, name_b, device_b)
-      @all[[name_a, name_b]] =
-        VirtualLink.new(name_a, device_a, name_b, device_b, @logger)
+    def add_link(name_a, name_b)
+      @links << VirtualLink.new(name_a, name_b, @logger)
     end
 
     private

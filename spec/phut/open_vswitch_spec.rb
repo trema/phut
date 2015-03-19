@@ -14,7 +14,7 @@ describe Phut::OpenVswitch do
         When { vswitch.run }
         Then do
           expect(vswitch).to(have_received(:sh).
-                             with('sudo ovs-vsctl add-br 0xabc'))
+                             with('sudo ovs-vsctl add-br br0xabc'))
         end
       end
     end

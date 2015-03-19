@@ -7,11 +7,11 @@ When(/^I do phut run "(.*?)"$/) do |file_name|
 end
 
 Then(/^a vswitch named "(.*?)" should be running$/) do |name|
-  expect(system("sudo ovs-vsctl br-exists #{name}")).to be(true)
+  expect(system("sudo ovs-vsctl br-exists br#{name}")).to be_truthy
 end
 
 Then(/^a vswitch named "(.*?)" should not be running$/) do |name|
-  expect(system("sudo ovs-vsctl br-exists #{name}")).to be(false)
+  expect(system("sudo ovs-vsctl br-exists br#{name}")).to be_falsey
 end
 
 Then(/^a vhost named "(.*?)" launches$/) do |name|
@@ -23,9 +23,7 @@ end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |name_a, name_b|
   in_current_dir do
-    link = Phut::Parser.new.parse(@config_file).links.find do |each|
-      each.name_a == name_a && each.name_b == name_b
-    end
+    link = Phut::Parser.new.parse(@config_file).fetch([name_a, name_b].sort)
     expect(link).to be_up
   end
 end
