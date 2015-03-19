@@ -1,12 +1,16 @@
 # Change log
 
 ## develop (unreleased)
+
+
+## 0.4.0 (3/19/2015)
 ### New features
 * Add `phut show` command.
 
 ### Changes
-* Switch port number to which a virtual link is attached is implicitly
-  determined by the ordering of `link` directives in DSL file.
+* [#14](https://github.com/trema/phut/issues/14): Switch port number
+  to which a virtual link is attached is implicitly determined by the
+  ordering of `link` directives in DSL file.
 
 
 ## 0.3.1 (3/17/2015)
