@@ -44,6 +44,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'codeclimate-test-reporter'
   gem.add_development_dependency 'coveralls', '~> 0.7.11'
   gem.add_development_dependency 'cucumber', '~> 1.3.19'
+  gem.add_development_dependency 'flay', '~> 2.6.1'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'reek', '~> 2.0.2'

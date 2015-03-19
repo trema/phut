@@ -10,7 +10,7 @@ module Phut
 
     attr_reader :ip_address
     attr_reader :mac_address
-    attr_accessor :interface
+    attr_accessor :network_device
 
     def initialize(ip_address, mac_address, promisc,
                    name = nil, logger = NullLogger.new)
@@ -51,7 +51,7 @@ module Phut
 
     def run_options(all_hosts)
       ["-n #{name}",
-       "-I #{interface}",
+       "-I #{@network_device}",
        "-i #{@ip_address}",
        "-m #{@mac_address}",
        "-a #{arp_entries all_hosts}",

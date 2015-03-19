@@ -7,45 +7,42 @@ module Phut
   class Parser
     def initialize(logger = NullLogger.new)
       @config = Configuration.new(logger)
+      @port_number = Hash.new(0)
     end
 
     def parse(file)
       Syntax.new(@config).instance_eval IO.read(file), file
-      assign_vswitch_interfaces
-      assign_vhost_interface
+      connect_links_to_switches
+      connect_links_to_vhosts
       @config
     end
 
     private
 
-    def assign_vswitch_interfaces
-      @config.vswitches.each do |each|
-        each.interfaces = find_interfaces_by_name(each.name)
+    def connect_links_to_switches
+      @config.links.each do |each|
+        maybe_assign_network_device_to_vswitch each
       end
     end
 
-    def assign_vhost_interface
+    def connect_links_to_vhosts
       @config.vhosts.each do |each|
-        each.interface = find_host_interface_by_name(each.name)
+        each.network_device = @config.find_network_device_by_name(each.name)
       end
     end
 
-    def find_interfaces_by_name(name)
-      find_device_by_name(name, :name_a, :device_a) +
-        find_device_by_name(name, :name_b, :device_b)
+    def maybe_assign_network_device_to_vswitch(link)
+      @config.vswitches.each do |each|
+        switch_name = each.name
+        network_device = link.find_network_device_by_name(switch_name)
+        next unless network_device
+        network_device.port_number = new_port_number(switch_name)
+        each.network_devices << network_device
+      end
     end
 
-    def find_host_interface_by_name(name)
-      find_interfaces_by_name(name).tap do |interface|
-        fail "No link found for host #{name}" if interface.empty?
-        fail "Multiple links connect to host #{name}" if interface.size > 1
-      end.first
-    end
-
-    def find_device_by_name(name, name_type, device_type)
-      @config.links.select do |each|
-        each.__send__(name_type) == name
-      end.map(&device_type)
+    def new_port_number(switch_name)
+      @port_number[switch_name] += 1
     end
   end
 end

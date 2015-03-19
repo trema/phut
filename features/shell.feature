@@ -37,6 +37,7 @@ Feature: Shell
     And I type "vswitch 0xabc"
     When I type "kill 0xabc"
     And I type "quit"
+    And I run `sleep 1`
     Then a vswitch named "0xabc" should not be running
 
   @shell

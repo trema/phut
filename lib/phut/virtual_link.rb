@@ -4,6 +4,26 @@ require 'phut/shell_runner'
 module Phut
   # Network virtual link.
   class VirtualLink
+    # Creates a valid network device name.
+    class NetworkDeviceName
+      attr_reader :name
+      attr_writer :port_number
+
+      def initialize(name)
+        @name = name
+      end
+
+      def to_s
+        @name.gsub('.', '_') + port_number_string
+      end
+
+      private
+
+      def port_number_string
+        @port_number ? '_' + @port_number.to_s : ''
+      end
+    end
+
     include ShellRunner
 
     attr_reader :name_a
@@ -11,11 +31,12 @@ module Phut
     attr_reader :device_a
     attr_reader :device_b
 
-    def initialize(name_a, device_a, name_b, device_b, logger = NullLogger.new)
+    def initialize(name_a, name_b, logger = NullLogger.new)
+      fail if name_a == name_b
       @name_a = name_a
-      @device_a = device_a
       @name_b = name_b
-      @device_b = device_b
+      @device_a = NetworkDeviceName.new(name_a)
+      @device_b = NetworkDeviceName.new(name_b)
       @logger = logger
     end
 
@@ -37,7 +58,11 @@ module Phut
     end
 
     def up?
-      /^#{@device_a}\s+/ =~ `ifconfig -a`
+      /^#{@device_a}\s+Link encap:Ethernet/ =~ `ifconfig -a`
+    end
+
+    def find_network_device_by_name(name)
+      [@device_a, @device_b].find { |each| each.name == name }
     end
 
     private

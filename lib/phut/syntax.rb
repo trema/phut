@@ -71,42 +71,8 @@ module Phut
       end
     end
 
-    # The 'link name_a, name_b' directive.
-    class LinkDirective
-      # Generates an unique Link ID
-      class LinkId
-        def initialize
-          init
-        end
-
-        def init
-          @index = 0
-        end
-
-        def generate
-          @index += 1
-        end
-      end
-
-      LinkIdSingleton = LinkId.new
-
-      def initialize(name_a, name_b, link_id)
-        @attributes = {}
-        @attributes[:name_a] = name_a
-        @attributes[:name_b] = name_b
-        link_id = LinkIdSingleton.generate
-        @attributes[:device_a] = "link#{link_id}-0"
-        @attributes[:device_b] = "link#{link_id}-1"
-      end
-
-      def [](key)
-        @attributes[key]
-      end
-    end
-
     def initialize(config)
       @config = config
-      LinkDirective::LinkIdSingleton.init
     end
 
     def vswitch(alias_name = nil, &block)
@@ -120,9 +86,7 @@ module Phut
     end
 
     def link(name_a, name_b)
-      link_id = @config.links.size
-      attrs = LinkDirective.new(name_a, name_b, link_id)
-      @config.add_link name_a, attrs[:device_a], name_b, attrs[:device_b]
+      @config.add_link name_a, name_b
     end
   end
 end
