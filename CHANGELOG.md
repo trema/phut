@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.5.0 (4/22/2015)
+### Misc
+* Pio 0.20.0 (preliminary support of OpenFlow 1.3).
+
+
 ## 0.4.0 (3/19/2015)
 ### New features
 * Add `phut show` command.
