@@ -34,7 +34,8 @@ module Phut
       @network_devices.each do |each|
         sh "sudo ovs-vsctl add-port #{bridge_name} #{each}"
       end
-      sh "sudo ovs-vsctl set bridge #{bridge_name} protocols=OpenFlow10" \
+      sh "sudo ovs-vsctl set bridge #{bridge_name}" \
+         " protocols=#{open_flow_protocol}" \
          " other-config:datapath-id=#{dpid_zero_filled}"
       sh "sudo ovs-vsctl set-controller #{bridge_name} tcp:127.0.0.1:6633"\
          " -- set controller #{bridge_name} connection-mode=out-of-band"
@@ -77,6 +78,10 @@ module Phut
 
     def bridge_name
       'br' + name
+    end
+
+    def open_flow_protocol
+      'OpenFlow' + { 1 => '10', 4 => '13' }.fetch(Pio::OpenFlow::VERSION)
     end
 
     def restart
