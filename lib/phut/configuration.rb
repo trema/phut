@@ -58,7 +58,8 @@ module Phut
 
     def add_vswitch(name, attrs)
       check_name_conflict name
-      @all[name] = OpenVswitch.new(attrs[:dpid], name, @logger)
+      @all[name] =
+        OpenVswitch.new(attrs[:dpid], attrs[:port_number], name, @logger)
     end
 
     def add_vhost(name, attrs)

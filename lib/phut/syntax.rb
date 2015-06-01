@@ -22,6 +22,10 @@ module Phut
       end
       alias_method :datapath_id, :dpid
 
+      def port(port_no)
+        @attributes[:port_number] = port_no
+      end
+
       def [](key)
         @attributes[key]
       end
