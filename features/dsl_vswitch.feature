@@ -6,7 +6,7 @@ Feature: The vswitch DSL directive.
     vswitch { dpid '0xabc' }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" should be running
+    Then a vswitch named "0xabc" (controller port = 6653) should be running
 
   Scenario: vswitch { dpid NUMBER }
     Given a file named "network.conf" with:
@@ -14,7 +14,7 @@ Feature: The vswitch DSL directive.
     vswitch { dpid 0xabc }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" should be running
+    Then a vswitch named "0xabc" (controller port = 6653) should be running
 
   Scenario: vswitch { datapath_id STRING }
     Given a file named "network.conf" with:
@@ -22,7 +22,7 @@ Feature: The vswitch DSL directive.
     vswitch { datapath_id '0xabc' }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" should be running
+    Then a vswitch named "0xabc" (controller port = 6653) should be running
 
   Scenario: vswitch { datapath_id NUMBER }
     Given a file named "network.conf" with:
@@ -30,7 +30,7 @@ Feature: The vswitch DSL directive.
     vswitch { datapath_id 0xabc }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "0xabc" should be running
+    Then a vswitch named "0xabc" (controller port = 6653) should be running
 
   Scenario: vswitch { dpid ...; port NUMBER }
     Given a file named "network.conf" with:
@@ -49,4 +49,4 @@ Feature: The vswitch DSL directive.
     vswitch('my_switch') { datapath_id '0xabc' }
     """
     When I do phut run "network.conf"
-    Then a vswitch named "my_switch" should be running
+    Then a vswitch named "my_switch" (controller port = 6653) should be running

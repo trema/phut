@@ -7,7 +7,7 @@ module Phut
     # The 'vswitch(name) { ...attributes... }' directive.
     class VswitchDirective
       def initialize(alias_name, &block)
-        @attributes = { name: alias_name }
+        @attributes = { name: alias_name, port_number: 6653 }
         instance_eval(&block)
       end
 
