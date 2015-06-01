@@ -23,7 +23,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 2.0.0'
 
-  gem.add_dependency 'gli', '~> 2.13.0'
+  gem.add_dependency 'gli', '~> 2.13.1'
   gem.add_dependency 'pio', '~> 0.20.0'
   gem.add_dependency 'pry', '~> 0.10.1'
 
@@ -32,11 +32,11 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'yard', '~> 0.8.7.6'
 
   # Development
-  gem.add_development_dependency 'byebug', '~> 4.0.5'
+  gem.add_development_dependency 'byebug', '~> 5.0.0'
   gem.add_development_dependency 'guard', '~> 2.12.5'
   gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
   gem.add_development_dependency 'guard-cucumber', '~> 1.6.0'
-  gem.add_development_dependency 'guard-rspec', '~> 4.5.0'
+  gem.add_development_dependency 'guard-rspec', '~> 4.5.1'
   gem.add_development_dependency 'guard-rubocop', '~> 1.2.0'
 
   # Test
@@ -47,8 +47,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'flay', '~> 2.6.1'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'reek', '~> 2.1.0'
+  gem.add_development_dependency 'reek', '~> 2.2.1'
   gem.add_development_dependency 'rspec', '~> 3.2.0'
   gem.add_development_dependency 'rspec-given', '~> 3.7.0'
-  gem.add_development_dependency 'rubocop', '~> 0.30.0'
+  gem.add_development_dependency 'rubocop', '~> 0.31.0'
 end
