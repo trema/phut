@@ -3,6 +3,12 @@
 ## develop (unreleased)
 
 
+## 0.6.0 (6/1/2015)
+### Changes
+* [#21](https://github.com/trema/phut/pull/21): Use IANA-assigned port number 6653.
+* [#21](https://github.com/trema/phut/pull/21): Add `port` attribute to `vswitch` directive.
+
+
 ## 0.5.0 (4/22/2015)
 ### Misc
 * Pio 0.20.0 (preliminary support of OpenFlow 1.3).

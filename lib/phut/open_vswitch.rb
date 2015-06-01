@@ -11,8 +11,10 @@ module Phut
     alias_method :datapath_id, :dpid
     attr_reader :network_devices
 
-    def initialize(dpid, name = nil, logger = NullLogger.new)
+    def initialize(dpid, port_number = 6653,
+                   name = nil, logger = NullLogger.new)
       @dpid = dpid
+      @port_number = port_number
       @name = name
       @network_devices = []
       @logger = logger
@@ -37,8 +39,9 @@ module Phut
       sh "sudo ovs-vsctl set bridge #{bridge_name}" \
          " protocols=#{open_flow_protocol}" \
          " other-config:datapath-id=#{dpid_zero_filled}"
-      sh "sudo ovs-vsctl set-controller #{bridge_name} tcp:127.0.0.1:6633"\
-         " -- set controller #{bridge_name} connection-mode=out-of-band"
+      sh "sudo ovs-vsctl set-controller #{bridge_name} "\
+         "tcp:127.0.0.1:#{@port_number} "\
+         "-- set controller #{bridge_name} connection-mode=out-of-band"
       sh "sudo ovs-vsctl set-fail-mode #{bridge_name} secure"
     rescue
       raise "Open vSwitch (dpid = #{@dpid}) is already running!"
