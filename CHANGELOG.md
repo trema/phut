@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.1 (6/1/2015)
+### Bugs fixed
+* Use the default port number (6653) if `port` attribute is not set.
+
+
 ## 0.6.0 (6/1/2015)
 ### Changes
 * [#21](https://github.com/trema/phut/pull/21): Use IANA-assigned port number 6653.
