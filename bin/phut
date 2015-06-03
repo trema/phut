@@ -101,9 +101,19 @@ module Phut
       end
     end
 
+    desc 'Kills a vswitch or a vhost'
+    arg_name 'NAME'
     command :kill do |c|
-      c.action do |_global_options, _options, args|
-        args.each { |each| Phut::OpenVswitch.new(each).shutdown }
+      c.desc 'Location to find socket files'
+      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+
+      c.action do |_global_options, options, args|
+        help_now! if args.size != 1
+        begin
+          Phut::VhostDaemon.process(args[0], options[:socket_dir]).stop
+        rescue
+          Phut::OpenVswitch.new(args[0]).shutdown
+        end
       end
     end
 

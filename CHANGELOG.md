@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.2 (6/3/2015)
+### Bugs fixed
+* Delete a vhost.*.ctl socket file after the vhost process is killed.
+
+
 ## 0.6.1 (6/1/2015)
 ### Bugs fixed
 * Use the default port number (6653) if `port` attribute is not set.
