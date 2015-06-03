@@ -53,10 +53,8 @@ module Phut
     command :run do |c|
       c.desc 'Location to put pid files'
       c.flag [:p, :pid_dir], default_value: Phut.pid_dir
-
       c.desc 'Location to put log files'
       c.flag [:l, :log_dir], default_value: Phut.log_dir
-
       c.desc 'Location to put socket files'
       c.flag [:s, :socket_dir], default_value: Phut.socket_dir
 

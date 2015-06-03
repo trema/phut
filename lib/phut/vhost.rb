@@ -30,7 +30,8 @@ module Phut
     end
 
     def run(all_hosts = [])
-      sh "rvmsudo vhost run #{run_options all_hosts}"
+      @all_hosts ||= all_hosts
+      sh "rvmsudo vhost run #{run_options}"
     end
 
     def stop
@@ -49,20 +50,20 @@ module Phut
 
     private
 
-    def run_options(all_hosts)
+    def run_options
       ["-n #{name}",
        "-I #{@network_device}",
        "-i #{@ip_address}",
        "-m #{@mac_address}",
-       "-a #{arp_entries all_hosts}",
+       "-a #{arp_entries}",
        @promisc ? '--promisc' : nil,
        "-P #{Phut.pid_dir}",
        "-L #{Phut.log_dir}",
        "-S #{Phut.socket_dir}"].compact.join(' ')
     end
 
-    def arp_entries(all_hosts)
-      all_hosts.map do |each|
+    def arp_entries
+      @all_hosts.map do |each|
         "#{each.ip_address}/#{each.mac_address}"
       end.join(',')
     end

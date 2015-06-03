@@ -77,6 +77,11 @@ module Phut
       system "sudo ovs-vsctl br-exists #{bridge_name}"
     end
 
+    def add_network_device(network_device)
+      network_device.port_number = @network_devices.size + 1
+      @network_devices << network_device
+    end
+
     private
 
     def bridge_name
