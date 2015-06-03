@@ -113,6 +113,7 @@ module Phut
       @logger.error $ERROR_INFO if $ERROR_INFO
       @logger.info 'Shutting down...'
       FileUtils.rm pid_file if running?
+      DRb.stop_service
       fail $ERROR_INFO if $ERROR_INFO
     end
 

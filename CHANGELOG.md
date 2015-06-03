@@ -1,6 +1,8 @@
 # Change log
 
 ## develop (unreleased)
+### Bugs fixed
+* Delete a vhost.*.ctl socket file after the vhost process is killed.
 
 
 ## 0.6.1 (6/1/2015)

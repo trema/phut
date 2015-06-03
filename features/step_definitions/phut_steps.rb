@@ -6,6 +6,11 @@ When(/^I do phut run "(.*?)"$/) do |file_name|
   step %(I run `phut -v run #{run_opts} #{@config_file}`)
 end
 
+When(/^I do phut kill "(.*?)"$/) do |name|
+  run_opts = "-s #{@socket_dir}"
+  step %(I successfully run `phut -v kill #{run_opts} #{name}`)
+end
+
 Then(/^a vswitch named "(.*?)" should be running$/) do |name|
   expect(system("sudo ovs-vsctl br-exists br#{name}")).to be_truthy
 end
