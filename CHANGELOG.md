@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.3 (6/4/2015)
+### Bugs fixed
+* [#23](https://github.com/trema/phut/pull/23): Fix vhost restart failure.
+
+
 ## 0.6.2 (6/3/2015)
 ### Bugs fixed
 * Delete a vhost.*.ctl socket file after the vhost process is killed.
