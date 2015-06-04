@@ -68,6 +68,9 @@ module Phut
     def write_to_raw_socket(packet)
       @packets_sent << packet.snapshot
       raw_socket.write packet.to_binary_s
+    rescue Errno::ENXIO
+      # link is disconnected
+      true
     end
 
     def create_udp_packet(dest)
@@ -81,17 +84,24 @@ module Phut
       "#{@options.fetch(:log_dir)}/vhost.#{@options.fetch(:name)}.log"
     end
 
+    # rubocop:disable MethodLength
     def read_loop
       loop do
-        raw_data, = raw_socket.recvfrom(8192)
-        udp = Pio::Udp.read(raw_data)
-        unless @options[:promisc]
-          next if udp.ip_destination_address != @options.fetch(:ip_address)
+        begin
+          raw_data, = raw_socket.recvfrom(8192)
+          udp = Pio::Udp.read(raw_data)
+          unless @options[:promisc]
+            next if udp.ip_destination_address != @options.fetch(:ip_address)
+          end
+          @logger.info "Received: #{udp}"
+          @packets_received << udp.snapshot
+        rescue Errno::ENETDOWN
+          # link is disconnected
+          sleep 1
         end
-        @logger.info "Received: #{udp}"
-        @packets_received << udp.snapshot
       end
     end
+    # rubocop:enable MethodLength
 
     def start_daemon
       Process.daemon
