@@ -17,6 +17,10 @@ module Phut
         @name.gsub('.', '_') + port_number_string
       end
 
+      def inspect
+        to_s
+      end
+
       private
 
       def port_number_string
@@ -58,11 +62,17 @@ module Phut
     end
 
     def up?
-      /^#{@device_a}\s+Link encap:Ethernet/ =~ `ifconfig -a`
+      /^#{@device_a}\s+Link encap:Ethernet/ =~ `ifconfig -a` || false
     end
 
-    def find_network_device_by_name(name)
-      [@device_a, @device_b].find { |each| each.name == name }
+    def connect_to?(vswitch)
+      find_network_device(vswitch) || false
+    end
+
+    def find_network_device(vswitch_or_vhost)
+      [@device_a, @device_b].detect do |each|
+        each.name == vswitch_or_vhost.name
+      end
     end
 
     private

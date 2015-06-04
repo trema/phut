@@ -49,7 +49,7 @@ module Phut
     private
 
     def start_logging
-      @logger = Logger.new(log_file)
+      @logger = Logger.new(File.open(log_file, 'a'))
       @logger.info("#{@options.fetch(:name)} started " \
                    "(interface = #{@options.fetch(:interface)}," \
                    " IP address = #{@options.fetch(:ip_address)}," \
