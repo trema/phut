@@ -3,6 +3,12 @@
 ## develop (unreleased)
 
 
+## 0.6.4 (6/4/2015)
+### Bugs fixed
+* [#24](https://github.com/trema/phut/pull/24): vhost should not exit
+  if the link to which the vhost is connected is disabled.
+
+
 ## 0.6.3 (6/4/2015)
 ### Bugs fixed
 * [#23](https://github.com/trema/phut/pull/23): Fix vhost restart failure.
