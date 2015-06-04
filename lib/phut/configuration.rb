@@ -4,8 +4,6 @@ require 'phut/open_vswitch'
 module Phut
   # Parsed DSL data.
   class Configuration
-    attr_reader :links
-
     def initialize(logger = NullLogger.new)
       @all = {}
       @links = []
@@ -28,12 +26,10 @@ module Phut
     end
     # rubocop:enable MethodLength
 
-    def find_network_device_by_name(name)
-      @links.each do |each|
-        device = each.find_network_device_by_name(name)
-        return device if device
-      end
-      fail "No network device found for #{name}."
+    def update_connections
+      update_vswitch_ports
+      update_vhost_interfaces
+      self
     end
 
     def vswitches
@@ -45,7 +41,7 @@ module Phut
     end
 
     def run
-      links.each(&:run)
+      @links.each(&:run)
       vhosts.each { |each| each.run vhosts }
       vswitches.each(&:run)
     end
@@ -53,7 +49,7 @@ module Phut
     def stop
       vswitches.each(&:maybe_stop)
       vhosts.each(&:maybe_stop)
-      links.each(&:maybe_stop)
+      @links.each(&:maybe_stop)
     end
 
     def add_vswitch(name, attrs)
@@ -77,6 +73,36 @@ module Phut
     def check_name_conflict(name)
       conflict = @all[name]
       fail "The name #{name} conflicts with #{conflict}." if conflict
+    end
+
+    def update_vswitch_ports
+      @links.each do |each|
+        maybe_connect_link_to_vswitch each
+      end
+    end
+
+    def maybe_connect_link_to_vswitch(link)
+      vswitches_connected_to(link).each do |each|
+        each.add_network_device link.find_network_device(each)
+      end
+    end
+
+    def vswitches_connected_to(link)
+      vswitches.select { |each| link.connect_to?(each) }
+    end
+
+    def update_vhost_interfaces
+      vhosts.each do |each|
+        each.network_device = find_network_device(each)
+      end
+    end
+
+    def find_network_device(vhost)
+      @links.each do |each|
+        device = each.find_network_device(vhost)
+        return device if device
+      end
+      fail "No network device found for #{vhost}."
     end
   end
 end
