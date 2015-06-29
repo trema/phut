@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.5 (6/29/2015)
+### Changes
+* [#25](https://github.com/trema/phut/pull/25): Update pio and other gems.
+
+
 ## 0.6.4 (6/4/2015)
 ### Bugs fixed
 * [#24](https://github.com/trema/phut/pull/24): vhost should not exit
