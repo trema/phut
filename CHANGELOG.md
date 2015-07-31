@@ -1,6 +1,8 @@
 # Change log
 
 ## develop (unreleased)
+### Changes
+* [#26](https://github.com/trema/phut/pull/26): Update pio and other gems.
 
 
 ## 0.6.5 (6/29/2015)
