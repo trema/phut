@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.6 (8/2/2015)
+### Changes
+* [#26](https://github.com/trema/phut/pull/26): Update pio and other gems.
+
+
 ## 0.6.5 (6/29/2015)
 ### Changes
 * [#25](https://github.com/trema/phut/pull/25): Update pio and other gems.
