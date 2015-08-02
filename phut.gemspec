@@ -24,7 +24,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.0.0'
 
   gem.add_dependency 'gli', '~> 2.13.1'
-  gem.add_dependency 'pio', '~> 0.23.0'
+  gem.add_dependency 'pio', '~> 0.24.0'
   gem.add_dependency 'pry', '~> 0.10.1'
 
   # Docs
@@ -33,22 +33,22 @@ Gem::Specification.new do |gem|
 
   # Development
   gem.add_development_dependency 'byebug', '~> 5.0.0'
-  gem.add_development_dependency 'guard', '~> 2.12.7'
+  gem.add_development_dependency 'guard', '~> 2.13.0'
   gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
   gem.add_development_dependency 'guard-cucumber', '~> 1.6.0'
-  gem.add_development_dependency 'guard-rspec', '~> 4.6.0'
+  gem.add_development_dependency 'guard-rspec', '~> 4.6.3'
   gem.add_development_dependency 'guard-rubocop', '~> 1.2.0'
 
   # Test
-  gem.add_development_dependency 'aruba', '~> 0.6.2'
+  gem.add_development_dependency 'aruba', '~> 0.8.1'
   gem.add_development_dependency 'codeclimate-test-reporter'
   gem.add_development_dependency 'coveralls', '~> 0.8.2'
-  gem.add_development_dependency 'cucumber', '~> 2.0.0'
+  gem.add_development_dependency 'cucumber', '~> 2.0.2'
   gem.add_development_dependency 'flay', '~> 2.6.1'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'reek', '~> 2.2.1'
+  gem.add_development_dependency 'reek', '~> 3.1'
   gem.add_development_dependency 'rspec', '~> 3.3.0'
-  gem.add_development_dependency 'rspec-given', '~> 3.7.0'
+  gem.add_development_dependency 'rspec-given', '~> 3.7.1'
   gem.add_development_dependency 'rubocop', '~> 0.32.1'
 end

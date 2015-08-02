@@ -1,3 +1,4 @@
+require 'pio'
 require 'phut/null_logger'
 require 'phut/setting'
 require 'phut/shell_runner'
@@ -37,7 +38,7 @@ module Phut
         sh "sudo ovs-vsctl add-port #{bridge_name} #{each}"
       end
       sh "sudo ovs-vsctl set bridge #{bridge_name}" \
-         " protocols=#{open_flow_protocol}" \
+         " protocols=#{Pio::OpenFlow.version}" \
          " other-config:datapath-id=#{dpid_zero_filled}"
       sh "sudo ovs-vsctl set-controller #{bridge_name} "\
          "tcp:127.0.0.1:#{@port_number} "\
@@ -86,10 +87,6 @@ module Phut
 
     def bridge_name
       'br' + name
-    end
-
-    def open_flow_protocol
-      'OpenFlow' + { 1 => '10', 4 => '13' }.fetch(Pio::OpenFlow::VERSION)
     end
 
     def restart

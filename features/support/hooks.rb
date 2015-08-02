@@ -12,7 +12,7 @@ Before('@sudo') do
 end
 
 After('@sudo') do
-  in_current_dir do
+  cd('.') do
     Phut.pid_dir = @pid_dir
     Phut.log_dir = @log_dir
     Phut.socket_dir = @socket_dir
