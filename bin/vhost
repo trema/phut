@@ -15,9 +15,9 @@ module Phut
       desc 'Runs a vhost process'
       command :run do |c|
         desc 'Host name'
-        c.flag [:n,  :name]
+        c.flag [:n, :name]
         desc 'Network interface'
-        c.flag [:I,  :interface]
+        c.flag [:I, :interface]
         desc 'IP address'
         c.flag [:i, :ip_address]
         desc 'MAC address'
@@ -52,7 +52,7 @@ module Phut
       desc 'Terminates a vhost process'
       command :stop do |c|
         desc 'Host name'
-        c.flag [:n,  :name]
+        c.flag [:n, :name]
 
         c.desc 'Location to put socket files'
         c.flag [:S, :socket_dir], default_value: Phut.socket_dir
@@ -62,7 +62,7 @@ module Phut
           begin
             VhostDaemon.process(options[:name], options[:socket_dir]).stop
           rescue DRb::DRbConnError
-            true  # OK
+            true # OK
           end
         end
       end
