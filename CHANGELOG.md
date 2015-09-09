@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.8 (9/9/2015)
+### Changes
+* Raises Phut::vSwitch::AlreadyRunning when phut failed to start vSwitch.
+
+
 ## 0.6.7 (9/9/2015)
 ### Bugs fixed
 * [#27](https://github.com/trema/phut/issues/27): Change the option ordering of sysctl to work with CentOS 6.
