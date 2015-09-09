@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.7 (9/9/2015)
+### Bugs fixed
+* [#27](https://github.com/trema/phut/issues/27): Change the option ordering of sysctl to work with CentOS 6.
+
+
 ## 0.6.6 (8/2/2015)
 ### Changes
 * [#26](https://github.com/trema/phut/pull/26): Update pio and other gems.
