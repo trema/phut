@@ -79,8 +79,8 @@ module Phut
 
     def add
       sh "sudo ip link add name #{@device_a} type veth peer name #{@device_b}"
-      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@device_a}.disable_ipv6=1 -q"
-      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{@device_b}.disable_ipv6=1 -q"
+      sh "sudo /sbin/sysctl -q -w net.ipv6.conf.#{@device_a}.disable_ipv6=1"
+      sh "sudo /sbin/sysctl -q -w net.ipv6.conf.#{@device_b}.disable_ipv6=1"
     end
 
     def up
