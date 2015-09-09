@@ -14,7 +14,7 @@ module Phut
       end
 
       def to_s
-        @name.gsub('.', '_') + port_number_string
+        @name.tr('.', '_') + port_number_string
       end
 
       def inspect
