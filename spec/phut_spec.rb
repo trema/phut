@@ -1,6 +1,8 @@
 require 'phut/setting'
 
 describe Phut do
+  Given { allow(FileTest).to receive(:directory?).and_return(true) }
+
   describe '.pid_dir' do
     Given(:result) { Phut.pid_dir }
     Then { result == Dir.tmpdir }
