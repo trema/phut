@@ -24,6 +24,7 @@ module Phut
     end
 
     def pid_dir=(path)
+      fail "No such directory: #{path}" unless FileTest.directory?(path)
       @options[:pid_dir] = File.expand_path(path)
     end
 
@@ -32,6 +33,7 @@ module Phut
     end
 
     def log_dir=(path)
+      fail "No such directory: #{path}" unless FileTest.directory?(path)
       @options[:log_dir] = File.expand_path(path)
     end
 
@@ -40,6 +42,7 @@ module Phut
     end
 
     def socket_dir=(path)
+      fail "No such directory: #{path}" unless FileTest.directory?(path)
       @options[:socket_dir] = File.expand_path(path)
     end
   end

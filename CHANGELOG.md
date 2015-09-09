@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.6.9 (9/9/2015)
+### Changes
+* Check the existance of pid, log and socket directory.
+
+
 ## 0.6.8 (9/9/2015)
 ### Changes
 * Raises Phut::vSwitch::AlreadyRunning when phut failed to start vSwitch.
