@@ -6,6 +6,8 @@ require 'phut/shell_runner'
 module Phut
   # Open vSwitch controller.
   class OpenVswitch
+    class AlreadyRunning < StandardError; end
+
     include ShellRunner
 
     attr_reader :dpid
@@ -45,7 +47,7 @@ module Phut
          "-- set controller #{bridge_name} connection-mode=out-of-band"
       sh "sudo ovs-vsctl set-fail-mode #{bridge_name} secure"
     rescue
-      raise "Open vSwitch (dpid = #{@dpid}) is already running!"
+      raise AlreadyRunning, "Open vSwitch (dpid = #{@dpid}) is already running!"
     end
     alias_method :start, :run
     # rubocop:enable MethodLength
