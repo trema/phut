@@ -1,6 +1,11 @@
-# Change log
+# Changelog
 
 ## develop (unreleased)
+
+
+## 0.6.10 (9/16/2015)
+### Changes
+* Pio 0.27.0.
 
 
 ## 0.6.9 (9/9/2015)
