@@ -1,6 +1,9 @@
 # Changelog
 
 ## develop (unreleased)
+
+
+## 0.6.11 (9/29/2015)
 ### Changes
 * [#30](https://github.com/trema/phut/issues/30): Support apt-installed rubies.
 
