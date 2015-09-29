@@ -31,7 +31,12 @@ module Phut
 
     def run(all_hosts = [])
       @all_hosts ||= all_hosts
-      sh "rvmsudo vhost run #{run_options}"
+      if ENV['rvm_path']
+        sh "rvmsudo vhost run #{run_options}"
+      else
+        vhost = File.join(__dir__, '..', '..', 'bin', 'vhost')
+        sh "bundle exec sudo #{vhost} run #{run_options}"
+      end
     end
 
     def stop
