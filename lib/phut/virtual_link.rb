@@ -62,7 +62,7 @@ module Phut
     end
 
     def up?
-      /^#{@device_a}\s+Link encap:Ethernet/ =~ `ifconfig -a` || false
+      /^#{@device_a}\s+Link encap:Ethernet/ =~ `LANG=C ifconfig -a` || false
     end
 
     def connect_to?(vswitch)
