@@ -24,8 +24,8 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.0.0'
 
   gem.add_dependency 'gli', '~> 2.13.2'
-  gem.add_dependency 'pio', '~> 0.27.0'
-  gem.add_dependency 'pry', '~> 0.10.1'
+  gem.add_dependency 'pio', '~> 0.27.1'
+  gem.add_dependency 'pry', '~> 0.10.3'
 
   # Docs
   gem.add_development_dependency 'relish'
@@ -42,13 +42,13 @@ Gem::Specification.new do |gem|
   # Test
   gem.add_development_dependency 'aruba', '~> 0.8.1'
   gem.add_development_dependency 'codeclimate-test-reporter'
-  gem.add_development_dependency 'coveralls', '~> 0.8.2'
-  gem.add_development_dependency 'cucumber', '~> 2.0.2'
+  gem.add_development_dependency 'coveralls', '~> 0.8.3'
+  gem.add_development_dependency 'cucumber', '~> 2.1.0'
   gem.add_development_dependency 'flay', '~> 2.6.1'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'reek', '~> 3.3.1'
+  gem.add_development_dependency 'reek', '~> 3.5.0'
   gem.add_development_dependency 'rspec', '~> 3.3.0'
   gem.add_development_dependency 'rspec-given', '~> 3.7.1'
-  gem.add_development_dependency 'rubocop', '~> 0.34.1'
+  gem.add_development_dependency 'rubocop', '~> 0.34.2'
 end
