@@ -13,6 +13,7 @@ $stdout.sync = true
 
 module Phut
   # /bin/phut command
+  # rubocop:disable ModuleLength
   module App
     extend GLI::App
 
@@ -129,6 +130,11 @@ module Phut
 
     default_command :shell
 
+    on_error do |e|
+      fail e
+    end
+
     exit run(ARGV)
   end
+  # rubocop:enable ModuleLength
 end

@@ -1,6 +1,8 @@
 # Changelog
 
 ## develop (unreleased)
+### New features
+* [#32](https://github.com/trema/phut/pull/32): Add netns directive.
 
 
 ## 0.6.11 (9/29/2015)

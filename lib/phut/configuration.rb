@@ -29,6 +29,7 @@ module Phut
     def update_connections
       update_vswitch_ports
       update_vhost_interfaces
+      update_netns_interfaces
       self
     end
 
@@ -40,15 +41,21 @@ module Phut
       @all.values.select { |each| each.is_a? Vhost }
     end
 
+    def netnss
+      @all.values.select { |each| each.is_a? Netns }
+    end
+
     def run
       @links.each(&:run)
       vhosts.each { |each| each.run vhosts }
+      netnss.each(&:run)
       vswitches.each(&:run)
     end
 
     def stop
       vswitches.each(&:maybe_stop)
       vhosts.each(&:maybe_stop)
+      netnss.each(&:maybe_stop)
       @links.each(&:maybe_stop)
     end
 
@@ -62,6 +69,11 @@ module Phut
       check_name_conflict name
       @all[name] =
         Vhost.new(attrs[:ip], attrs[:mac], attrs[:promisc], name, @logger)
+    end
+
+    def add_netns(name, attrs)
+      check_name_conflict name
+      @all[name] = Netns.new(attrs, name, @logger)
     end
 
     def add_link(name_a, name_b)
@@ -93,6 +105,12 @@ module Phut
 
     def update_vhost_interfaces
       vhosts.each do |each|
+        each.network_device = find_network_device(each)
+      end
+    end
+
+    def update_netns_interfaces
+      netnss.each do |each|
         each.network_device = find_network_device(each)
       end
     end

@@ -1,3 +1,4 @@
+require 'phut/netns'
 require 'phut/vhost'
 require 'phut/virtual_link'
 
@@ -75,6 +76,32 @@ module Phut
       end
     end
 
+    # The 'netns(name) { ...attributes... }' directive.
+    class NetnsDirective
+      def initialize(alias_name, &block)
+        @attributes = { name: alias_name }
+        instance_eval(&block)
+      end
+
+      def ip(value)
+        @attributes[:ip] = value
+        @attributes[:name] ||= value
+      end
+
+      def netmask(value)
+        @attributes[:netmask] = value
+      end
+
+      def route(options)
+        @attributes[:net] = options.fetch(:net)
+        @attributes[:gateway] = options.fetch(:gateway)
+      end
+
+      def [](key)
+        @attributes[key]
+      end
+    end
+
     def initialize(config)
       @config = config
     end
@@ -87,6 +114,11 @@ module Phut
     def vhost(alias_name = nil, &block)
       attrs = VhostDirective.new(alias_name, &block)
       @config.add_vhost attrs[:name], attrs
+    end
+
+    def netns(name, &block)
+      attrs = NetnsDirective.new(name, &block)
+      @config.add_netns attrs[:name], attrs
     end
 
     def link(name_a, name_b)
