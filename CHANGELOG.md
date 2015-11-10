@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.7.2 (11/11/2015)
+### Changes
+* Pio 0.29.0.
+
+
 ## 0.7.1 (11/5/2015)
 ### Changes
 * Pio 0.28.1.
