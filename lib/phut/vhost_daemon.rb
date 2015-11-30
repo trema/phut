@@ -76,8 +76,8 @@ module Phut
     def create_udp_packet(dest)
       Pio::Udp.new(source_mac: @options.fetch(:mac_address),
                    destination_mac: dest.mac_address,
-                   ip_source_address: @options.fetch(:ip_address),
-                   ip_destination_address: dest.ip_address)
+                   source_ip_address: @options.fetch(:ip_address),
+                   destination_ip_address: dest.ip_address)
     end
 
     def log_file
@@ -91,7 +91,7 @@ module Phut
           raw_data, = raw_socket.recvfrom(8192)
           udp = Pio::Udp.read(raw_data)
           unless @options[:promisc]
-            next if udp.ip_destination_address != @options.fetch(:ip_address)
+            next if udp.destination_ip_address != @options.fetch(:ip_address)
           end
           @logger.info "Received: #{udp}"
           @packets_received << udp.snapshot
