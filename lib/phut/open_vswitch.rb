@@ -73,7 +73,7 @@ module Phut
     end
 
     def dump_flows
-      `sudo ovs-ofctl dump-flows #{bridge_name}`
+      `sudo ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}`
     end
 
     def running?

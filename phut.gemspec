@@ -32,7 +32,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'yard', '~> 0.8.7.6'
 
   # Development
-  gem.add_development_dependency 'byebug', '~> 7.0.0'
   gem.add_development_dependency 'guard', '~> 2.13.0'
   gem.add_development_dependency 'guard-bundler', '~> 2.1.0'
   gem.add_development_dependency 'guard-cucumber', '~> 1.6.0'
