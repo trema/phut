@@ -41,7 +41,7 @@ module Phut
 
     def stop
       fail "vhost (name = #{name}) is not running!" unless running?
-      sh "vhost stop -n #{name} -s #{Phut.socket_dir}"
+      sh "vhost stop -n #{name} -S #{Phut.socket_dir}"
     end
 
     def maybe_stop

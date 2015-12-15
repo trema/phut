@@ -1,20 +1,20 @@
 Feature: Shell
   Background:
-    Given I run `phut -v` interactively
-    And I wait for stdout to contain "phut>"
+    Given I wait 5 seconds for a command to start up
+    And I run `phut -v` interactively
 
   @shell
   Scenario: vswitch NUMBER
     When I type "vswitch 0xabc"
     And I type "quit"
-    And I run `sleep 1`
+    And sleep 1
     Then a vswitch named "0xabc" should be running
 
   @shell
   Scenario: vswitch STRING
     When I type "vswitch '0xabc'"
     And I type "quit"
-    And I run `sleep 1`
+    And sleep 1
     Then a vswitch named "0xabc" should be running
 
   @shell
@@ -22,7 +22,7 @@ Feature: Shell
     Given I type "vswitch '0xabc'"
     When I type "dump_flows 0xabc"
     And I type "quit"
-    And I run `sleep 1`
+    And sleep 1
     Then the output should contain "NXST_FLOW reply"
 
   @shell
@@ -37,7 +37,7 @@ Feature: Shell
     And I type "vswitch 0xabc"
     When I type "kill 0xabc"
     And I type "quit"
-    And I run `sleep 1`
+    And sleep 1
     Then a vswitch named "0xabc" should not be running
 
   @shell
