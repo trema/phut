@@ -9,7 +9,7 @@ When(/^I do phut run "(.*?)"$/) do |config_file|
 end
 
 When(/^I do phut kill "(.*?)"$/) do |name|
-  run_opts = "-s #{@socket_dir}"
+  run_opts = "-S #{@socket_dir}"
   step %(I successfully run `phut -v kill #{run_opts} #{name}`)
 end
 

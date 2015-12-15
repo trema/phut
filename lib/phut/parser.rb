@@ -10,9 +10,9 @@ module Phut
     end
 
     def parse(file)
-      Configuration.new(@logger).tap do |configuration|
-        Syntax.new(configuration).instance_eval IO.read(file), file
-        configuration.update_connections
+      Configuration.new do |config|
+        Syntax.new(config, @logger).instance_eval IO.read(file), file
+        config.update_connections
       end
     end
   end

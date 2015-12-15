@@ -102,27 +102,30 @@ module Phut
       end
     end
 
-    def initialize(config)
+    def initialize(config, logger)
       @config = config
+      @logger = logger
     end
 
     def vswitch(alias_name = nil, &block)
       attrs = VswitchDirective.new(alias_name, &block)
-      @config.add_vswitch attrs[:name], attrs
+      OpenVswitch.create(attrs[:dpid], attrs[:port_number], attrs[:name],
+                         @logger)
     end
 
     def vhost(alias_name = nil, &block)
       attrs = VhostDirective.new(alias_name, &block)
-      @config.add_vhost attrs[:name], attrs
+      Vhost.create(attrs[:ip], attrs[:mac], attrs[:promisc], attrs[:name],
+                   @logger)
     end
 
     def netns(name, &block)
       attrs = NetnsDirective.new(name, &block)
-      @config.add_netns attrs[:name], attrs
+      Netns.create(attrs, attrs[:name], @logger)
     end
 
     def link(name_a, name_b)
-      @config.add_link name_a, name_b
+      VirtualLink.create(name_a, name_b, @logger)
     end
   end
 end

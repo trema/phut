@@ -12,7 +12,6 @@ describe Phut::Parser do
       When(:string) { "vswitch { dpid '0xabc' }" }
 
       describe '#vswitch' do
-        Then { configuration.vswitches.size == 1 }
         Then { configuration.fetch('0xabc').datapath_id == 0xabc }
         Then { configuration.fetch('0xabc').dpid == 0xabc }
       end
@@ -22,7 +21,6 @@ describe Phut::Parser do
       When(:string) { "vswitch { datapath_id '0xabc' }" }
 
       describe '#vswitch' do
-        Then { configuration.vswitches.size == 1 }
         Then { configuration.fetch('0xabc').dpid == 0xabc }
         Then { configuration.fetch('0xabc').datapath_id == 0xabc }
       end
@@ -32,7 +30,6 @@ describe Phut::Parser do
       When(:string) { "vswitch('my_controller') { dpid '0xabc' }" }
 
       describe '#vswitch' do
-        Then { configuration.vswitches.size == 1 }
         Then { configuration.fetch('my_controller').dpid == 0xabc }
         Then { configuration.fetch('my_controller').datapath_id == 0xabc }
       end
@@ -48,7 +45,6 @@ CONFIGURATION
       end
 
       describe '#vhost' do
-        Then { configuration.vhosts.size == 2 }
         Then { configuration.fetch('192.168.0.1').ip_address == '192.168.0.1' }
       end
     end
@@ -63,7 +59,6 @@ CONFIGURATION
       end
 
       describe '#vhost' do
-        Then { configuration.vhosts.size == 2 }
         Then { configuration.fetch('host1').ip_address == '192.168.0.1' }
       end
     end

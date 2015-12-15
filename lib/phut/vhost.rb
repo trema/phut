@@ -1,3 +1,4 @@
+require 'active_support/core_ext/class/attribute_accessors'
 require 'phut/null_logger'
 require 'phut/setting'
 require 'phut/shell_runner'
@@ -6,14 +7,35 @@ require 'pio/mac'
 module Phut
   # An interface class to vhost emulation utility program.
   class Vhost
+    cattr_accessor(:all, instance_reader: false) { [] }
+
+    def self.create(ip_address, mac_address, promisc, name = nil,
+                    logger = NullLogger.new)
+      new(ip_address, mac_address, promisc, name, logger).tap do |vhost|
+        conflict = find_by(name: vhost.name)
+        fail "The name #{vhost.name} conflicts with #{conflict}." if conflict
+        all << vhost
+      end
+    end
+
+    # This method smells of :reek:NestedIterators but ignores them
+    def self.find_by(queries)
+      queries.inject(all) do |memo, (attr, value)|
+        memo.find_all { |vhost| vhost.__send__(attr) == value }
+      end.first
+    end
+
+    def self.each(&block)
+      all.each(&block)
+    end
+
     include ShellRunner
 
     attr_reader :ip_address
     attr_reader :mac_address
     attr_accessor :network_device
 
-    def initialize(ip_address, mac_address, promisc,
-                   name = nil, logger = NullLogger.new)
+    def initialize(ip_address, mac_address, promisc, name, logger)
       @ip_address = ip_address
       @promisc = promisc
       @name = name
@@ -40,13 +62,13 @@ module Phut
     end
 
     def stop
-      fail "vhost (name = #{name}) is not running!" unless running?
-      sh "vhost stop -n #{name} -S #{Phut.socket_dir}"
+      return unless running?
+      stop!
     end
 
-    def maybe_stop
-      return unless running?
-      stop
+    def stop!
+      fail "vhost (name = #{name}) is not running!" unless running?
+      sh "vhost stop -n #{name} -S #{Phut.socket_dir}"
     end
 
     def running?

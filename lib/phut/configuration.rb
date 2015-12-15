@@ -4,19 +4,25 @@ require 'phut/open_vswitch'
 module Phut
   # Parsed DSL data.
   class Configuration
-    def initialize(logger = NullLogger.new)
-      @all = {}
-      @links = []
-      @logger = logger
+    def initialize(&block)
+      OpenVswitch.all.clear
+      Vhost.all.clear
+      Netns.all.clear
+      VirtualLink.all.clear
+      block.call self
     end
 
     # rubocop:disable MethodLength
     def fetch(key)
       case key
       when String
-        @all.fetch(key)
+        [OpenVswitch, Vhost, Netns].each do |each|
+          found = each.find_by(name: key)
+          return found if found
+        end
+        fail "Invalid key: #{key.inspect}"
       when Array
-        @links.each do |each|
+        VirtualLink.each do |each|
           return each if [each.name_a, each.name_b].sort == key.sort
         end
         fail "link #{key.join ' '} not found."
@@ -33,51 +39,18 @@ module Phut
       self
     end
 
-    def vswitches
-      @all.values.select { |each| each.is_a? OpenVswitch }
-    end
-
-    def vhosts
-      @all.values.select { |each| each.is_a? Vhost }
-    end
-
-    def netnss
-      @all.values.select { |each| each.is_a? Netns }
-    end
-
     def run
-      @links.each(&:run)
-      vhosts.each { |each| each.run vhosts }
-      netnss.each(&:run)
-      vswitches.each(&:run)
+      VirtualLink.each(&:run)
+      Vhost.each { |each| each.run Vhost.all }
+      Netns.each(&:run)
+      OpenVswitch.each(&:run)
     end
 
     def stop
-      vswitches.each(&:maybe_stop)
-      vhosts.each(&:maybe_stop)
-      netnss.each(&:maybe_stop)
-      @links.each(&:maybe_stop)
-    end
-
-    def add_vswitch(name, attrs)
-      check_name_conflict name
-      @all[name] =
-        OpenVswitch.new(attrs[:dpid], attrs[:port_number], name, @logger)
-    end
-
-    def add_vhost(name, attrs)
-      check_name_conflict name
-      @all[name] =
-        Vhost.new(attrs[:ip], attrs[:mac], attrs[:promisc], name, @logger)
-    end
-
-    def add_netns(name, attrs)
-      check_name_conflict name
-      @all[name] = Netns.new(attrs, name, @logger)
-    end
-
-    def add_link(name_a, name_b)
-      @links << VirtualLink.new(name_a, name_b, @logger)
+      OpenVswitch.each(&:stop)
+      Vhost.each(&:stop)
+      Netns.each(&:stop)
+      VirtualLink.each(&:stop)
     end
 
     private
@@ -88,7 +61,7 @@ module Phut
     end
 
     def update_vswitch_ports
-      @links.each do |each|
+      VirtualLink.each do |each|
         maybe_connect_link_to_vswitch each
       end
     end
@@ -100,23 +73,23 @@ module Phut
     end
 
     def vswitches_connected_to(link)
-      vswitches.select { |each| link.connect_to?(each) }
+      OpenVswitch.select { |each| link.connect_to?(each) }
     end
 
     def update_vhost_interfaces
-      vhosts.each do |each|
+      Vhost.each do |each|
         each.network_device = find_network_device(each)
       end
     end
 
     def update_netns_interfaces
-      netnss.each do |each|
+      Netns.each do |each|
         each.network_device = find_network_device(each)
       end
     end
 
     def find_network_device(vhost)
-      @links.each do |each|
+      VirtualLink.each do |each|
         device = each.find_network_device(vhost)
         return device if device
       end

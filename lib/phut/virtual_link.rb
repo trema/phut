@@ -1,9 +1,20 @@
+require 'active_support/core_ext/class/attribute_accessors'
 require 'phut/null_logger'
 require 'phut/shell_runner'
 
 module Phut
   # Network virtual link.
   class VirtualLink
+    cattr_accessor(:all, instance_reader: false) { [] }
+
+    def self.create(name_a, name_b, logger = NullLogger.new)
+      new(name_a, name_b, logger).tap { |vlink| all << vlink }
+    end
+
+    def self.each(&block)
+      all.each(&block)
+    end
+
     # Creates a valid network device name.
     class NetworkDeviceName
       attr_reader :name
@@ -35,13 +46,20 @@ module Phut
     attr_reader :device_a
     attr_reader :device_b
 
-    def initialize(name_a, name_b, logger = NullLogger.new)
+    def initialize(name_a, name_b, logger)
       fail if name_a == name_b
       @name_a = name_a
       @name_b = name_b
       @device_a = NetworkDeviceName.new(name_a)
       @device_b = NetworkDeviceName.new(name_b)
       @logger = logger
+    end
+
+    def ==(other)
+      @name_a == other.name_a &&
+        @name_b == other.name_b &&
+        @device_a == other.device_a &&
+        @device_b == other.device_b
     end
 
     def run
@@ -51,14 +69,14 @@ module Phut
     end
 
     def stop
+      return unless up?
+      stop!
+    end
+
+    def stop!
       sh "sudo ip link delete #{@device_a}"
     rescue
       raise "link #{@name_a} #{@name_b} does not exist!"
-    end
-
-    def maybe_stop
-      return unless up?
-      stop
     end
 
     def up?

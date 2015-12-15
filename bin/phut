@@ -41,13 +41,17 @@ module Phut
           Phut.socket_dir = dir
         end
         Pry::Commands.block_command 'vswitch' do |dpid|
-          Phut::OpenVswitch.new(dpid).run
+          if Phut::OpenVswitch.find_by(name: dpid)
+            fail(Phut::OpenVswitch::AlreadyRunning,
+                 "Open vSwitch (dpid = #{dpid}) is already running!")
+          end
+          Phut::OpenVswitch.create(dpid).run
         end
         Pry::Commands.block_command 'dump_flows' do |dpid|
-          puts Phut::OpenVswitch.new(dpid).dump_flows
+          puts Phut::OpenVswitch.dump_flows(dpid)
         end
         Pry::Commands.block_command 'kill' do |dpid|
-          Phut::OpenVswitch.new(dpid).shutdown
+          Phut::OpenVswitch.shutdown(dpid)
         end
         pry
       end
@@ -109,14 +113,14 @@ module Phut
     arg_name 'NAME'
     command :kill do |c|
       c.desc 'Location to find socket files'
-      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
       c.action do |_global_options, options, args|
         help_now! if args.size != 1
         begin
           Phut::VhostDaemon.process(args[0], options[:socket_dir]).stop
         rescue
-          Phut::OpenVswitch.new(args[0]).shutdown
+          Phut::OpenVswitch.shutdown(args[0])
         end
       end
     end
