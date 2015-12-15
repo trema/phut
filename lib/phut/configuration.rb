@@ -40,25 +40,18 @@ module Phut
     end
 
     def run
-      VirtualLink.each(&:run)
-      Vhost.each { |each| each.run Vhost.all }
-      Netns.each(&:run)
-      OpenVswitch.each(&:run)
+      [VirtualLink, Vhost, Netns, OpenVswitch].each do |klass|
+        klass.each(&:run)
+      end
     end
 
     def stop
-      OpenVswitch.each(&:stop)
-      Vhost.each(&:stop)
-      Netns.each(&:stop)
-      VirtualLink.each(&:stop)
+      [OpenVswitch, Vhost, Netns, VirtualLink].each do |klass|
+        klass.each(&:stop)
+      end
     end
 
     private
-
-    def check_name_conflict(name)
-      conflict = @all[name]
-      fail "The name #{name} conflicts with #{conflict}." if conflict
-    end
 
     def update_vswitch_ports
       VirtualLink.each do |each|

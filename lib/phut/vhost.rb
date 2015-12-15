@@ -51,7 +51,7 @@ module Phut
       "vhost (name = #{name}, IP address = #{@ip_address})"
     end
 
-    def run(all_hosts = [])
+    def run(all_hosts = Vhost.all)
       @all_hosts ||= all_hosts
       if ENV['rvm_path']
         sh "rvmsudo vhost run #{run_options}"
