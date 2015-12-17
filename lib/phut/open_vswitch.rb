@@ -109,7 +109,11 @@ module Phut
     end
 
     def dump_flows
-      `sudo ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}`
+      output =
+        `sudo ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}`
+      output.split("\n").inject('') do |memo, each|
+        memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip)
+      end
     end
 
     def running?

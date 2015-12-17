@@ -18,14 +18,6 @@ Feature: Shell
     Then a vswitch named "0xabc" should be running
 
   @shell
-  Scenario: dump_flows
-    Given I type "vswitch '0xabc'"
-    When I type "dump_flows 0xabc"
-    And I type "quit"
-    And sleep 1
-    Then the output should contain "NXST_FLOW reply"
-
-  @shell
   Scenario: vswitch twice and fail
     And I type "vswitch 0xabc"
     When I type "vswitch 0xabc"
