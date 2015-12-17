@@ -1,3 +1,4 @@
+require 'active_support/core_ext/class/attribute_accessors'
 require 'pio'
 require 'phut/null_logger'
 require 'phut/setting'
@@ -5,7 +6,43 @@ require 'phut/shell_runner'
 
 module Phut
   # Open vSwitch controller.
+  # rubocop:disable ClassLength
   class OpenVswitch
+    cattr_accessor(:all, instance_reader: false) { [] }
+
+    def self.create(dpid, port_number = 6653, name = nil,
+                    logger = NullLogger.new)
+      new(dpid, port_number, name, logger).tap do |vswitch|
+        conflict = find_by(name: vswitch.name)
+        fail "The name #{vswitch.name} conflicts with #{conflict}." if conflict
+        all << vswitch
+      end
+    end
+
+    def self.dump_flows(dpid, port_number = 6653, name = nil,
+                        logger = NullLogger.new)
+      OpenVswitch.new(dpid, port_number, name, logger).dump_flows
+    end
+
+    def self.shutdown(dpid, port_number = 6653, name = nil,
+                      logger = NullLogger.new)
+      OpenVswitch.new(dpid, port_number, name, logger).stop!
+    end
+
+    def self.find_by(queries)
+      queries.inject(all) do |memo, (attr, value)|
+        memo.find_all { |vswitch| vswitch.__send__(attr) == value }
+      end.first
+    end
+
+    def self.each(&block)
+      all.each(&block)
+    end
+
+    def self.select(&block)
+      all.select(&block)
+    end
+
     class AlreadyRunning < StandardError; end
 
     include ShellRunner
@@ -14,8 +51,7 @@ module Phut
     alias_method :datapath_id, :dpid
     attr_reader :network_devices
 
-    def initialize(dpid, port_number = 6653,
-                   name = nil, logger = NullLogger.new)
+    def initialize(dpid, port_number, name, logger)
       @dpid = dpid
       @port_number = port_number
       @name = name
@@ -54,15 +90,15 @@ module Phut
     # rubocop:enable AbcSize
 
     def stop
+      return unless running?
+      stop!
+    end
+
+    def stop!
       fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       sh "sudo ovs-vsctl del-br #{bridge_name}"
     end
-    alias_method :shutdown, :stop
-
-    def maybe_stop
-      return unless running?
-      stop
-    end
+    alias_method :shutdown, :stop!
 
     def bring_port_up(port_number)
       sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} up"
@@ -73,7 +109,7 @@ module Phut
     end
 
     def dump_flows
-      `sudo ovs-ofctl dump-flows #{bridge_name}`
+      `sudo ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}`
     end
 
     def running?
@@ -105,4 +141,5 @@ module Phut
       '0' * (16 - hex.length) + hex
     end
   end
+  # rubocop:enable ClassLength
 end

@@ -12,11 +12,13 @@ Before('@sudo') do
 end
 
 After('@sudo') do
-  cd('.') do
-    Phut.pid_dir = @pid_dir
-    Phut.log_dir = @log_dir
-    Phut.socket_dir = @socket_dir
-    Phut::Parser.new.parse(@config_file).stop
+  Aruba.configure do |config|
+    Dir.chdir(config.working_directory) do
+      Phut.pid_dir = @pid_dir
+      Phut.log_dir = @log_dir
+      Phut.socket_dir = @socket_dir
+      Phut::Parser.new.parse(@config_file).stop
+    end
   end
 end
 

@@ -1,16 +1,20 @@
 require 'phut'
 
-When(/^I do phut run "(.*?)"$/) do |file_name|
-  @config_file = file_name
+When(/^I do phut run "(.*?)"$/) do |config_file|
+  @config_file = config_file
   cd('.') do
-    run_opts = "-p #{@pid_dir} -l #{@log_dir} -s #{@socket_dir}"
+    run_opts = "-P #{@pid_dir} -L #{@log_dir} -S #{@socket_dir}"
     step %(I run `phut -v run #{run_opts} #{@config_file}`)
   end
 end
 
 When(/^I do phut kill "(.*?)"$/) do |name|
-  run_opts = "-s #{@socket_dir}"
+  run_opts = "-S #{@socket_dir}"
   step %(I successfully run `phut -v kill #{run_opts} #{name}`)
+end
+
+When(/^sleep (\d+)$/) do |time|
+  sleep time.to_i
 end
 
 Then(/^a vswitch named "(.*?)" should be running$/) do |name|

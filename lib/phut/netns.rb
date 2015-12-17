@@ -1,15 +1,26 @@
+require 'active_support/core_ext/class/attribute_accessors'
 require 'phut/null_logger'
 require 'phut/shell_runner'
 
 module Phut
   # `ip netns ...` command runner
   class Netns
+    cattr_accessor(:all, instance_reader: false) { [] }
+
+    def self.create(options, name, logger = NullLogger.new)
+      new(options, name, logger).tap { |netns| all << netns }
+    end
+
+    def self.each(&block)
+      all.each(&block)
+    end
+
     include ShellRunner
 
     attr_reader :name
     attr_accessor :network_device
 
-    def initialize(options, name, logger = NullLogger.new)
+    def initialize(options, name, logger)
       @name = name
       @options = options
       @logger = logger
@@ -26,7 +37,7 @@ module Phut
     end
     # rubocop:enable AbcSize
 
-    def maybe_stop
+    def stop
       sh "sudo ip netns delete #{name}"
     end
 

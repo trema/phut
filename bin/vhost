@@ -56,7 +56,6 @@ module Phut
       command :stop do |c|
         desc 'Host name'
         c.flag [:n, :name]
-
         c.desc 'Location to put socket files'
         c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 

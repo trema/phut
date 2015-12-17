@@ -41,13 +41,17 @@ module Phut
           Phut.socket_dir = dir
         end
         Pry::Commands.block_command 'vswitch' do |dpid|
-          Phut::OpenVswitch.new(dpid).run
+          if Phut::OpenVswitch.find_by(name: dpid)
+            fail(Phut::OpenVswitch::AlreadyRunning,
+                 "Open vSwitch (dpid = #{dpid}) is already running!")
+          end
+          Phut::OpenVswitch.create(dpid).run
         end
         Pry::Commands.block_command 'dump_flows' do |dpid|
-          puts Phut::OpenVswitch.new(dpid).dump_flows
+          puts Phut::OpenVswitch.dump_flows(dpid)
         end
         Pry::Commands.block_command 'kill' do |dpid|
-          Phut::OpenVswitch.new(dpid).shutdown
+          Phut::OpenVswitch.shutdown(dpid)
         end
         pry
       end
@@ -57,11 +61,11 @@ module Phut
     arg_name 'FILE'
     command :run do |c|
       c.desc 'Location to put pid files'
-      c.flag [:p, :pid_dir], default_value: Phut.pid_dir
+      c.flag [:P, :pid_dir], default_value: Phut.pid_dir
       c.desc 'Location to put log files'
-      c.flag [:l, :log_dir], default_value: Phut.log_dir
+      c.flag [:L, :log_dir], default_value: Phut.log_dir
       c.desc 'Location to put socket files'
-      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
       c.action do |global_options, options, args|
         stdout_logger = Logger.new($stderr).tap do |logger|
@@ -87,19 +91,20 @@ module Phut
     arg_name 'FILE'
     command :stop do |c|
       c.desc 'Location to put pid files'
-      c.flag [:p, :pid_dir], default_value: Phut.pid_dir
-
+      c.flag [:P, :pid_dir], default_value: Phut.pid_dir
       c.desc 'Location to put log files'
-      c.flag [:l, :log_dir], default_value: Phut.log_dir
-
+      c.flag [:L, :log_dir], default_value: Phut.log_dir
       c.desc 'Location to put socket files'
-      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
-      c.action do |global_options, _options, args|
+      c.action do |global_options, options, args|
         stdout_logger = Logger.new($stderr).tap do |logger|
           logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
+        Phut.pid_dir = options.fetch(:pid_dir)
+        Phut.log_dir = options.fetch(:log_dir)
+        Phut.socket_dir = options.fetch(:socket_dir)
         Phut::Parser.new(stdout_logger).parse(args[0]).stop
       end
     end
@@ -108,14 +113,14 @@ module Phut
     arg_name 'NAME'
     command :kill do |c|
       c.desc 'Location to find socket files'
-      c.flag [:s, :socket_dir], default_value: Phut.socket_dir
+      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
       c.action do |_global_options, options, args|
         help_now! if args.size != 1
         begin
           Phut::VhostDaemon.process(args[0], options[:socket_dir]).stop
         rescue
-          Phut::OpenVswitch.new(args[0]).shutdown
+          Phut::OpenVswitch.shutdown(args[0])
         end
       end
     end

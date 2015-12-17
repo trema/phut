@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.7.5 (12/17/2015)
+### Bugs fixed
+* [#33](https://github.com/trema/phut/pull/33): Fix dump_flows in OpenFlow 1.3.
+
+
 ## 0.7.4 (11/30/2015)
 ### Bugs fixed
 * Fix NoMethodError.
