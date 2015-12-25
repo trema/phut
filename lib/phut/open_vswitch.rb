@@ -112,7 +112,7 @@ module Phut
       output =
         `sudo ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}`
       output.split("\n").inject('') do |memo, each|
-        memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip)
+        memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip + "\n")
       end
     end
 
