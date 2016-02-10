@@ -3,6 +3,11 @@
 ## develop (unreleased)
 
 
+## 0.7.6 (2/10/2016)
+### Changes
+* Drop the first line (NXST_FLOW...) of dump-flows output.
+
+
 ## 0.7.5 (12/17/2015)
 ### Bugs fixed
 * [#33](https://github.com/trema/phut/pull/33): Fix dump_flows in OpenFlow 1.3.
