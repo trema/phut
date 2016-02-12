@@ -3,6 +3,10 @@
 ## develop (unreleased)
 
 
+## 0.7.7 (2/12/2016)
+### New features
+* Add Phut::VhostDaemon#reset_stats method.
+
 ## 0.7.6 (2/10/2016)
 ### Changes
 * Drop the first line (NXST_FLOW...) of dump-flows output.
