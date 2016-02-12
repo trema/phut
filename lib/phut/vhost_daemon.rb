@@ -17,8 +17,7 @@ module Phut
 
     def initialize(options)
       @options = options
-      @packets_sent = []
-      @packets_received = []
+      reset_stats
     end
 
     def run
@@ -44,6 +43,11 @@ module Phut
 
     def stats
       { tx: @packets_sent, rx: @packets_received }
+    end
+
+    def reset_stats
+      @packets_sent = []
+      @packets_received = []
     end
 
     private
