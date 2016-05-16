@@ -43,7 +43,7 @@ module Phut
           fail '--ip_address option is mandatory' if options[:ip_address].nil?
           fail '--mac_address option is mandatory' if options[:mac_address].nil?
           options[:arp_table] =
-            options[:arp_entries].split(',').
+            (options[:arp_entries] || '').split(',').
             each_with_object({}) do |each, table|
               ip_address, mac_address = each.split('/')
               table[ip_address] = mac_address

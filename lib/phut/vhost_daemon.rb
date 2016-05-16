@@ -20,6 +20,22 @@ module Phut
       reset_stats
     end
 
+    def name
+      @options.fetch :name
+    end
+
+    def ip_address
+      @options.fetch :ip_address
+    end
+
+    def mac_address
+      @options.fetch :mac_address
+    end
+
+    def device
+      @options.fetch :interface
+    end
+
     def run
       start_logging
       create_pid_file
