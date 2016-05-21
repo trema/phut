@@ -16,7 +16,10 @@ module Phut
     end
 
     def initialize(options)
-      @options = options
+      @options = options.dup
+      @options[:log_dir] = File.expand_path(@options[:log_dir])
+      @options[:pid_dir] = File.expand_path(@options[:pid_dir])
+      @options[:socket_dir] = File.expand_path(@options[:socket_dir])
       reset_stats
     end
 
