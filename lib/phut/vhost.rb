@@ -68,7 +68,12 @@ module Phut
 
     def stop!
       fail "vhost (name = #{name}) is not running!" unless running?
-      sh "vhost stop -n #{name} -S #{Phut.socket_dir}"
+      if ENV['rvm_path']
+        sh "rvmsudo vhost stop -n #{name} -s #{Phut.socket_dir}"
+      else
+        vhost = File.join(__dir__, '..', '..', 'bin', 'vhost')
+        sh "bundle exec sudo #{vhost} stop -n #{name} -s #{Phut.socket_dir}"
+      end
     end
 
     def running?
