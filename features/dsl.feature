@@ -1,4 +1,5 @@
 Feature: DSL parser
+  @wip
   Scenario: name conflict (vsiwtch and vswitch)
     Given a file named "network.conf" with:
       """ruby

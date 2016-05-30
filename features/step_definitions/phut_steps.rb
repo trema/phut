@@ -1,6 +1,24 @@
 # frozen_string_literal: true
 require 'phut'
 
+# Temporary class
+# FIXME: Delete me
+class TearDownSyntax < Phut::Syntax
+  def vswitch(alias_name = nil, &block)
+  end
+end
+
+# Temporary class
+# FIXME: Delete me
+class TearDownParser
+  def parse(file)
+    Phut::Configuration.new do |config|
+      TearDownSyntax.new(config, @logger).instance_eval IO.read(file), file
+      config # .update_connections
+    end
+  end
+end
+
 When(/^I do phut run "(.*?)"$/) do |config_file|
   @config_file = config_file
   cd('.') do
@@ -18,20 +36,24 @@ When(/^sleep (\d+)$/) do |time|
   sleep time.to_i
 end
 
+# rubocop:disable LineLength
 Then(/^a vswitch named "(.*?)" should be running$/) do |name|
-  expect(system("sudo ovs-vsctl br-exists br#{name}")).to be_truthy
+  expect(system("sudo ovs-vsctl br-exists #{Phut::Vswitch.prefix}#{name}")).to be_truthy
 end
+# rubocop:enable LineLength
 
 # rubocop:disable LineLength
 Then(/^a vswitch named "([^"]*)" \(controller port = (\d+)\) should be running$/) do |name, port_number|
   step %(a vswitch named "#{name}" should be running)
-  step %(the output should contain "ovs-vsctl set-controller br#{name} tcp:127.0.0.1:#{port_number}")
+  expect(`sudo ovs-vsctl get-controller #{Phut::Vswitch.prefix}#{name}`.chomp).to eq "tcp:127.0.0.1:#{port_number}"
 end
 # rubocop:enable LineLength
 
+# rubocop:disable LineLength
 Then(/^a vswitch named "(.*?)" should not be running$/) do |name|
-  expect(system("sudo ovs-vsctl br-exists br#{name}")).to be_falsey
+  expect(system("sudo ovs-vsctl br-exists #{Phut::Vswitch.prefix}#{name}")).to be_falsey
 end
+# rubocop:enable LineLength
 
 Then(/^a vhost named "(.*?)" launches$/) do |name|
   step %(a file named "vhost.#{name}.pid" should exist)
@@ -39,7 +61,7 @@ end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |name_a, name_b|
   cd('.') do
-    link = Phut::Parser.new.parse(@config_file).fetch([name_a, name_b].sort)
+    link = TearDownParser.new.parse(@config_file).fetch([name_a, name_b].sort)
     expect(link).to be_up
   end
 end

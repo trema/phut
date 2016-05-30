@@ -18,7 +18,7 @@ Feature: phut kill command
     And I run `sudo ovs-vsctl list-br`
     Then the output from "sudo ovs-vsctl list-br" should not contain "br0xabc"
 
-  @sudo
+  @sudo @wip
   Scenario: phut kill vhost_name
     When I do phut kill "host1"
     And I successfully run `sleep 5`

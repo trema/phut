@@ -41,7 +41,7 @@ module Phut
     end
 
     def run
-      [VirtualLink, Vhost, Netns, Vswitch].each do |klass|
+      [VirtualLink, Vhost, Netns].each do |klass|
         klass.each(&:run)
       end
     end
@@ -62,7 +62,7 @@ module Phut
 
     def maybe_connect_link_to_vswitch(link)
       vswitches_connected_to(link).each do |each|
-        each.add_network_device link.find_network_device(each)
+        each.add_port link.find_network_device(each).name
       end
     end
 

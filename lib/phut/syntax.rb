@@ -16,7 +16,9 @@ module Phut
 
     def vswitch(alias_name = nil, &block)
       attrs = VswitchDirective.new(alias_name, &block)
-      Vswitch.create(attrs[:dpid], attrs[:port], attrs[:name], @logger)
+      Vswitch.create(dpid: attrs[:dpid],
+                     name: attrs[:name],
+                     tcp_port: attrs[:port])
     end
 
     def vhost(alias_name = nil, &block)

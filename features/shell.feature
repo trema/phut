@@ -1,3 +1,4 @@
+@wip
 Feature: Shell
   Background:
     Given I wait 5 seconds for a command to start up

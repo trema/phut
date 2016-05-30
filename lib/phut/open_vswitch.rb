@@ -33,6 +33,14 @@ module Phut
     end
     # rubocop:enable AbcSize
 
+    def self.each(&block)
+      all.each(&block)
+    end
+
+    def self.select(&block)
+      all.select(&block)
+    end
+
     def self.find_by(queries)
       queries.inject(all) do |memo, (attr, value)|
         memo.find_all { |switch| switch.__send__(attr) == value }
@@ -51,20 +59,29 @@ module Phut
       find_by!(name: name).dump_flows
     end
 
+    def self.shutdown(name)
+      find_by!(name: name).stop!
+    end
+
     def self.destroy_all
       all.each(&:stop)
     end
 
     attr_reader :dpid
+    alias datapath_id dpid
 
-    def initialize(dpid:, name: nil, port: 6653)
+    def initialize(dpid:, name: nil, tcp_port: 6653)
       @dpid = dpid
       @name = name
-      @port = port
+      @tcp_port = tcp_port
     end
 
     def name
       @name || format('%#x', @dpid)
+    end
+
+    def to_s
+      "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
     end
 
     def start
@@ -74,10 +91,18 @@ module Phut
       set_controller
       set_fail_mode_secure
     end
+    alias run start
 
     def stop
+      return unless running?
       del_bridge
     end
+
+    def stop!
+      raise "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
+      del_bridge
+    end
+    alias shutdown stop!
 
     def add_port(device)
       sudo "ovs-vsctl add-port #{bridge_name} #{device}"
@@ -86,6 +111,14 @@ module Phut
     def add_numbered_port(port_number, device)
       add_port device
       sudo "ovs-vsctl set Port #{device} other_config:rstp-port-num=#{port_number}"
+    end
+
+    def bring_port_up(port_number)
+      sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} up"
+    end
+
+    def bring_port_down(port_number)
+      sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} down"
     end
 
     def ports
@@ -123,11 +156,11 @@ module Phut
     end
 
     def set_openflow_version_and_dpid
-      sudo "ovs-vsctl set bridge #{bridge_name} protocols=OpenFlow10 other-config:datapath-id=#{dpid_zero_filled}"
+      sudo "ovs-vsctl set bridge #{bridge_name} protocols=#{Pio::OpenFlow.version} other-config:datapath-id=#{dpid_zero_filled}"
     end
 
     def set_controller
-      sudo "ovs-vsctl set-controller #{bridge_name} tcp:127.0.0.1:#{@port} -- set controller #{bridge_name} connection-mode=out-of-band"
+      sudo "ovs-vsctl set-controller #{bridge_name} tcp:127.0.0.1:#{@tcp_port} -- set controller #{bridge_name} connection-mode=out-of-band"
     end
 
     def set_fail_mode_secure

@@ -1,5 +1,5 @@
 Feature: The link directive of phut DSL
-  @sudo
+  @sudo @wip
   Scenario: link name_a, name_b
     Given a file named "network.conf" with:
       """
@@ -21,7 +21,7 @@ Feature: The link directive of phut DSL
     When I do phut run "network.conf"
     Then a link is created between "my_switch" and "host1"
 
-  @sudo
+  @sudo @wip
   Scenario: connect multiple links to a switch
     Given a file named "network.conf" with:
       """

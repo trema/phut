@@ -43,16 +43,15 @@ module Phut
         end
         Pry::Commands.block_command 'vswitch' do |dpid|
           if Phut::Vswitch.find_by(name: dpid)
-            raise(Phut::Vswitch::AlreadyRunning,
-                  "Open vSwitch (dpid = #{dpid}) is already running!")
+            raise "Open vSwitch (dpid = #{dpid}) is already running!"
           end
           Phut::Vswitch.create(dpid).run
         end
-        Pry::Commands.block_command 'dump_flows' do |dpid|
-          puts Phut::Vswitch.dump_flows(dpid)
+        Pry::Commands.block_command 'dump_flows' do |name|
+          puts Phut::Vswitch.dump_flows(name)
         end
-        Pry::Commands.block_command 'kill' do |dpid|
-          Phut::Vswitch.shutdown(dpid)
+        Pry::Commands.block_command 'kill' do |name|
+          Phut::Vswitch.shutdown(name)
         end
         pry
       end
@@ -84,7 +83,7 @@ module Phut
     arg_name 'SWITCH'
     command :show do |c|
       c.action do |_global_options, _options, args|
-        system "sudo ovs-ofctl show br#{args[0]}"
+        system "sudo ovs-ofctl show #{Phut::Vswitch.prefix}#{args[0]}"
       end
     end
 
