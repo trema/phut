@@ -1,33 +1,34 @@
+# frozen_string_literal: true
 require 'phut/null_logger'
-require 'phut/open_vswitch'
+require 'phut/vswitch'
 
 module Phut
   # Parsed DSL data.
   class Configuration
-    def initialize(&block)
-      OpenVswitch.all.clear
+    def initialize
+      Vswitch.all.clear
       Vhost.all.clear
       Netns.all.clear
       VirtualLink.all.clear
-      block.call self
+      yield self
     end
 
     # rubocop:disable MethodLength
     def fetch(key)
       case key
       when String
-        [OpenVswitch, Vhost, Netns].each do |each|
+        [Vswitch, Vhost, Netns].each do |each|
           found = each.find_by(name: key)
           return found if found
         end
-        fail "Invalid key: #{key.inspect}"
+        raise "Invalid key: #{key.inspect}"
       when Array
         VirtualLink.each do |each|
           return each if [each.name_a, each.name_b].sort == key.sort
         end
-        fail "link #{key.join ' '} not found."
+        raise "link #{key.join ' '} not found."
       else
-        fail "Invalid key: #{key.inspect}"
+        raise "Invalid key: #{key.inspect}"
       end
     end
     # rubocop:enable MethodLength
@@ -40,13 +41,13 @@ module Phut
     end
 
     def run
-      [VirtualLink, Vhost, Netns, OpenVswitch].each do |klass|
+      [VirtualLink, Vhost, Netns, Vswitch].each do |klass|
         klass.each(&:run)
       end
     end
 
     def stop
-      [OpenVswitch, Vhost, Netns, VirtualLink].each do |klass|
+      [Vswitch, Vhost, Netns, VirtualLink].each do |klass|
         klass.each(&:stop)
       end
     end
@@ -66,7 +67,7 @@ module Phut
     end
 
     def vswitches_connected_to(link)
-      OpenVswitch.select { |each| link.connect_to?(each) }
+      Vswitch.select { |each| link.connect_to?(each) }
     end
 
     def update_vhost_interfaces
@@ -86,7 +87,7 @@ module Phut
         device = each.find_network_device(vhost)
         return device if device
       end
-      fail "No network device found for #{vhost}."
+      raise "No network device found for #{vhost}."
     end
   end
 end

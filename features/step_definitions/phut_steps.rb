@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'phut'
 
 When(/^I do phut run "(.*?)"$/) do |config_file|

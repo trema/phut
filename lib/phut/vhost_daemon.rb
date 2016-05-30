@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'drb'
 require 'logger'
 require 'phut/raw_socket'
@@ -147,7 +148,7 @@ module Phut
       @logger.info 'Shutting down...'
       FileUtils.rm pid_file if running?
       DRb.stop_service
-      fail $ERROR_INFO if $ERROR_INFO
+      raise $ERROR_INFO if $ERROR_INFO
     end
 
     def trap_sigint
@@ -164,7 +165,7 @@ module Phut
     end
 
     def create_pid_file
-      fail "#{@options.fetch(:name)} is already running." if running?
+      raise "#{@options.fetch(:name)} is already running." if running?
       update_pid_file
     end
 

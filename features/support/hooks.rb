@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'phut'
 
 Before do
@@ -7,7 +8,7 @@ Before do
 end
 
 Before('@sudo') do
-  fail 'sudo authentication failed' unless system 'sudo -v'
+  raise 'sudo authentication failed' unless system 'sudo -v'
   @aruba_timeout_seconds = 10
 end
 
@@ -23,7 +24,7 @@ After('@sudo') do
 end
 
 Before('@shell') do
-  fail 'sudo authentication failed' unless system 'sudo -v'
+  raise 'sudo authentication failed' unless system 'sudo -v'
 end
 
 After('@shell') do

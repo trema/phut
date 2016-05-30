@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'phut/configuration'
 require 'phut/null_logger'
 require 'phut/syntax'

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'active_support/core_ext/class/attribute_accessors'
 require 'phut/null_logger'
 require 'phut/setting'
@@ -13,7 +14,7 @@ module Phut
                     logger = NullLogger.new)
       new(ip_address, mac_address, promisc, name, logger).tap do |vhost|
         conflict = find_by(name: vhost.name)
-        fail "The name #{vhost.name} conflicts with #{conflict}." if conflict
+        raise "The name #{vhost.name} conflicts with #{conflict}." if conflict
         all << vhost
       end
     end
@@ -67,7 +68,7 @@ module Phut
     end
 
     def stop!
-      fail "vhost (name = #{name}) is not running!" unless running?
+      raise "vhost (name = #{name}) is not running!" unless running?
       if ENV['rvm_path']
         sh "rvmsudo vhost stop -n #{name} -s #{Phut.socket_dir}"
       else

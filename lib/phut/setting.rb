@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'tmpdir'
 
 # Base module.
@@ -9,7 +10,7 @@ module Phut
       pid_dir: Dir.tmpdir,
       log_dir: Dir.tmpdir,
       socket_dir: Dir.tmpdir
-    }
+    }.freeze
 
     def initialize
       @options = DEFAULTS.dup
@@ -24,7 +25,7 @@ module Phut
     end
 
     def pid_dir=(path)
-      fail "No such directory: #{path}" unless FileTest.directory?(path)
+      raise "No such directory: #{path}" unless FileTest.directory?(path)
       @options[:pid_dir] = File.expand_path(path)
     end
 
@@ -33,7 +34,7 @@ module Phut
     end
 
     def log_dir=(path)
-      fail "No such directory: #{path}" unless FileTest.directory?(path)
+      raise "No such directory: #{path}" unless FileTest.directory?(path)
       @options[:log_dir] = File.expand_path(path)
     end
 
@@ -42,7 +43,7 @@ module Phut
     end
 
     def socket_dir=(path)
-      fail "No such directory: #{path}" unless FileTest.directory?(path)
+      raise "No such directory: #{path}" unless FileTest.directory?(path)
       @options[:socket_dir] = File.expand_path(path)
     end
   end

@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'rubygems'
 require 'bundler'
@@ -37,18 +38,18 @@ module Phut
         c.desc 'Location to put socket files'
         c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
-        c.action do |_global_options, options, _args|
-          fail '--name option is mandatory' if options[:name].nil?
-          fail '--interface option is mandatory' if options[:interface].nil?
-          fail '--ip_address option is mandatory' if options[:ip_address].nil?
-          fail '--mac_address option is mandatory' if options[:mac_address].nil?
-          options[:arp_table] =
-            (options[:arp_entries] || '').split(',').
+        c.action do |_global_opts, opts, _args|
+          raise '--name option is mandatory' if opts[:name].nil?
+          raise '--interface option is mandatory' if opts[:interface].nil?
+          raise '--ip_address option is mandatory' if opts[:ip_address].nil?
+          raise '--mac_address option is mandatory' if opts[:mac_address].nil?
+          opts[:arp_table] =
+            (opts[:arp_entries] || '').split(',').
             each_with_object({}) do |each, table|
               ip_address, mac_address = each.split('/')
               table[ip_address] = mac_address
             end
-          VhostDaemon.new(options).run
+          VhostDaemon.new(opts).run
         end
       end
 
@@ -59,10 +60,10 @@ module Phut
         c.desc 'Location to put socket files'
         c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
-        c.action do |_global_options, options, _args|
-          fail '--name option is mandatory' if options[:name].nil?
+        c.action do |_global_opts, opts, _args|
+          raise '--name option is mandatory' if opts[:name].nil?
           begin
-            VhostDaemon.process(options[:name], options[:socket_dir]).stop
+            VhostDaemon.process(opts[:name], opts[:socket_dir]).stop
           rescue DRb::DRbConnError
             true # OK
           end
@@ -74,9 +75,9 @@ module Phut
         desc 'Source host name'
         c.flag [:s,  :source]
 
-        c.action do |_global_options, options, _args|
-          fail '--source option is mandatory' if options[:source].nil?
-          VhostDaemon.process(options[:source], options[:socket_dir]).
+        c.action do |_global_opts, opts, _args|
+          raise '--source option is mandatory' if opts[:source].nil?
+          VhostDaemon.process(opts[:source], opts[:socket_dir]).
             send_packets
         end
       end

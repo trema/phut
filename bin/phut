@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'rubygems'
 require 'bundler'
@@ -41,17 +42,17 @@ module Phut
           Phut.socket_dir = dir
         end
         Pry::Commands.block_command 'vswitch' do |dpid|
-          if Phut::OpenVswitch.find_by(name: dpid)
-            fail(Phut::OpenVswitch::AlreadyRunning,
-                 "Open vSwitch (dpid = #{dpid}) is already running!")
+          if Phut::Vswitch.find_by(name: dpid)
+            raise(Phut::Vswitch::AlreadyRunning,
+                  "Open vSwitch (dpid = #{dpid}) is already running!")
           end
-          Phut::OpenVswitch.create(dpid).run
+          Phut::Vswitch.create(dpid).run
         end
         Pry::Commands.block_command 'dump_flows' do |dpid|
-          puts Phut::OpenVswitch.dump_flows(dpid)
+          puts Phut::Vswitch.dump_flows(dpid)
         end
         Pry::Commands.block_command 'kill' do |dpid|
-          Phut::OpenVswitch.shutdown(dpid)
+          Phut::Vswitch.shutdown(dpid)
         end
         pry
       end
@@ -120,7 +121,7 @@ module Phut
         begin
           Phut::VhostDaemon.process(args[0], options[:socket_dir]).stop
         rescue
-          Phut::OpenVswitch.shutdown(args[0])
+          Phut::Vswitch.shutdown(args[0])
         end
       end
     end
@@ -136,7 +137,7 @@ module Phut
     default_command :shell
 
     on_error do |e|
-      fail e
+      raise e
     end
 
     exit run(ARGV)

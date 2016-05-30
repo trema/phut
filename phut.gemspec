@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'phut/version'
@@ -49,8 +50,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'flay', '~> 2.6.1'
   gem.add_development_dependency 'flog', '~> 4.3.2'
   gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'reek', '~> 3.7.1'
+  gem.add_development_dependency 'reek', '~> 4.0.3'
   gem.add_development_dependency 'rspec', '~> 3.4.0'
   gem.add_development_dependency 'rspec-given', '~> 3.7.1'
-  gem.add_development_dependency 'rubocop', '~> 0.35.1'
+  gem.add_development_dependency 'rubocop', '~> 0.40.0'
 end

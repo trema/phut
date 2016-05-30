@@ -5,6 +5,8 @@ require 'pio'
 
 module Phut
   # Open vSwitch controller
+  # rubocop:disable ClassLength
+  # rubocop:disable LineLength
   class Switch
     class_attribute :prefix
 
@@ -17,6 +19,7 @@ module Phut
 
     name_prefix ''
 
+    # rubocop:disable AbcSize
     def self.all
       sudo('ovs-vsctl list-br').chomp.split.map do |each|
         dpid = ('0x' + sudo("ovs-vsctl get bridge #{each} datapath-id").delete('"')).hex
@@ -28,6 +31,7 @@ module Phut
         end
       end.compact
     end
+    # rubocop:enable AbcSize
 
     def self.find_by(queries)
       queries.inject(all) do |memo, (attr, value)|
@@ -141,4 +145,6 @@ module Phut
       '0' * (16 - hex.length) + hex
     end
   end
+  # rubocop:enable ClassLength
+  # rubocop:enable LineLength
 end

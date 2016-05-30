@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'phut/netns'
 require 'phut/syntax/netns_directive'
 require 'phut/syntax/vhost_directive'
@@ -15,7 +16,7 @@ module Phut
 
     def vswitch(alias_name = nil, &block)
       attrs = VswitchDirective.new(alias_name, &block)
-      OpenVswitch.create(attrs[:dpid], attrs[:port], attrs[:name], @logger)
+      Vswitch.create(attrs[:dpid], attrs[:port], attrs[:name], @logger)
     end
 
     def vhost(alias_name = nil, &block)

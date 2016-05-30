@@ -11,7 +11,7 @@ module Phut
     def sh(command)
       @logger.debug(command) if @logger
       stdout, stderr, status = Open3.capture3(command)
-      fail %(Command '#{command}' failed: #{stderr}) unless status.success?
+      raise %(Command '#{command}' failed: #{stderr}) unless status.success?
       stdout
     end
   end

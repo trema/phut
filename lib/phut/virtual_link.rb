@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'active_support/core_ext/class/attribute_accessors'
 require 'phut/null_logger'
 require 'phut/shell_runner'
@@ -47,7 +48,7 @@ module Phut
     attr_reader :device_b
 
     def initialize(name_a, name_b, logger)
-      fail if name_a == name_b
+      raise if name_a == name_b
       @name_a = name_a
       @name_b = name_b
       @device_a = NetworkDeviceName.new(name_a)

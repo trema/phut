@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'active_support/core_ext/class/attribute_accessors'
 require 'phut/null_logger'
 require 'phut/shell_runner'

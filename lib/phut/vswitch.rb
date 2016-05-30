@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'active_support/core_ext/class/attribute_accessors'
 require 'pio'
 require 'phut/null_logger'
@@ -7,26 +8,26 @@ require 'phut/shell_runner'
 module Phut
   # Open vSwitch controller.
   # rubocop:disable ClassLength
-  class OpenVswitch
+  class Vswitch
     cattr_accessor(:all, instance_reader: false) { [] }
 
     def self.create(dpid, port_number = 6653, name = nil,
                     logger = NullLogger.new)
       new(dpid, port_number, name, logger).tap do |vswitch|
         conflict = find_by(name: vswitch.name)
-        fail "The name #{vswitch.name} conflicts with #{conflict}." if conflict
+        raise "The name #{vswitch.name} conflicts with #{conflict}." if conflict
         all << vswitch
       end
     end
 
     def self.dump_flows(dpid, port_number = 6653, name = nil,
                         logger = NullLogger.new)
-      OpenVswitch.new(dpid, port_number, name, logger).dump_flows
+      Vswitch.new(dpid, port_number, name, logger).dump_flows
     end
 
     def self.shutdown(dpid, port_number = 6653, name = nil,
                       logger = NullLogger.new)
-      OpenVswitch.new(dpid, port_number, name, logger).stop!
+      Vswitch.new(dpid, port_number, name, logger).stop!
     end
 
     def self.find_by(queries)
@@ -48,7 +49,7 @@ module Phut
     include ShellRunner
 
     attr_reader :dpid
-    alias_method :datapath_id, :dpid
+    alias datapath_id dpid
     attr_reader :network_devices
 
     def initialize(dpid, port_number, name, logger)
@@ -85,7 +86,7 @@ module Phut
     rescue
       raise AlreadyRunning, "Open vSwitch (dpid = #{@dpid}) is already running!"
     end
-    alias_method :start, :run
+    alias start run
     # rubocop:enable MethodLength
     # rubocop:enable AbcSize
 
@@ -95,10 +96,10 @@ module Phut
     end
 
     def stop!
-      fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
+      raise "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       sh "sudo ovs-vsctl del-br #{bridge_name}"
     end
-    alias_method :shutdown, :stop!
+    alias shutdown stop!
 
     def bring_port_up(port_number)
       sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} up"
