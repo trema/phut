@@ -7,7 +7,7 @@ module Phut
   # Open vSwitch controller
   # rubocop:disable ClassLength
   # rubocop:disable LineLength
-  class Switch
+  class OpenVswitch
     class_attribute :prefix
 
     include ShellRunner
