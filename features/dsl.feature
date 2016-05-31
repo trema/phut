@@ -1,5 +1,5 @@
 Feature: DSL parser
-  @wip
+  @sudo
   Scenario: name conflict (vsiwtch and vswitch)
     Given a file named "network.conf" with:
       """ruby
@@ -10,9 +10,10 @@ Feature: DSL parser
     Then the exit status should not be 0
     And the stderr should contain:
       """
-      The name 0xabc conflicts with vswitch (name = 0xabc, dpid = 0xabc).
+      The name 0xabc conflicts with vswitch (name = 0xabc, dpid = 0xabc)
       """
 
+  @sudo
   Scenario: name conflict (vhost and vhost)
     Given a file named "network.conf" with:
       """ruby
@@ -23,5 +24,5 @@ Feature: DSL parser
     Then the exit status should not be 0
     And the stderr should contain:
       """
-      The name 192.168.0.1 conflicts with vhost (name = 192.168.0.1, IP address = 192.168.0.1).
+      The name 192.168.0.1 conflicts with vhost (name = 192.168.0.1, IP address = 192.168.0.1)
       """

@@ -19,12 +19,19 @@ module Phut
       Vswitch.create(dpid: attrs[:dpid],
                      name: attrs[:name],
                      tcp_port: attrs[:port])
+    rescue
+      conflict = Vswitch.find_by(dpid: attrs[:dpid])
+      name = attrs[:name] || format('%#x', attrs[:ip])
+      raise "The name #{name} conflicts with #{conflict}"
     end
 
     def vhost(name = nil, &block)
       attrs = VhostDirective.new(name, &block)
-      Vhost.create(attrs[:ip], attrs[:mac], attrs[:promisc], attrs[:name],
-                   @logger)
+      Vhost.create(name: attrs[:name], ip_address: attrs[:ip],
+                   mac_address: attrs[:mac], promisc: attrs[:promisc])
+    rescue
+      conflict = Vhost.find_by(ip_address: attrs[:ip])
+      raise "The name #{attrs[:name] || attrs[:ip]} conflicts with #{conflict}"
     end
 
     def link(name_a, name_b)

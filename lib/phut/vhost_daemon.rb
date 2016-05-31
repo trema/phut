@@ -18,6 +18,7 @@ module Phut
 
     def initialize(options)
       @options = options.dup
+      @options[:device] = @options.fetch(:interface)
       @options[:log_dir] = File.expand_path(@options[:log_dir])
       @options[:pid_dir] = File.expand_path(@options[:pid_dir])
       @options[:socket_dir] = File.expand_path(@options[:socket_dir])
@@ -37,7 +38,11 @@ module Phut
     end
 
     def device
-      @options.fetch :interface
+      @options[:device]
+    end
+
+    def device=(name)
+      @options[:device] = name
     end
 
     def run
@@ -75,14 +80,14 @@ module Phut
     def start_logging
       @logger = Logger.new(File.open(log_file, 'a'))
       @logger.info("#{@options.fetch(:name)} started " \
-                   "(interface = #{@options.fetch(:interface)}," \
+                   "(interface = #{@options.fetch(:device)}," \
                    " IP address = #{@options.fetch(:ip_address)}," \
                    " MAC address = #{@options.fetch(:mac_address)}," \
                    " arp_entries = #{@options.fetch(:arp_entries)})")
     end
 
     def raw_socket
-      @raw_socket ||= RawSocket.new(@options.fetch(:interface))
+      @raw_socket ||= RawSocket.new(@options.fetch(:device))
     end
 
     def lookup_arp_table(ip_address)
@@ -109,8 +114,13 @@ module Phut
     end
 
     # rubocop:disable MethodLength
+    # rubocop:disable AbcSize
     def read_loop
       loop do
+        if @options.fetch(:device).nil?
+          sleep 0.1
+          next
+        end
         begin
           raw_data, = raw_socket.recvfrom(8192)
           udp = Pio::Udp.read(raw_data)
@@ -126,6 +136,7 @@ module Phut
       end
     end
     # rubocop:enable MethodLength
+    # rubocop:enable AbcSize
 
     def start_daemon
       Process.daemon

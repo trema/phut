@@ -40,7 +40,6 @@ module Phut
 
         c.action do |_global_opts, opts, _args|
           raise '--name option is mandatory' if opts[:name].nil?
-          raise '--interface option is mandatory' if opts[:interface].nil?
           raise '--ip_address option is mandatory' if opts[:ip_address].nil?
           raise '--mac_address option is mandatory' if opts[:mac_address].nil?
           opts[:arp_table] =

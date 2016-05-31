@@ -2,9 +2,9 @@
 require 'phut'
 
 Before do
-  @pid_dir = '.'
-  @log_dir = '.'
-  @socket_dir = '.'
+  @log_dir = './log'
+  @pid_dir = './tmp/pids'
+  @socket_dir = './tmp/sockets'
 end
 
 Before('@sudo') do
@@ -21,6 +21,7 @@ After('@sudo') do
       # FIXME: Delete me
       TearDownParser.new.parse(@config_file).stop
       Phut::Vswitch.destroy_all
+      Phut::Vhost.destroy_all
       Phut::Link.destroy_all
     end
   end

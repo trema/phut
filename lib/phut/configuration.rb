@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require 'phut/null_logger'
+require 'phut/vhost'
 require 'phut/vswitch'
 
 module Phut
@@ -7,7 +7,7 @@ module Phut
   class Configuration
     def initialize
       Vswitch.destroy_all
-      Vhost.all.clear
+      Vhost.destroy_all
       Netns.all.clear
       Link.destroy_all
       yield self
@@ -41,9 +41,7 @@ module Phut
     end
 
     def run
-      [Vhost, Netns].each do |klass|
-        klass.each(&:run)
-      end
+      Netns.each(&:run)
     end
 
     def stop
@@ -72,7 +70,7 @@ module Phut
 
     def update_vhost_interfaces
       Vhost.each do |each|
-        each.network_device = find_network_device(each)
+        each.device = find_network_device(each)
       end
     end
 

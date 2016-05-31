@@ -33,12 +33,15 @@ module Phut
             proc { 'phut* ' }
           ]
         Pry::Commands.block_command 'pid_dir' do |dir|
+          FileUtils.mkdir_p(dir) unless File.exist?(dir)
           Phut.pid_dir = dir
         end
         Pry::Commands.block_command 'log_dir' do |dir|
+          FileUtils.mkdir_p(dir) unless File.exist?(dir)
           Phut.log_dir = dir
         end
         Pry::Commands.block_command 'socket_dir' do |dir|
+          FileUtils.mkdir_p(dir) unless File.exist?(dir)
           Phut.socket_dir = dir
         end
         Pry::Commands.block_command 'vswitch' do |dpid|
@@ -72,6 +75,12 @@ module Phut
           logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
+        # rubocop:disable LineLength
+        FileUtils.mkdir_p(options.fetch(:pid_dir)) unless File.exist?(options.fetch(:pid_dir))
+        FileUtils.mkdir_p(options.fetch(:log_dir)) unless File.exist?(options.fetch(:log_dir))
+        FileUtils.mkdir_p(options.fetch(:socket_dir)) unless File.exist?(options.fetch(:socket_dir))
+        # rubocop:enable LineLength
+
         Phut.pid_dir = options.fetch(:pid_dir)
         Phut.log_dir = options.fetch(:log_dir)
         Phut.socket_dir = options.fetch(:socket_dir)

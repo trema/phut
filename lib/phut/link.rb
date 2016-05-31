@@ -61,7 +61,7 @@ module Phut
       @link = VirtualLink.new(device_name(link_id, name_a),
                               device_name(link_id, name_b))
       @device = [name_a, name_b].each_with_object({}) do |each, hash|
-        hash[each] = device_name(link_id, each)
+        hash[each.to_s] = device_name(link_id, each)
       end
     end
 
@@ -70,7 +70,7 @@ module Phut
     end
 
     def device(name)
-      @device[name]
+      @device[name.to_s]
     end
 
     def start

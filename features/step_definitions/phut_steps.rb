@@ -7,6 +7,9 @@ class TearDownSyntax < Phut::Syntax
   def vswitch(alias_name = nil, &block)
   end
 
+  def vhost(name = nil, &block)
+  end
+
   def link(name_a, name_b)
   end
 end
@@ -59,7 +62,7 @@ end
 # rubocop:enable LineLength
 
 Then(/^a vhost named "(.*?)" launches$/) do |name|
-  step %(a file named "vhost.#{name}.pid" should exist)
+  step %(a file named "./tmp/pids/vhost.#{name}.pid" should exist)
 end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |name_a, name_b|

@@ -1,108 +1,122 @@
+# coding: utf-8
 # frozen_string_literal: true
-require 'active_support/core_ext/class/attribute_accessors'
-require 'phut/null_logger'
 require 'phut/setting'
 require 'phut/shell_runner'
-require 'pio/mac'
+require 'phut/vhost_daemon'
 
 module Phut
-  # An interface class to vhost emulation utility program.
+  # Virtual host for NetTester
   class Vhost
-    cattr_accessor(:all, instance_reader: false) { [] }
+    include ShellRunner
 
-    def self.create(ip_address, mac_address, promisc, name = nil,
-                    logger = NullLogger.new)
-      new(ip_address, mac_address, promisc, name, logger).tap do |vhost|
-        conflict = find_by(name: vhost.name)
-        raise "The name #{vhost.name} conflicts with #{conflict}." if conflict
-        all << vhost
+    attr_reader :ip_address
+    attr_reader :mac_address
+
+    def self.all
+      ::Dir.glob(File.join(Phut.socket_dir, 'vhost.*.ctl')).map do |each|
+        vhost = DRbObject.new_with_uri("drbunix:#{each}")
+        new(name: vhost.name,
+            ip_address: vhost.ip_address,
+            mac_address: vhost.mac_address,
+            device: vhost.device)
       end
-    end
-
-    # This method smells of :reek:NestedIterators but ignores them
-    def self.find_by(queries)
-      queries.inject(all) do |memo, (attr, value)|
-        memo.find_all { |vhost| vhost.__send__(attr) == value }
-      end.first
     end
 
     def self.each(&block)
       all.each(&block)
     end
 
-    include ShellRunner
-
-    attr_reader :ip_address
-    attr_reader :mac_address
-    attr_accessor :network_device
-
-    def initialize(ip_address, mac_address, promisc, name, logger)
-      @ip_address = ip_address
-      @promisc = promisc
-      @name = name
-      @mac_address = mac_address
-      @logger = logger
+    def self.find_by(queries)
+      queries.inject(all) do |memo, (attr, value)|
+        memo.find_all { |each| each.__send__(attr) == value }
+      end.first
     end
+
+    def self.create(*args)
+      new(*args).tap(&:start)
+    end
+
+    def self.destroy_all
+      ::Dir.glob(File.join(Phut.socket_dir, 'vhost.*.ctl')).each do |each|
+        /vhost\.(\S+)\.ctl/=~ each
+        VhostDaemon.process(Regexp.last_match(1), Phut.socket_dir).stop
+      end
+    end
+
+    # rubocop:disable ParameterLists
+    def initialize(name:, ip_address:, mac_address:,
+                   device: nil, promisc: false, arp_entries: nil)
+      @name = name
+      @ip_address = ip_address
+      @mac_address = mac_address
+      @device = device
+      @promisc = promisc
+      @arp_entries = arp_entries
+    end
+    # rubocop:enable ParameterLists
 
     def name
       @name || @ip_address
     end
 
-    def to_s
-      "vhost (name = #{name}, IP address = #{@ip_address})"
-    end
-
-    def run(all_hosts = Vhost.all)
-      @all_hosts ||= all_hosts
+    def start
       if ENV['rvm_path']
         sh "rvmsudo vhost run #{run_options}"
       else
         vhost = File.join(__dir__, '..', '..', 'bin', 'vhost')
         sh "bundle exec sudo #{vhost} run #{run_options}"
       end
+      sleep 1
+      self.device = @device if @device
     end
+    alias run start
 
     def stop
-      return unless running?
-      stop!
+      sh "bundle exec vhost stop -n #{name} -S #{Phut.socket_dir}"
+      sleep 1
     end
 
-    def stop!
-      raise "vhost (name = #{name}) is not running!" unless running?
-      if ENV['rvm_path']
-        sh "rvmsudo vhost stop -n #{name} -s #{Phut.socket_dir}"
-      else
-        vhost = File.join(__dir__, '..', '..', 'bin', 'vhost')
-        sh "bundle exec sudo #{vhost} stop -n #{name} -s #{Phut.socket_dir}"
+    def device
+      VhostDaemon.process(name, Phut.socket_dir).device
+    end
+
+    def device=(device_name)
+      VhostDaemon.process(name, Phut.socket_dir).device = device_name
+    end
+
+    def send_packet(destination)
+      VhostDaemon.process(name, Phut.socket_dir).send_packets(destination, 1)
+    end
+
+    def packets_sent_to(dest)
+      VhostDaemon.process(name, Phut.socket_dir).stats[:tx].select do |each|
+        (each[:destination_mac].to_s == dest.mac_address) &&
+          (each[:destination_ip_address].to_s == dest.ip_address)
       end
     end
 
-    def running?
-      FileTest.exists?(pid_file)
+    def packets_received_from(source)
+      VhostDaemon.process(name, Phut.socket_dir).stats[:rx].select do |each|
+        (each[:source_mac].to_s == source.mac_address) &&
+          (each[:source_ip_address].to_s == source.ip_address)
+      end
+    end
+
+    def to_s
+      "vhost (name = #{name}, IP address = #{@ip_address})"
     end
 
     private
 
     def run_options
       ["-n #{name}",
-       "-I #{@network_device}",
-       "-i #{@ip_address}",
-       "-m #{@mac_address}",
-       "-a #{arp_entries}",
+       "-i #{ip_address}",
+       "-m #{mac_address}",
+       @arp_entries ? "-a #{@arp_entries}" : nil,
        @promisc ? '--promisc' : nil,
-       "-P #{Phut.pid_dir}",
        "-L #{Phut.log_dir}",
+       "-P #{Phut.pid_dir}",
        "-S #{Phut.socket_dir}"].compact.join(' ')
-    end
-
-    def arp_entries
-      @all_hosts.map do |each|
-        "#{each.ip_address}/#{each.mac_address}"
-      end.join(',')
-    end
-
-    def pid_file
-      "#{Phut.pid_dir}/vhost.#{name}.pid"
     end
   end
 end
