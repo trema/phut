@@ -21,6 +21,7 @@ After('@sudo') do
       # FIXME: Delete me
       TearDownParser.new.parse(@config_file).stop
       Phut::Vswitch.destroy_all
+      Phut::Link.destroy_all
     end
   end
 end

@@ -6,10 +6,10 @@ module Phut
   # Parsed DSL data.
   class Configuration
     def initialize
-      Vswitch.all.clear
+      Vswitch.destroy_all
       Vhost.all.clear
       Netns.all.clear
-      VirtualLink.all.clear
+      Link.destroy_all
       yield self
     end
 
@@ -23,10 +23,10 @@ module Phut
         end
         raise "Invalid key: #{key.inspect}"
       when Array
-        VirtualLink.each do |each|
-          return each if [each.name_a, each.name_b].sort == key.sort
+        Link.each do |each|
+          return each if each.names == key.sort.map(&:to_sym)
         end
-        raise "link #{key.join ' '} not found."
+        raise "link #{key.sort.join(' <-> ')} not found."
       else
         raise "Invalid key: #{key.inspect}"
       end
@@ -41,13 +41,13 @@ module Phut
     end
 
     def run
-      [VirtualLink, Vhost, Netns].each do |klass|
+      [Vhost, Netns].each do |klass|
         klass.each(&:run)
       end
     end
 
     def stop
-      [Vswitch, Vhost, Netns, VirtualLink].each do |klass|
+      [Vswitch, Vhost, Netns, Link].each do |klass|
         klass.each(&:stop)
       end
     end
@@ -55,14 +55,14 @@ module Phut
     private
 
     def update_vswitch_ports
-      VirtualLink.each do |each|
+      Link.each do |each|
         maybe_connect_link_to_vswitch each
       end
     end
 
     def maybe_connect_link_to_vswitch(link)
       vswitches_connected_to(link).each do |each|
-        each.add_port link.find_network_device(each).name
+        each.add_port link.device(each.name)
       end
     end
 
@@ -83,8 +83,8 @@ module Phut
     end
 
     def find_network_device(vhost)
-      VirtualLink.each do |each|
-        device = each.find_network_device(vhost)
+      Link.each do |each|
+        device = each.device(vhost.name)
         return device if device
       end
       raise "No network device found for #{vhost}."

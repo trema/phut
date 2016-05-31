@@ -6,6 +6,9 @@ require 'phut'
 class TearDownSyntax < Phut::Syntax
   def vswitch(alias_name = nil, &block)
   end
+
+  def link(name_a, name_b)
+  end
 end
 
 # Temporary class
@@ -60,8 +63,5 @@ Then(/^a vhost named "(.*?)" launches$/) do |name|
 end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |name_a, name_b|
-  cd('.') do
-    link = TearDownParser.new.parse(@config_file).fetch([name_a, name_b].sort)
-    expect(link).to be_up
-  end
+  expect(Phut::Link.find([name_a, name_b])).not_to be_nil
 end
