@@ -11,6 +11,10 @@ AllCops:
     - spec/**/*.rb
     - tasks/*.rake
 
+Metrics/LineLength:
+  Exclude:
+    - features/step_definitions/*_steps.rb
+
 Style/StringLiterals:
   EnforcedStyle: single_quotes
 

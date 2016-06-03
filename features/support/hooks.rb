@@ -18,10 +18,9 @@ After('@sudo') do
       Phut.pid_dir = @pid_dir
       Phut.log_dir = @log_dir
       Phut.socket_dir = @socket_dir
-      # FIXME: Delete me
-      TearDownParser.new.parse(@config_file).stop
       Phut::Vswitch.destroy_all
       Phut::Vhost.destroy_all
+      Phut::Netns.destroy_all
       Phut::Link.destroy_all
     end
   end

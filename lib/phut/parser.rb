@@ -12,8 +12,7 @@ module Phut
 
     def parse(file)
       Configuration.new do |config|
-        Syntax.new(config, @logger).instance_eval IO.read(file), file
-        config.update_connections
+        Syntax.new(config).instance_eval IO.read(file), file
       end
     end
   end

@@ -9,9 +9,8 @@ require 'phut/vhost'
 module Phut
   # DSL syntax definitions.
   class Syntax
-    def initialize(config, logger)
+    def initialize(config)
       @config = config
-      @logger = logger
     end
 
     def vswitch(alias_name = nil, &block)
@@ -39,8 +38,7 @@ module Phut
     end
 
     def netns(name, &block)
-      attrs = NetnsDirective.new(name, &block)
-      Netns.create(attrs, attrs[:name], @logger)
+      @config.netns << NetnsDirective.new(name, &block)
     end
   end
 end

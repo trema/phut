@@ -1,30 +1,4 @@
 # frozen_string_literal: true
-require 'phut'
-
-# Temporary class
-# FIXME: Delete me
-class TearDownSyntax < Phut::Syntax
-  def vswitch(alias_name = nil, &block)
-  end
-
-  def vhost(name = nil, &block)
-  end
-
-  def link(name_a, name_b)
-  end
-end
-
-# Temporary class
-# FIXME: Delete me
-class TearDownParser
-  def parse(file)
-    Phut::Configuration.new do |config|
-      TearDownSyntax.new(config, @logger).instance_eval IO.read(file), file
-      config # .update_connections
-    end
-  end
-end
-
 When(/^I do phut run "(.*?)"$/) do |config_file|
   @config_file = config_file
   cd('.') do
@@ -42,24 +16,18 @@ When(/^sleep (\d+)$/) do |time|
   sleep time.to_i
 end
 
-# rubocop:disable LineLength
 Then(/^a vswitch named "(.*?)" should be running$/) do |name|
   expect(system("sudo ovs-vsctl br-exists #{Phut::Vswitch.prefix}#{name}")).to be_truthy
 end
-# rubocop:enable LineLength
 
-# rubocop:disable LineLength
 Then(/^a vswitch named "([^"]*)" \(controller port = (\d+)\) should be running$/) do |name, port_number|
   step %(a vswitch named "#{name}" should be running)
   expect(`sudo ovs-vsctl get-controller #{Phut::Vswitch.prefix}#{name}`.chomp).to eq "tcp:127.0.0.1:#{port_number}"
 end
-# rubocop:enable LineLength
 
-# rubocop:disable LineLength
 Then(/^a vswitch named "(.*?)" should not be running$/) do |name|
   expect(system("sudo ovs-vsctl br-exists #{Phut::Vswitch.prefix}#{name}")).to be_falsey
 end
-# rubocop:enable LineLength
 
 Then(/^a vhost named "(.*?)" launches$/) do |name|
   step %(a file named "./tmp/pids/vhost.#{name}.pid" should exist)
@@ -67,4 +35,26 @@ end
 
 Then(/^a link is created between "(.*?)" and "(.*?)"$/) do |name_a, name_b|
   expect(Phut::Link.find([name_a, name_b])).not_to be_nil
+end
+
+Then(/^a netns named "(.*?)" should be started$/) do |name|
+  expect(Phut::Netns.find_by!(name: name)).not_to be_nil
+end
+
+Then(/^the IP address of the netns "([^"]*)" should not be set$/) do |name|
+  expect(Phut::Netns.find_by!(name: name).ip_address).to be_nil
+end
+
+Then(/^the IP address of the netns "([^"]*)" should be "([^"]*)"$/) do |name, ip|
+  expect(Phut::Netns.find_by!(name: name).ip_address).to eq ip
+end
+
+Then(/^the netmask of the netns "([^"]*)" should be "([^"]*)"$/) do |name, netmask|
+  expect(Phut::Netns.find_by!(name: name).netmask).to eq netmask
+end
+
+Then(/^the netns "([^"]*)" have the following route:$/) do |name, table|
+  netns = Phut::Netns.find_by!(name: name)
+  expect(netns.route.net).to eq table.hashes.first['net']
+  expect(netns.route.gateway).to eq table.hashes.first['gateway']
 end

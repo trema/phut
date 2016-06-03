@@ -6,7 +6,7 @@ module Phut
   describe Link do
     def delete_all_link
       `ifconfig -a`.split("\n").each do |each|
-        next unless /^(L\S+)/=~ each
+        next unless /^(#{Veth::PREFIX}\S+)/ =~ each
         system "sudo ip link delete #{Regexp.last_match(1)} 2>/dev/null"
       end
     end
@@ -16,7 +16,16 @@ module Phut
 
     describe '.all' do
       When(:all) { Link.all }
-      Then { all == [] }
+
+      context 'when there is no link' do
+        Then { all == [] }
+      end
+
+      context 'when there is a link' do
+        Given { Link.create('foo', 'bar') }
+        Then { all.size == 1 }
+        Then { all.first.names == %w(bar foo) }
+      end
     end
 
     describe '.create' do
@@ -32,6 +41,48 @@ module Phut
       describe '#destroy' do
         When { link.destroy }
         Then { Link.all == [] }
+      end
+    end
+
+    describe '.find' do
+      When(:result) { Link.find(%w(foo bar)) }
+
+      context 'when there is no link' do
+        Then { result.nil? }
+      end
+
+      context 'when there is a link' do
+        Given { Link.create('foo', 'bar') }
+        Then { !result.nil? }
+        Then { result.names == %w(bar foo) }
+      end
+    end
+
+    describe '.select' do
+      When(:result) { Link.select { |each| each.names == %w(bar foo) } }
+
+      context 'when there is no link' do
+        Then { result.empty? }
+      end
+
+      context 'when there is a link' do
+        Given { Link.create('foo', 'bar') }
+        Then { result.size == 1 }
+      end
+    end
+
+    describe '.each' do
+      Given(:links) { [] }
+      When { Link.each { |each| links << each } }
+
+      context 'when there is no link' do
+        Then { links.empty? }
+      end
+
+      context 'when there is a link' do
+        Given { Link.create('foo', 'bar') }
+        Then { links.size == 1 }
+        Then { links.first.names == %w(bar foo) }
       end
     end
 

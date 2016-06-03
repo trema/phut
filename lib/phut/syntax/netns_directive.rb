@@ -9,7 +9,7 @@ module Phut
 
       def initialize(alias_name, &block)
         @attributes = { name: alias_name }
-        instance_eval(&block)
+        instance_eval(&block) if block
       end
 
       def ip(value)
