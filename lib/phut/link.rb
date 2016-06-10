@@ -1,35 +1,16 @@
 # frozen_string_literal: true
-require 'ipaddr'
+require 'phut/netns'
 require 'phut/shell_runner'
-require 'phut/virtual_link'
+require 'phut/veth'
 
 module Phut
   # Virtual link
   class Link
-    LINK_DEVICE_PREFIX = 'L'
-    # rubocop:disable LineLength
-    IPADDR_REGEX = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-    # rubocop:enable LineLength
-
-    extend ShellRunner
-
-    # rubocop:disable MethodLength
-    # rubocop:disable AbcSize
     def self.all
       link = Hash.new { [] }
-      devices.each do |each|
-        case each
-        when /^#{LINK_DEVICE_PREFIX}(\d+)_(\h{8})/
-          name = IPAddr.new(Regexp.last_match(2).hex, Socket::AF_INET).to_s
-          link[Regexp.last_match(1).to_i] += [name]
-        when /^#{LINK_DEVICE_PREFIX}(\d+)_(\S+)/
-          link[Regexp.last_match(1).to_i] += [Regexp.last_match(2)]
-        end
-      end
+      Veth.each { |link_id, name| link[link_id] += [name] }
       link.map { |link_id, names| new(*names, link_id: link_id) }
     end
-    # rubocop:enable MethodLength
-    # rubocop:enable AbcSize
 
     def self.find(names)
       all.find { |each| each.names == names.sort }
@@ -43,12 +24,6 @@ module Phut
       all.select(&block)
     end
 
-    def self.devices
-      sh('LANG=C ifconfig -a').split("\n").map do |each|
-        /^(#{LINK_DEVICE_PREFIX}\d+_\S+)/ =~ each ? Regexp.last_match(1) : nil
-      end.compact
-    end
-
     def self.create(name_a, name_b)
       new(name_a, name_b).start
     end
@@ -57,45 +32,63 @@ module Phut
       all.each(&:destroy)
     end
 
+    include ShellRunner
+
     def initialize(name_a, name_b, link_id: Link.all.size)
-      @link = VirtualLink.new(device_name(link_id, name_a),
-                              device_name(link_id, name_b))
-      @device = [name_a, name_b].each_with_object({}) do |each, hash|
-        hash[each.to_s] = device_name(link_id, each)
-      end
+      raise if name_a == name_b
+      @veth_a = Veth.new(name: name_a, link_id: link_id)
+      @veth_b = Veth.new(name: name_b, link_id: link_id)
     end
 
     def names
-      @device.keys.sort
+      [@veth_a, @veth_b].map(&:name).sort
     end
 
     def device(name)
-      @device[name.to_s]
+      [@veth_a, @veth_b].each do |each|
+        return each.to_s if each.name == name.to_s
+      end
+      nil
     end
 
     def start
-      @link.run
+      stop if up?
+      add
+      up
       self
     end
 
     def destroy
-      @link.stop
+      return unless up?
+      sudo "ip link delete #{@veth_a}"
+    rescue
+      raise "link #{@veth_a} #{@veth_b} does not exist!"
     end
     alias stop destroy
+
+    def up?
+      /^#{@veth_a}\s+Link encap:Ethernet/ =~ `LANG=C ifconfig -a` || false
+    end
 
     def connect_to?(vswitch)
       device(vswitch.name) || false
     end
 
+    def ==(other)
+      @veth_a == other.veth_a && @veth_b == other.veth_b
+    end
+
     private
 
-    def device_name(link_id, name)
-      if IPADDR_REGEX =~ name
-        hex = format('%x', IPAddr.new(name).to_i)
-        "#{LINK_DEVICE_PREFIX}#{link_id}_#{hex}"
-      else
-        "#{LINK_DEVICE_PREFIX}#{link_id}_#{name}"
-      end
+    def add
+      sudo "ip link add name #{@veth_a} type veth peer name #{@veth_b}"
+      sudo "/sbin/sysctl -q -w net.ipv6.conf.#{@veth_a}.disable_ipv6=1"
+      sudo "/sbin/sysctl -q -w net.ipv6.conf.#{@veth_b}.disable_ipv6=1"
+    end
+
+    def up
+      sudo "/sbin/ifconfig #{@veth_a} up"
+      sudo "/sbin/ifconfig #{@veth_b} up"
     end
   end
 end

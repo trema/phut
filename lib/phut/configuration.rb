@@ -5,12 +5,12 @@ require 'phut/vswitch'
 module Phut
   # Parsed DSL data.
   class Configuration
+    attr_reader :netns
+
     def initialize
-      Vswitch.destroy_all
-      Vhost.destroy_all
-      Netns.all.clear
-      Link.destroy_all
+      @netns = []
       yield self
+      update_connections
     end
 
     # rubocop:disable MethodLength
@@ -33,17 +33,6 @@ module Phut
     end
     # rubocop:enable MethodLength
 
-    def update_connections
-      update_vswitch_ports
-      update_vhost_interfaces
-      update_netns_interfaces
-      self
-    end
-
-    def run
-      Netns.each(&:run)
-    end
-
     def stop
       [Vswitch, Vhost, Netns, Link].each do |klass|
         klass.each(&:stop)
@@ -51,6 +40,12 @@ module Phut
     end
 
     private
+
+    def update_connections
+      update_vswitch_ports
+      update_vhost_interfaces
+      update_netns_interfaces
+    end
 
     def update_vswitch_ports
       Link.each do |each|
@@ -75,17 +70,21 @@ module Phut
     end
 
     def update_netns_interfaces
-      Netns.each do |each|
-        each.network_device = find_network_device(each)
+      @netns.each do |each|
+        netns = Netns.create(name: each[:name],
+                             ip_address: each[:ip], netmask: each[:netmask],
+                             route: { net: each[:net],
+                                      gateway: each[:gateway] })
+        netns.device = find_network_device(each.name)
       end
     end
 
-    def find_network_device(vhost)
+    def find_network_device(name)
       Link.each do |each|
-        device = each.device(vhost.name)
+        device = each.device(name)
         return device if device
       end
-      raise "No network device found for #{vhost}."
+      nil
     end
   end
 end

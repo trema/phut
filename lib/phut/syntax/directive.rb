@@ -10,7 +10,11 @@ module Phut
       end
 
       def [](key)
-        @attributes.fetch(key)
+        @attributes[key]
+      end
+
+      def method_missing(name)
+        @attributes.fetch name.to_sym
       end
     end
   end
