@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 require 'active_support/core_ext/class/attribute'
+require 'active_support/core_ext/module/delegation.rb'
 require 'phut/shell_runner'
+require 'phut/vsctl'
 require 'pio'
 
 module Phut
   # Open vSwitch controller
-  # rubocop:disable ClassLength
-  # rubocop:disable LineLength
   class OpenVswitch
     class_attribute :prefix
 
-    include ShellRunner
     extend ShellRunner
 
     def self.name_prefix(name)
@@ -19,22 +18,22 @@ module Phut
 
     name_prefix ''
 
-    # rubocop:disable AbcSize
     def self.all
-      sudo('ovs-vsctl list-br').chomp.split.map do |each|
-        dpid = ('0x' + sudo("ovs-vsctl get bridge #{each} datapath-id").delete('"')).hex
-        case each
-        when /^#{prefix}(0x\S+)/
-          new(dpid: dpid) if dpid == Regexp.last_match(1).hex
-        when /^#{prefix}(\S+)/
-          new(name: Regexp.last_match(1), dpid: dpid)
+      list_br.map do |name, dpid|
+        if /^0x\h+/ =~ name
+          new(dpid: dpid) if dpid == name.hex
+        else
+          new(name: name, dpid: dpid)
         end
-      end.compact
+      end
     end
-    # rubocop:enable AbcSize
 
-    def self.each(&block)
-      all.each(&block)
+    def self.list_br
+      sudo('ovs-vsctl list-br').split.each_with_object([]) do |each, list|
+        next unless /^#{prefix}(\S+)/ =~ each
+        dpid_str = sudo("ovs-vsctl get bridge #{each} datapath-id").delete('"')
+        list << [Regexp.last_match(1), ('0x' + dpid_str).hex]
+      end
     end
 
     def self.select(&block)
@@ -60,12 +59,14 @@ module Phut
     end
 
     def self.shutdown(name)
-      find_by!(name: name).stop!
+      find_by!(name: name).stop
     end
 
     def self.destroy_all
       all.each(&:stop)
     end
+
+    include ShellRunner
 
     attr_reader :dpid
     alias datapath_id dpid
@@ -74,65 +75,43 @@ module Phut
       @dpid = dpid
       @name = name
       @tcp_port = tcp_port
+      @vsctl = Vsctl.new(name: default_name, name_prefix: self.class.prefix,
+                         dpid: @dpid, bridge_name: bridge_name)
     end
+
+    delegate :add_port, to: :@vsctl
+    delegate :add_numbered_port, to: :@vsctl
+    delegate :bring_port_up, to: :@vsctl
+    delegate :bring_port_down, to: :@vsctl
+    delegate :ports, to: :@vsctl
+    delegate :running?, to: :@vsctl
 
     def name
       @name || format('%#x', @dpid)
     end
+    alias default_name name
 
     def to_s
       "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
     end
 
     def start
-      add_bridge
-      disable_ipv6
-      set_openflow_version_and_dpid
-      set_controller
-      set_fail_mode_secure
+      @vsctl.add_bridge
+      @vsctl.set_openflow_version_and_dpid
+      @vsctl.controller_tcp_port = @tcp_port
+      @vsctl.set_fail_mode_secure
     end
     alias run start
 
     def stop
-      return unless running?
-      del_bridge
-    end
-
-    def stop!
       raise "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
-      del_bridge
+      @vsctl.del_bridge
     end
-    alias shutdown stop!
-
-    def add_port(device)
-      sudo "ovs-vsctl add-port #{bridge_name} #{device}"
-    end
-
-    def add_numbered_port(port_number, device)
-      add_port device
-      sudo "ovs-vsctl set Port #{device} other_config:rstp-port-num=#{port_number}"
-    end
-
-    def bring_port_up(port_number)
-      sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} up"
-    end
-
-    def bring_port_down(port_number)
-      sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} down"
-    end
-
-    def ports
-      sudo("ovs-vsctl list-ports #{bridge_name}").split
-    end
-
-    def running?
-      system("sudo ovs-vsctl br-exists #{bridge_name}") &&
-        !sudo("ovs-vsctl get-controller #{bridge_name}").empty?
-    end
+    alias shutdown stop
 
     def dump_flows
-      output = sudo "ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}"
-      output.split("\n").inject('') do |memo, each|
+      sudo("ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}").
+        split("\n").inject('') do |memo, each|
         memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip + "\n")
       end
     end
@@ -143,41 +122,9 @@ module Phut
 
     private
 
-    def add_bridge
-      sudo "ovs-vsctl add-br #{bridge_name}"
-    end
-
-    def del_bridge
-      sudo "ovs-vsctl del-br #{bridge_name}"
-    end
-
-    def disable_ipv6
-      sudo "/sbin/sysctl -w net.ipv6.conf.#{bridge_name}.disable_ipv6=1 -q"
-    end
-
-    def set_openflow_version_and_dpid
-      sudo "ovs-vsctl set bridge #{bridge_name} protocols=#{Pio::OpenFlow.version} other-config:datapath-id=#{dpid_zero_filled}"
-    end
-
-    def set_controller
-      sudo "ovs-vsctl set-controller #{bridge_name} tcp:127.0.0.1:#{@tcp_port} -- set controller #{bridge_name} connection-mode=out-of-band"
-    end
-
-    def set_fail_mode_secure
-      sudo "ovs-vsctl set-fail-mode #{bridge_name} secure"
-    end
-
     def bridge_name
       raise 'DPID is not set' unless @dpid
       self.class.prefix + name
     end
-
-    def dpid_zero_filled
-      raise 'DPID is not set' unless @dpid
-      hex = format('%x', @dpid)
-      '0' * (16 - hex.length) + hex
-    end
   end
-  # rubocop:enable ClassLength
-  # rubocop:enable LineLength
 end
