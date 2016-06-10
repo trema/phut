@@ -84,7 +84,7 @@ module Phut
         Phut.pid_dir = options.fetch(:pid_dir)
         Phut.log_dir = options.fetch(:log_dir)
         Phut.socket_dir = options.fetch(:socket_dir)
-        Phut::Parser.new(stdout_logger).parse(args[0])
+        Phut::Parser.new(args[0], stdout_logger).parse
       end
     end
 

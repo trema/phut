@@ -26,9 +26,10 @@ module Phut
         name = Regexp.last_match(1)
         addr_list = sudo("ip -netns #{name} -4 -o addr list").split("\n")
         if addr_list.size > 1
+          %r{inet ([^/]+)/(\d+)} =~ addr_list[1]
           new(name: name,
               ip_address: Regexp.last_match(1),
-              netmask: IPAddr.new('255.255.255.255').mask(Regexp.last_match(1).to_i).to_s)
+              netmask: IPAddr.new('255.255.255.255').mask(Regexp.last_match(2).to_i).to_s)
         else
           new(name: name)
         end

@@ -6,13 +6,14 @@ require 'phut/syntax'
 module Phut
   # Configuration DSL parser.
   class Parser
-    def initialize(logger = NullLogger.new)
+    def initialize(file, logger = NullLogger.new)
+      @file = file
       @logger = logger
     end
 
-    def parse(file)
+    def parse
       Configuration.new do |config|
-        Syntax.new(config).instance_eval IO.read(file), file
+        Syntax.new(config).instance_eval IO.read(@file), @file
       end
     end
   end
