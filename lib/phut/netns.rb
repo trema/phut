@@ -1,35 +1,24 @@
 # frozen_string_literal: true
+require 'phut/route'
 require 'phut/shell_runner'
 
 module Phut
   # `ip netns ...` command runner
   class Netns
-    # routing table entry
-    class Route
-      attr_reader :net
-      attr_reader :gateway
-
-      def initialize(net:, gateway:)
-        @net = net
-        @gateway = gateway
-      end
-    end
-
     extend ShellRunner
 
     # rubocop:disable MethodLength
     # rubocop:disable AbcSize
-    # rubocop:disable LineLength
     def self.all
       sh('ip netns list').split("\n").map do |each|
-        /^(\S+)/ =~ each
-        name = Regexp.last_match(1)
+        name = each.split.first
         addr_list = sudo("ip -netns #{name} -4 -o addr list").split("\n")
         if addr_list.size > 1
           %r{inet ([^/]+)/(\d+)} =~ addr_list[1]
           new(name: name,
               ip_address: Regexp.last_match(1),
-              netmask: IPAddr.new('255.255.255.255').mask(Regexp.last_match(2).to_i).to_s)
+              netmask: IPAddr.new('255.255.255.255').
+                       mask(Regexp.last_match(2).to_i).to_s)
         else
           new(name: name)
         end
@@ -37,7 +26,6 @@ module Phut
     end
     # rubocop:enable MethodLength
     # rubocop:enable AbcSize
-    # rubocop:enable LineLength
 
     def self.create(*args)
       new(*args).tap(&:run)
@@ -70,22 +58,21 @@ module Phut
                    ip_address: nil, netmask: '255.255.255.255', route: {})
       @name = name
       @ip_address = ip_address
-      @netmask = netmask || '255.255.255.255'
-      @route = route
+      @netmask = netmask
+      @route = Route.new(net: route[:net], gateway: route[:gateway])
     end
 
     def run
       sudo "ip netns add #{@name}"
-      netns_exec 'ifconfig lo 127.0.0.1'
+      sudo "ip netns exec #{@name} ifconfig lo 127.0.0.1"
     end
 
-    # rubocop:disable LineLength
     def netmask
-      if %r{inet [^/]+/(\d+) } =~ sudo("ip -netns #{@name} -o -4 address show dev #{device}")
+      if %r{inet [^/]+/(\d+) } =~
+         sudo("ip -netns #{@name} -o -4 address show dev #{device}")
         IPAddr.new('255.255.255.255').mask(Regexp.last_match(1).to_i).to_s
       end
     end
-    # rubocop:enable LineLength
 
     def device
       if /^\d+: ([^@]+)@/ =~ sudo("ip -netns #{@name} -o link show type veth")
@@ -96,11 +83,9 @@ module Phut
     def device=(device_name)
       return unless device_name
       sudo "ip link set dev #{device_name} netns #{@name}"
-      netns_exec "ifconfig #{device_name} #{@ip_address} netmask #{@netmask}"
-      sleep 1
-      if @route[:net] && @route[:gateway]
-        netns_exec "route add -net #{@route[:net]} gw #{@route[:gateway]}"
-      end
+      sudo "ip netns exec #{@name} "\
+           "ifconfig #{device_name} #{@ip_address} netmask #{@netmask}"
+      @route.add @name
     end
 
     def stop
@@ -108,18 +93,7 @@ module Phut
     end
 
     def route
-      netns_exec('route -n').split("\n").each do |each|
-        next unless /^(\S+)\s+(\S+)\s+\S+\s+UG\s+/ =~ each
-        return Route.new(net: Regexp.last_match(1),
-                         gateway: Regexp.last_match(2))
-      end
-      nil
-    end
-
-    private
-
-    def netns_exec(command)
-      sudo "ip netns exec #{@name} #{command}"
+      Route.read @name
     end
   end
 end

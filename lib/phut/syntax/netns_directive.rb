@@ -8,7 +8,8 @@ module Phut
       attribute :netmask
 
       def initialize(alias_name, &block)
-        @attributes = { name: alias_name }
+        @attributes = { name: alias_name,
+                        netmask: '255.255.255.255' }
         instance_eval(&block) if block
       end
 

@@ -71,10 +71,10 @@ module Phut
 
     def update_netns_interfaces
       @netns.each do |each|
-        netns = Netns.create(name: each[:name],
-                             ip_address: each[:ip], netmask: each[:netmask],
-                             route: { net: each[:net],
-                                      gateway: each[:gateway] })
+        netns =
+          Netns.create(name: each[:name],
+                       ip_address: each[:ip], netmask: each[:netmask],
+                       route: { net: each[:net], gateway: each[:gateway] })
         netns.device = find_network_device(each.name)
       end
     end
