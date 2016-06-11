@@ -114,10 +114,9 @@ module Phut
     end
 
     # rubocop:disable MethodLength
-    # rubocop:disable AbcSize
     def read_loop
       loop do
-        if @options.fetch(:device).nil?
+        unless @options.fetch(:device)
           sleep 0.1
           next
         end
@@ -136,7 +135,6 @@ module Phut
       end
     end
     # rubocop:enable MethodLength
-    # rubocop:enable AbcSize
 
     def start_daemon
       Process.daemon
