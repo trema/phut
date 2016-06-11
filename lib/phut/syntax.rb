@@ -28,9 +28,6 @@ module Phut
       attrs = VhostDirective.new(name, &block)
       Vhost.create(name: attrs[:name], ip_address: attrs[:ip],
                    mac_address: attrs[:mac], promisc: attrs[:promisc])
-    rescue
-      conflict = Vhost.find_by(ip_address: attrs[:ip])
-      raise "The name #{attrs[:name] || attrs[:ip]} conflicts with #{conflict}"
     end
 
     def link(name_a, name_b)

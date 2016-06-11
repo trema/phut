@@ -24,5 +24,5 @@ Feature: DSL parser
     Then the exit status should not be 0
     And the stderr should contain:
       """
-      The name 192.168.0.1 conflicts with vhost (name = 192.168.0.1, IP address = 192.168.0.1)
+      error: 192.168.0.1 is already running
       """
