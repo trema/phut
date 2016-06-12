@@ -43,6 +43,15 @@ module Phut
       end
     end
 
+    def self.connect_link
+      all.each do |each|
+        Link.each do |link|
+          device = link.device(each)
+          each.device = device if device
+        end
+      end
+    end
+
     # rubocop:disable ParameterLists
     def initialize(name:, ip_address:, mac_address:,
                    device: nil, promisc: false, arp_entries: nil)

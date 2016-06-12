@@ -2,6 +2,7 @@
 require 'phut/link'
 require 'phut/null_logger'
 require 'phut/syntax'
+require 'phut/vhost'
 require 'phut/vswitch'
 
 module Phut
@@ -15,30 +16,12 @@ module Phut
 
     def parse
       Syntax.new(@netns).instance_eval IO.read(@file), @file
-      update_vswitch_ports
-      update_vhost_interfaces
+      Vswitch.connect_link
+      Vhost.connect_link
       update_netns_interfaces
     end
 
     private
-
-    def update_vswitch_ports
-      Link.each do |each|
-        maybe_connect_link_to_vswitch each
-      end
-    end
-
-    def maybe_connect_link_to_vswitch(link)
-      Vswitch.select { |each| link.connect_to?(each) }.each do |each|
-        each.add_port link.device(each.name)
-      end
-    end
-
-    def update_vhost_interfaces
-      Vhost.each do |each|
-        each.device = find_network_device(each)
-      end
-    end
 
     def update_netns_interfaces
       @netns.each do |each|
