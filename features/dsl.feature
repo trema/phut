@@ -10,7 +10,7 @@ Feature: DSL parser
     Then the exit status should not be 0
     And the stderr should contain:
       """
-      The name 0xabc conflicts with vswitch (name = 0xabc, dpid = 0xabc)
+      a bridge named vsw_0xabc already exists
       """
 
   @sudo
