@@ -30,20 +30,11 @@ After('@sudo') do
       Phut.pid_dir = @pid_dir
       Phut.log_dir = @log_dir
       Phut.socket_dir = @socket_dir
+
       Phut::Vswitch.destroy_all
       Phut::Vhost.destroy_all
       Phut::Netns.destroy_all
       Phut::Link.destroy_all
     end
-  end
-end
-
-Before('@shell') do
-  raise 'sudo authentication failed' unless system 'sudo -v'
-end
-
-After('@shell') do
-  `sudo ovs-vsctl list-br`.split("\n").each do |each|
-    run "sudo ovs-vsctl del-br #{each}"
   end
 end

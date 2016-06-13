@@ -46,6 +46,3 @@ Feature: The link directive of phut DSL
     Then a link between "0xabc" and "host1" should be created
     And a link between "0xabc" and "host2" should be created
     And a link between "0xabc" and "host3" should be created
-    And the output from "phut show 0xabc" should contain "1(L0_0xabc)"
-    And the output from "phut show 0xabc" should contain "2(L1_0xabc)"
-    And the output from "phut show 0xabc" should contain "3(L2_0xabc)"

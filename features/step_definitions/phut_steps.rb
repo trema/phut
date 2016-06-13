@@ -8,3 +8,7 @@ When(/^I do phut kill "(.*?)"$/) do |name|
   run_opts = "-S #{@socket_dir}"
   step %(I successfully run `phut -v kill #{run_opts} #{name}`)
 end
+
+When(/^sleep (\d+)$/) do |second|
+  step "I successfully run `sleep #{second}`"
+end
