@@ -14,7 +14,7 @@ module Phut
     def self.all
       sh('ip netns list').split("\n").map do |each|
         name = each.split.first
-        addr_list = sudo("ip -netns #{name} -4 -o addr list").split("\n")
+        addr_list = sudo("ip netns exec #{name} ip -4 -o addr list").split("\n")
         if addr_list.size > 1
           %r{inet ([^/]+)/(\d+)} =~ addr_list[1]
           new(name: name,
@@ -62,7 +62,8 @@ module Phut
     end
 
     def device
-      if /^\d+: ([^@]+)@/ =~ sudo("ip -netns #{name} -o link show type veth")
+      if /^\d+: ([^@]+)@/ =~
+         sudo("ip netns exec #{name} ip -o link show type veth")
         Regexp.last_match(1)
       end
     end
@@ -74,17 +75,17 @@ module Phut
 
       vlan_suffix = @vlan ? ".#{@vlan}" : ''
       if @vlan
-        sudo "ip -netns #{name} link set #{device_name} up"
-        sudo "ip -netns #{name} "\
-             "link add link #{device_name} name "\
+        sudo "ip netns exec #{name} ip link set #{device_name} up"
+        sudo "ip netns exec #{name} "\
+             "ip link add link #{device_name} name "\
              "#{device_name}#{vlan_suffix} type vlan id #{@vlan}"
       end
-      sudo "ip -netns #{name} link set #{device_name}#{vlan_suffix} up"
-      sudo "ip -netns #{name} "\
-           "addr replace #{@ip_address}/#{@netmask} "\
+      sudo "ip netns exec #{name} ip link set #{device_name}#{vlan_suffix} up"
+      sudo "ip netns exec #{name} "\
+           "ip addr replace #{@ip_address}/#{@netmask} "\
            "dev #{device_name}#{vlan_suffix}"
 
-      sudo "ip -netns #{name} link set #{device_name}#{vlan_suffix} up"
+      sudo "ip netns exec #{name} ip link set #{device_name}#{vlan_suffix} up"
 
       @route.add name
     end
@@ -92,7 +93,7 @@ module Phut
 
     def netmask
       if %r{inet [^/]+/(\d+) } =~
-         sudo("ip -netns #{name} -o -4 address show dev #{device}")
+         sudo("ip netns exec #{name} ip -o -4 address show dev #{device}")
         IPAddr.new('255.255.255.255').mask(Regexp.last_match(1).to_i).to_s
       end
     end
@@ -102,7 +103,8 @@ module Phut
     end
 
     def vlan
-      if /^\d+: #{device}\.(\d+)@/ =~ sudo("ip -netns #{name} -o link show")
+      if /^\d+: #{device}\.(\d+)@/ =~
+         sudo("ip netns exec #{name} ip -o link show")
         Regexp.last_match(1)
       end
     end
