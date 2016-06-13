@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'logger'
 require 'tmpdir'
 
 # Base module.
@@ -7,6 +8,10 @@ module Phut
   class Setting
     DEFAULTS = {
       root: File.expand_path(File.join(File.dirname(__FILE__), '..', '..')),
+      logger: Logger.new($stderr).tap do |logger|
+                logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
+                logger.level = Logger::INFO
+              end,
       pid_dir: Dir.tmpdir,
       log_dir: Dir.tmpdir,
       socket_dir: Dir.tmpdir
@@ -18,6 +23,10 @@ module Phut
 
     def root
       @options.fetch :root
+    end
+
+    def logger
+      @options.fetch :logger
     end
 
     def pid_dir
