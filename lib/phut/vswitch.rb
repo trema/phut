@@ -8,7 +8,7 @@ module Phut
     name_prefix 'vsw_'
 
     def self.connect_link
-      Link.each do |link|
+      Link.all.each do |link|
         select { |vswitch| link.connect_to?(vswitch) }.each do |each|
           each.add_port link.device(each.name)
         end

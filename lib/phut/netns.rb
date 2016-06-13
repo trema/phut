@@ -31,10 +31,6 @@ module Phut
       new(*args).tap(&:run)
     end
 
-    def self.each(&block)
-      all.each(&block)
-    end
-
     def self.find_by(queries)
       queries.inject(all) do |memo, (attr, value)|
         memo.find_all { |each| each.__send__(attr) == value }

@@ -34,7 +34,7 @@ module Phut
     end
 
     def find_network_device(name)
-      Link.each do |each|
+      Link.all.each do |each|
         device = each.device(name)
         return device if device
       end

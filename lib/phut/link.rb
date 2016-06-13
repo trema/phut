@@ -16,10 +16,6 @@ module Phut
       all.find { |each| each.names == names.sort }
     end
 
-    def self.each(&block)
-      all.each(&block)
-    end
-
     def self.select(&block)
       all.select(&block)
     end

@@ -73,7 +73,7 @@ module Phut
 
     describe '.each' do
       Given(:links) { [] }
-      When { Link.each { |each| links << each } }
+      When { Link.all.each { |each| links << each } }
 
       context 'when there is no link' do
         Then { links.empty? }

@@ -22,10 +22,6 @@ module Phut
       end
     end
 
-    def self.each(&block)
-      all.each(&block)
-    end
-
     def self.find_by(queries)
       queries.inject(all) do |memo, (attr, value)|
         memo.find_all { |each| each.__send__(attr) == value }
@@ -45,7 +41,7 @@ module Phut
 
     def self.connect_link
       all.each do |each|
-        Link.each do |link|
+        Link.all.each do |link|
           device = link.device(each)
           each.device = device if device
         end
