@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/module/delegation.rb'
+require 'phut/finder'
 require 'phut/shell_runner'
 require 'phut/vsctl'
 require 'pio'
@@ -11,6 +12,7 @@ module Phut
     class_attribute :prefix
 
     extend ShellRunner
+    extend Finder
 
     def self.name_prefix(name)
       self.prefix = name
@@ -38,16 +40,6 @@ module Phut
 
     def self.select(&block)
       all.select(&block)
-    end
-
-    def self.find_by(queries)
-      queries.inject(all) do |memo, (attr, value)|
-        memo.find_all { |switch| switch.__send__(attr) == value }
-      end.first
-    end
-
-    def self.find_by!(queries)
-      find_by(queries) || raise("Swtich not found: #{queries.inspect}")
     end
 
     def self.create(*args)

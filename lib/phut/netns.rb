@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'phut/finder'
 require 'phut/route'
 require 'phut/shell_runner'
 
@@ -6,6 +7,7 @@ module Phut
   # `ip netns ...` command runner
   class Netns
     extend ShellRunner
+    extend Finder
 
     # rubocop:disable MethodLength
     # rubocop:disable AbcSize
@@ -29,16 +31,6 @@ module Phut
 
     def self.create(*args)
       new(*args).tap(&:run)
-    end
-
-    def self.find_by(queries)
-      queries.inject(all) do |memo, (attr, value)|
-        memo.find_all { |each| each.__send__(attr) == value }
-      end.first
-    end
-
-    def self.find_by!(queries)
-      find_by(queries) || raise("Netns not found: #{queries.inspect}")
     end
 
     def self.destroy_all

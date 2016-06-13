@@ -1,5 +1,5 @@
-# coding: utf-8
 # frozen_string_literal: true
+require 'phut/finder'
 require 'phut/setting'
 require 'phut/shell_runner'
 require 'phut/vhost_daemon'
@@ -7,7 +7,7 @@ require 'phut/vhost_daemon'
 module Phut
   # Virtual host for NetTester
   class Vhost
-    include ShellRunner
+    extend Finder
 
     attr_reader :ip_address
     attr_reader :mac_address
@@ -20,12 +20,6 @@ module Phut
             mac_address: vhost.mac_address,
             device: vhost.device)
       end
-    end
-
-    def self.find_by(queries)
-      queries.inject(all) do |memo, (attr, value)|
-        memo.find_all { |each| each.__send__(attr) == value }
-      end.first
     end
 
     def self.create(*args)
@@ -59,6 +53,8 @@ module Phut
       @arp_entries = arp_entries
     end
     # rubocop:enable ParameterLists
+
+    include ShellRunner
 
     def name
       @name || @ip_address
