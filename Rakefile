@@ -7,7 +7,7 @@ RELISH_PROJECT = 'trema/phut'
 
 task default: :test
 task test: [:spec, :cucumber, :quality]
-task travis: [:spec, 'cucumber:travis', :quality]
+task travis: ['cucumber:travis', :quality]
 task quality: [:rubocop, :reek, :flog, :flay]
 
 Dir.glob('tasks/*.rake').each { |each| import each }
