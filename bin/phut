@@ -138,10 +138,6 @@ module Phut
 
     default_command :shell
 
-    on_error do |e|
-      raise e
-    end
-
     exit run(ARGV)
   end
   # rubocop:enable ModuleLength
