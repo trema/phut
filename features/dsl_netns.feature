@@ -77,3 +77,21 @@ Feature: The netns DSL directive.
     And the netns "host2" have the following route:
       |     net |       gateway |
       | 0.0.0.0 | 192.168.1.254 |
+
+  @sudo
+  Scenario: vlan option
+    Given a file named "phut.conf" with:
+      """
+      netns('host1') {
+        ip '192.168.0.1'
+        vlan 10
+      }
+      netns('host2') {
+        ip '192.168.1.2'
+        vlan 20
+      }
+      link 'host1', 'host2'
+      """
+    When I do phut run "phut.conf"
+    Then the VLAN of the netns "host1" should be "10"
+    And the VLAN of the netns "host2" should be "20"

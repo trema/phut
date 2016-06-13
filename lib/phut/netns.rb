@@ -43,45 +43,68 @@ module Phut
     attr_reader :ip_address
 
     def initialize(name:,
-                   ip_address: nil, netmask: '255.255.255.255', route: {})
+                   ip_address: nil, netmask: '255.255.255.255',
+                   route: {}, vlan: nil)
       @name = name
       @ip_address = ip_address
       @netmask = netmask
       @route = Route.new(net: route[:net], gateway: route[:gateway])
+      @vlan = vlan
     end
 
     def run
-      sudo "ip netns add #{@name}"
-      sudo "ip netns exec #{@name} ifconfig lo 127.0.0.1"
+      sudo "ip netns add #{name}"
+      sudo "ip netns exec #{name} ifconfig lo 127.0.0.1"
     end
 
-    def netmask
-      if %r{inet [^/]+/(\d+) } =~
-         sudo("ip -netns #{@name} -o -4 address show dev #{device}")
-        IPAddr.new('255.255.255.255').mask(Regexp.last_match(1).to_i).to_s
-      end
+    def stop
+      sudo "ip netns delete #{name}"
     end
 
     def device
-      if /^\d+: ([^@]+)@/ =~ sudo("ip -netns #{@name} -o link show type veth")
+      if /^\d+: ([^@]+)@/ =~ sudo("ip -netns #{name} -o link show type veth")
         Regexp.last_match(1)
       end
     end
 
+    # rubocop:disable MethodLength
     def device=(device_name)
       return unless device_name
-      sudo "ip link set dev #{device_name} netns #{@name}"
-      sudo "ip netns exec #{@name} "\
-           "ifconfig #{device_name} #{@ip_address} netmask #{@netmask}"
-      @route.add @name
-    end
+      sudo "ip link set dev #{device_name} netns #{name}"
 
-    def stop
-      sudo "ip netns delete #{@name}"
+      vlan_suffix = @vlan ? ".#{@vlan}" : ''
+      if @vlan
+        sudo "ip -netns #{name} link set #{device_name} up"
+        sudo "ip -netns #{name} "\
+             "link add link #{device_name} name "\
+             "#{device_name}#{vlan_suffix} type vlan id #{@vlan}"
+      end
+      sudo "ip -netns #{name} link set #{device_name}#{vlan_suffix} up"
+      sudo "ip -netns #{name} "\
+           "addr replace #{@ip_address}/#{@netmask} "\
+           "dev #{device_name}#{vlan_suffix}"
+
+      sudo "ip -netns #{name} link set #{device_name}#{vlan_suffix} up"
+
+      @route.add name
+    end
+    # rubocop:enable MethodLength
+
+    def netmask
+      if %r{inet [^/]+/(\d+) } =~
+         sudo("ip -netns #{name} -o -4 address show dev #{device}")
+        IPAddr.new('255.255.255.255').mask(Regexp.last_match(1).to_i).to_s
+      end
     end
 
     def route
-      Route.read @name
+      Route.read name
+    end
+
+    def vlan
+      if /^\d+: #{device}\.(\d+)@/ =~ sudo("ip -netns #{name} -o link show")
+        Regexp.last_match(1)
+      end
     end
   end
 end

@@ -22,6 +22,10 @@ module Phut
         @attributes[:net] = options.fetch(:net)
         @attributes[:gateway] = options.fetch(:gateway)
       end
+
+      def vlan(value)
+        @attributes[:vlan] = value
+      end
     end
   end
 end
