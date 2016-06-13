@@ -38,10 +38,6 @@ module Phut
       end
     end
 
-    def self.select(&block)
-      all.select(&block)
-    end
-
     def self.create(*args)
       new(*args).tap(&:start)
     end

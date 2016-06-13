@@ -59,7 +59,7 @@ module Phut
     end
 
     describe '.select' do
-      When(:result) { Link.select { |each| each.names == %w(bar foo) } }
+      When(:result) { Link.all.select { |each| each.names == %w(bar foo) } }
 
       context 'when there is no link' do
         Then { result.empty? }

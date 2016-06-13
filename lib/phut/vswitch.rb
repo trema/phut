@@ -9,7 +9,7 @@ module Phut
 
     def self.connect_link
       Link.all.each do |link|
-        select { |vswitch| link.connect_to?(vswitch) }.each do |each|
+        all.select { |vswitch| link.connect_to?(vswitch) }.each do |each|
           each.add_port link.device(each.name)
         end
       end

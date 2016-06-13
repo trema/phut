@@ -16,10 +16,6 @@ module Phut
       all.find { |each| each.names == names.sort }
     end
 
-    def self.select(&block)
-      all.select(&block)
-    end
-
     def self.create(name_a, name_b)
       new(name_a, name_b).start
     end
