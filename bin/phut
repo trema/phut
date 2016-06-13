@@ -71,19 +71,15 @@ module Phut
       c.flag [:S, :socket_dir], default_value: Phut.socket_dir
 
       c.action do |global_options, options, args|
+        Phut.pid_dir = options.fetch(:pid_dir)
+        Phut.log_dir = options.fetch(:log_dir)
+        Phut.socket_dir = options.fetch(:socket_dir)
+
         stdout_logger = Logger.new($stderr).tap do |logger|
           logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
           logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
         end
-        # rubocop:disable LineLength
-        FileUtils.mkdir_p(options.fetch(:pid_dir)) unless File.exist?(options.fetch(:pid_dir))
-        FileUtils.mkdir_p(options.fetch(:log_dir)) unless File.exist?(options.fetch(:log_dir))
-        FileUtils.mkdir_p(options.fetch(:socket_dir)) unless File.exist?(options.fetch(:socket_dir))
-        # rubocop:enable LineLength
 
-        Phut.pid_dir = options.fetch(:pid_dir)
-        Phut.log_dir = options.fetch(:log_dir)
-        Phut.socket_dir = options.fetch(:socket_dir)
         Phut::Parser.new(args[0], stdout_logger).parse
       end
     end
