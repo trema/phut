@@ -1,6 +1,6 @@
 Feature: phut kill command
   Background:
-    Given a file named "network.conf" with:
+    Given a file named "phut.conf" with:
       """
       vswitch { datapath_id 0xabc }
 
@@ -10,7 +10,7 @@ Feature: phut kill command
       link '0xabc', 'host1'
       link '0xabc', 'host2'
       """
-    And I do phut run "network.conf"
+    And I do phut run "phut.conf"
 
   @sudo
   Scenario: phut kill vswitch_name
@@ -21,7 +21,6 @@ Feature: phut kill command
   @sudo
   Scenario: phut kill vhost_name
     When I do phut kill "host1"
-    And I successfully run `sleep 5`
     Then the following files should not exist:
       | vhost.host1.pid |
       | vhost.host1.ctl |

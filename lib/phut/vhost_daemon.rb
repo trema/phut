@@ -53,6 +53,10 @@ module Phut
       shutdown
     end
 
+    def running?
+      FileTest.exists?(pid_file)
+    end
+
     def stop
       @stop = true
     end
@@ -180,10 +184,6 @@ module Phut
 
     def update_pid_file
       File.open(pid_file, 'w') { |file| file << Process.pid }
-    end
-
-    def running?
-      FileTest.exists?(pid_file)
     end
 
     def pid_file

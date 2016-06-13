@@ -13,7 +13,7 @@ module Phut
     attr_reader :mac_address
 
     def self.all
-      ::Dir.glob(File.join(Phut.socket_dir, 'vhost.*.ctl')).map do |each|
+      Dir.glob(File.join(Phut.socket_dir, 'vhost.*.ctl')).map do |each|
         vhost = DRbObject.new_with_uri("drbunix:#{each}")
         new(name: vhost.name,
             ip_address: vhost.ip_address,
@@ -71,6 +71,10 @@ module Phut
       self.device = @device if @device
     end
     alias run start
+
+    def running?
+      VhostDaemon.process(name, Phut.socket_dir).running?
+    end
 
     def stop
       sh "bundle exec vhost stop -n #{name} -S #{Phut.socket_dir}"

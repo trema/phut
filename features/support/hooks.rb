@@ -2,9 +2,21 @@
 require 'phut'
 
 Before do
-  @log_dir = './log'
-  @pid_dir = './tmp/pids'
-  @socket_dir = './tmp/sockets'
+  Aruba.configure do |config|
+    Dir.chdir(config.working_directory) do
+      @log_dir = './log'
+      @pid_dir = './tmp/pids'
+      @socket_dir = './tmp/sockets'
+
+      FileUtils.mkdir_p(@log_dir) unless File.exist?(@log_dir)
+      FileUtils.mkdir_p(@pid_dir) unless File.exist?(@pid_dir)
+      FileUtils.mkdir_p(@socket_dir) unless File.exist?(@socket_dir)
+
+      Phut.pid_dir = @pid_dir
+      Phut.log_dir = @log_dir
+      Phut.socket_dir = @socket_dir
+    end
+  end
 end
 
 Before('@sudo') do

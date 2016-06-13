@@ -14,6 +14,11 @@ module Phut
       @bridge_name = bridge_name
     end
 
+    def tcp_port
+      sudo("ovs-vsctl get-controller #{@bridge_name}").
+        chomp.split(':').last.to_i
+    end
+
     def add_bridge
       sudo "ovs-vsctl add-br #{@bridge_name}"
       sudo "/sbin/sysctl -w net.ipv6.conf.#{@bridge_name}.disable_ipv6=1 -q"

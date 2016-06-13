@@ -22,10 +22,12 @@ module Phut
 
     def self.all
       list_br.map do |name, dpid|
+        tcp_port = Vsctl.new(name: name, name_prefix: prefix,
+                             dpid: dpid, bridge_name: prefix + name).tcp_port
         if /^0x\h+/ =~ name
-          new(dpid: dpid) if dpid == name.hex
+          new(dpid: dpid, tcp_port: tcp_port) if dpid == name.hex
         else
-          new(name: name, dpid: dpid)
+          new(name: name, dpid: dpid, tcp_port: tcp_port)
         end
       end
     end
@@ -58,6 +60,7 @@ module Phut
 
     attr_reader :dpid
     alias datapath_id dpid
+    attr_reader :tcp_port
 
     def initialize(dpid:, name: nil, tcp_port: 6653)
       @dpid = dpid
