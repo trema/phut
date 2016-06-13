@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require 'phut/link'
-require 'phut/null_logger'
 require 'phut/syntax'
 require 'phut/vhost'
 require 'phut/vswitch'
@@ -8,10 +7,9 @@ require 'phut/vswitch'
 module Phut
   # Configuration DSL parser.
   class Parser
-    def initialize(file, logger = NullLogger.new)
+    def initialize(file)
       @file = file
       @netns = []
-      @logger = logger
     end
 
     def parse
