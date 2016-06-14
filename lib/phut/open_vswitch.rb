@@ -8,17 +8,22 @@ require 'pio'
 
 module Phut
   # Open vSwitch controller
+  # rubocop:disable ClassLength
   class OpenVswitch
-    class_attribute :prefix
-
     extend ShellRunner
     extend Finder
 
-    def self.name_prefix(name)
-      self.prefix = name
-    end
+    class_attribute :prefix
+    self.prefix = ''
 
-    name_prefix ''
+    def self.create(*args)
+      found = find_by(dpid: args.first[:dpid])
+      if found
+        inspection = "name: \"#{found.name}\", dpid: #{found.dpid.to_hex}"
+        raise "a Vswitch (#{inspection}) already exists"
+      end
+      new(*args).tap(&:start)
+    end
 
     def self.all
       list_br.map do |name, dpid|
@@ -40,10 +45,6 @@ module Phut
       end
     end
 
-    def self.create(*args)
-      new(*args).tap(&:start)
-    end
-
     def self.dump_flows(name)
       find_by!(name: name).dump_flows
     end
@@ -54,6 +55,10 @@ module Phut
 
     def self.destroy_all
       all.each(&:stop)
+    end
+
+    def self.name_prefix(name)
+      self.prefix = name
     end
 
     include ShellRunner
@@ -128,4 +133,5 @@ module Phut
       dpid <=> other.dpid
     end
   end
+  # rubocop:enable ClassLength
 end

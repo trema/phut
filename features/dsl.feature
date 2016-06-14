@@ -10,7 +10,7 @@ Feature: DSL parser
     Then the exit status should not be 0
     And the stderr should contain:
       """
-      a bridge named vsw_0xabc already exists
+      a Vswitch (name: "0xabc", dpid: 0xabc) already exists
       """
 
   @sudo

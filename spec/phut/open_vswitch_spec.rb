@@ -36,14 +36,6 @@ module Phut
           Then { switch.name == '0xc001' }
           Then { switch.running? == true }
         end
-
-        context 'when there is a switch (dpid = 0xc001)' do
-          Given { OpenVswitch.create dpid: 0xc001 }
-          Then do
-            switch == Failure(RuntimeError,
-                              /cannot create a bridge named 0xc001/)
-          end
-        end
       end
 
       context "with name: 'dadi', dpid: 0xc001" do
