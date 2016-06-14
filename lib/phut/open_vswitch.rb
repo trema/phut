@@ -21,7 +21,7 @@ module Phut
         inspection = "name: \"#{found.name}\", dpid: #{found.dpid.to_hex}"
         raise "a Vswitch (#{inspection}) already exists"
       end
-      new(*args).tap(&:start)
+      new(*args).__send__ :start
     end
 
     def self.destroy(name)
@@ -91,14 +91,6 @@ module Phut
       "bridge: \"#{bridge}\">"
     end
 
-    def start
-      @vsctl.add_bridge
-      @vsctl.set_openflow_version_and_dpid
-      @vsctl.controller_tcp_port = @tcp_port
-      @vsctl.set_fail_mode_secure
-    end
-    alias run start
-
     def destroy
       raise "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       @vsctl.del_bridge
@@ -123,6 +115,16 @@ module Phut
 
     def <=>(other)
       dpid <=> other.dpid
+    end
+
+    private
+
+    def start
+      @vsctl.add_bridge
+      @vsctl.set_openflow_version_and_dpid
+      @vsctl.controller_tcp_port = @tcp_port
+      @vsctl.set_fail_mode_secure
+      self
     end
   end
 end
