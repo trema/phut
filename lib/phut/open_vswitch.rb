@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'active_support/core_ext/class/attribute'
-require 'active_support/core_ext/module/delegation.rb'
+require 'active_support/core_ext/module/delegation'
 require 'phut/finder'
 require 'phut/shell_runner'
 require 'phut/vsctl'
@@ -86,6 +86,13 @@ module Phut
       "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
     end
 
+    def inspect
+      "#<Vswitch name: \"#{name}\", "\
+      "dpid: #{@dpid.to_hex}, "\
+      "openflow_version: \"#{openflow_version}\", "\
+      "bridge_name: \"#{bridge_name}\">"
+    end
+
     def start
       @vsctl.add_bridge
       @vsctl.set_openflow_version_and_dpid
@@ -99,6 +106,11 @@ module Phut
       @vsctl.del_bridge
     end
     alias shutdown stop
+
+    def openflow_version
+      /OpenFlow(\d)(\d)/ =~ Pio::OpenFlow.version
+      Regexp.last_match(1) + '.' + Regexp.last_match(2)
+    end
 
     def dump_flows
       sudo("ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}").

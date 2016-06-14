@@ -15,6 +15,14 @@ Feature: Shell
     Then the output should contain "a bridge named vsw_0xabc already exists"
 
   @sudo
+  Scenario: Vswitch inspection
+    Given I type "Vswitch.create(dpid: 0xabc)"
+    Then the output should contain:
+     """
+     #<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: "1.0", bridge_name: "vsw_0xabc">
+     """
+
+  @sudo
   Scenario: Vswitch#stop 
     Given I type "vswitch = Vswitch.create(dpid: 0xabc)"
     When I type "vswitch.stop"
