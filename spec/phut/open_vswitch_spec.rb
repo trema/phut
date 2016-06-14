@@ -76,9 +76,9 @@ module Phut
       end
     end
 
-    describe '#stop' do
+    describe '#destroy' do
       Given(:switch) { OpenVswitch.create dpid: 0xc001 }
-      When { switch.stop }
+      When { switch.destroy }
       Then { switch.running? == false }
     end
   end

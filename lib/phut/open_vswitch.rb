@@ -25,7 +25,11 @@ module Phut
     end
 
     def self.destroy(name)
-      find_by!(name: name).stop
+      find_by!(name: name).destroy
+    end
+
+    def self.destroy_all
+      all.each(&:destroy)
     end
 
     def self.all
@@ -42,10 +46,6 @@ module Phut
 
     def self.dump_flows(name)
       find_by!(name: name).dump_flows
-    end
-
-    def self.destroy_all
-      all.each(&:stop)
     end
 
     def self.name_prefix(name)
@@ -97,11 +97,10 @@ module Phut
     end
     alias run start
 
-    def stop
+    def destroy
       raise "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       @vsctl.del_bridge
     end
-    alias shutdown stop
 
     def openflow_version
       /OpenFlow(\d)(\d)/ =~ Pio::OpenFlow.version
