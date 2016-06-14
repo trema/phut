@@ -19,7 +19,7 @@ Feature: Shell
     Given I type "Vswitch.create(dpid: 0xabc)"
     Then the output should contain:
      """
-     #<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: "1.0", bridge_name: "vsw_0xabc">
+     #<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: "1.0", bridge: "vsw_0xabc">
      """
 
   @sudo

@@ -7,45 +7,45 @@ module Phut
   class Vsctl
     include ShellRunner
 
-    def initialize(name:, name_prefix:, dpid:, bridge_name:)
+    def initialize(name:, name_prefix:, dpid:, bridge:)
       @name = name
       @prefix = name_prefix
       @dpid = dpid
-      @bridge_name = bridge_name
+      @bridge = bridge
     end
 
     def tcp_port
-      sudo("ovs-vsctl get-controller #{@bridge_name}").
+      sudo("ovs-vsctl get-controller #{@bridge}").
         chomp.split(':').last.to_i
     end
 
     def add_bridge
-      sudo "ovs-vsctl add-br #{@bridge_name}"
-      sudo "/sbin/sysctl -w net.ipv6.conf.#{@bridge_name}.disable_ipv6=1 -q"
+      sudo "ovs-vsctl add-br #{@bridge}"
+      sudo "/sbin/sysctl -w net.ipv6.conf.#{@bridge}.disable_ipv6=1 -q"
     end
 
     def del_bridge
-      sudo "ovs-vsctl del-br #{@bridge_name}"
+      sudo "ovs-vsctl del-br #{@bridge}"
     end
 
     def set_openflow_version_and_dpid
-      sudo "ovs-vsctl set bridge #{@bridge_name} "\
+      sudo "ovs-vsctl set bridge #{@bridge} "\
            "protocols=#{Pio::OpenFlow.version} "\
            "other-config:datapath-id=#{dpid_zero_filled}"
     end
 
     def controller_tcp_port=(tcp_port)
-      sudo "ovs-vsctl set-controller #{@bridge_name} "\
+      sudo "ovs-vsctl set-controller #{@bridge} "\
            "tcp:127.0.0.1:#{tcp_port} "\
-           "-- set controller #{@bridge_name} connection-mode=out-of-band"
+           "-- set controller #{@bridge} connection-mode=out-of-band"
     end
 
     def set_fail_mode_secure
-      sudo "ovs-vsctl set-fail-mode #{@bridge_name} secure"
+      sudo "ovs-vsctl set-fail-mode #{@bridge} secure"
     end
 
     def add_port(device)
-      sudo "ovs-vsctl add-port #{@bridge_name} #{device}"
+      sudo "ovs-vsctl add-port #{@bridge} #{device}"
     end
 
     def add_numbered_port(port_number, device)
@@ -55,20 +55,20 @@ module Phut
     end
 
     def bring_port_up(port_number)
-      sh "sudo ovs-ofctl mod-port #{@bridge_name} #{port_number} up"
+      sh "sudo ovs-ofctl mod-port #{@bridge} #{port_number} up"
     end
 
     def bring_port_down(port_number)
-      sh "sudo ovs-ofctl mod-port #{@bridge_name} #{port_number} down"
+      sh "sudo ovs-ofctl mod-port #{@bridge} #{port_number} down"
     end
 
     def ports
-      sudo("ovs-vsctl list-ports #{@bridge_name}").split
+      sudo("ovs-vsctl list-ports #{@bridge}").split
     end
 
     def running?
-      system("sudo ovs-vsctl br-exists #{@bridge_name}") &&
-        !sudo("ovs-vsctl get-controller #{@bridge_name}").empty?
+      system("sudo ovs-vsctl br-exists #{@bridge}") &&
+        !sudo("ovs-vsctl get-controller #{@bridge}").empty?
     end
 
     private

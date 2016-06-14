@@ -23,7 +23,7 @@ module Phut
     def self.all
       list_br.map do |name, dpid|
         tcp_port = Vsctl.new(name: name, name_prefix: prefix,
-                             dpid: dpid, bridge_name: prefix + name).tcp_port
+                             dpid: dpid, bridge: prefix + name).tcp_port
         if /^0x\h+/ =~ name && dpid == name.hex
           new(dpid: dpid, tcp_port: tcp_port)
         else
@@ -67,7 +67,7 @@ module Phut
       @name = name
       @tcp_port = tcp_port
       @vsctl = Vsctl.new(name: default_name, name_prefix: self.class.prefix,
-                         dpid: @dpid, bridge_name: bridge_name)
+                         dpid: @dpid, bridge: bridge)
     end
 
     delegate :add_port, to: :@vsctl
@@ -90,7 +90,7 @@ module Phut
       "#<Vswitch name: \"#{name}\", "\
       "dpid: #{@dpid.to_hex}, "\
       "openflow_version: \"#{openflow_version}\", "\
-      "bridge_name: \"#{bridge_name}\">"
+      "bridge: \"#{bridge}\">"
     end
 
     def start
@@ -113,21 +113,19 @@ module Phut
     end
 
     def dump_flows
-      sudo("ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}").
+      sudo("ovs-ofctl dump-flows #{bridge} -O #{Pio::OpenFlow.version}").
         split("\n").inject('') do |memo, each|
         memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip + "\n")
       end
     end
 
-    def <=>(other)
-      dpid <=> other.dpid
-    end
-
-    private
-
-    def bridge_name
+    def bridge
       raise 'DPID is not set' unless @dpid
       self.class.prefix + name
+    end
+
+    def <=>(other)
+      dpid <=> other.dpid
     end
   end
 end
