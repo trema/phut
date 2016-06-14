@@ -8,7 +8,6 @@ require 'pio'
 
 module Phut
   # Open vSwitch controller
-  # rubocop:disable ClassLength
   class OpenVswitch
     extend ShellRunner
     extend Finder
@@ -26,7 +25,7 @@ module Phut
     end
 
     def self.all
-      list_br.map do |name, dpid|
+      Vsctl.list_br(prefix).map do |name, dpid|
         tcp_port = Vsctl.new(name: name, name_prefix: prefix,
                              dpid: dpid, bridge: prefix + name).tcp_port
         if /^0x\h+/ =~ name && dpid == name.hex
@@ -34,14 +33,6 @@ module Phut
         else
           new(name: name, dpid: dpid, tcp_port: tcp_port)
         end
-      end
-    end
-
-    def self.list_br
-      sudo('ovs-vsctl list-br').split.each_with_object([]) do |each, list|
-        next unless /^#{prefix}(\S+)/ =~ each
-        dpid_str = sudo("ovs-vsctl get bridge #{each} datapath-id").delete('"')
-        list << [Regexp.last_match(1), ('0x' + dpid_str).hex]
       end
     end
 
@@ -133,5 +124,4 @@ module Phut
       dpid <=> other.dpid
     end
   end
-  # rubocop:enable ClassLength
 end

@@ -5,6 +5,16 @@ require 'pio'
 module Phut
   # ovs-vsctl wrapper
   class Vsctl
+    extend ShellRunner
+
+    def self.list_br(prefix)
+      sudo('ovs-vsctl list-br').split.each_with_object([]) do |each, list|
+        next unless /^#{prefix}(\S+)/ =~ each
+        dpid_str = sudo("ovs-vsctl get bridge #{each} datapath-id").delete('"')
+        list << [Regexp.last_match(1), ('0x' + dpid_str).hex]
+      end
+    end
+
     include ShellRunner
 
     def initialize(name:, name_prefix:, dpid:, bridge:)
