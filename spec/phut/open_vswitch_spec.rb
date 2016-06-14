@@ -67,6 +67,11 @@ module Phut
       Then { OpenVswitch.all == [] }
     end
 
+    describe '.new' do
+      When(:result) { OpenVswitch.new }
+      Then { result == Failure(NoMethodError) }
+    end
+
     describe '#add_port' do
       Given(:switch) { OpenVswitch.create dpid: 0xc001 }
 

@@ -58,6 +58,8 @@ module Phut
     alias datapath_id dpid
     attr_reader :tcp_port
 
+    private_class_method :new
+
     def initialize(dpid:, name: nil, tcp_port: 6653)
       @dpid = dpid
       @name = name
