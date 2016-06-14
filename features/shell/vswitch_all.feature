@@ -15,3 +15,12 @@ Feature: Vswitch.all
      """
      [#<Vswitch name: "firewall", dpid: 0xabc, openflow_version: "1.0", bridge: "vsw_firewall">]
      """
+
+  @sudo
+  Scenario: Vswitch.all #=> [aVswitch]
+    Given I type "Vswitch.create(dpid: 0xabc)"
+    When I type "Vswitch.all"
+    Then the output should contain:
+     """
+     [#<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: "1.0", bridge: "vsw_0xabc">]
+     """
