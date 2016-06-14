@@ -3,16 +3,12 @@ Feature: Shell
     Given I run `phut -v` interactively
 
   @sudo
-  Scenario: Vswitch.create
-    When I type "Vswitch.create(dpid: 0xabc)"
-    And sleep 5
-    Then a vswitch named "0xabc" should be running
-
-  @sudo
-  Scenario: Vswitch.create twice and fail
-    Given I type "Vswitch.create(dpid: 0xabc)"
-    When I type "Vswitch.create(dpid: 0xabc)"
-    Then the output should contain "a bridge named vsw_0xabc already exists"
+  Scenario: Vswitch inspection
+    Given I type "Vswitch.create(name: 'firewall', dpid: 0xabc)"
+    Then the output should contain:
+     """
+     #<Vswitch name: "firewall", dpid: 0xabc, openflow_version: "1.0", bridge: "vsw_firewall">
+     """
 
   @sudo
   Scenario: Vswitch#stop 

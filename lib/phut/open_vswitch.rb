@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'active_support/core_ext/class/attribute'
-require 'active_support/core_ext/module/delegation.rb'
+require 'active_support/core_ext/module/delegation'
 require 'phut/finder'
 require 'phut/shell_runner'
 require 'phut/vsctl'
@@ -8,22 +8,27 @@ require 'pio'
 
 module Phut
   # Open vSwitch controller
+  # rubocop:disable ClassLength
   class OpenVswitch
-    class_attribute :prefix
-
     extend ShellRunner
     extend Finder
 
-    def self.name_prefix(name)
-      self.prefix = name
-    end
+    class_attribute :prefix
+    self.prefix = ''
 
-    name_prefix ''
+    def self.create(*args)
+      found = find_by(dpid: args.first[:dpid])
+      if found
+        inspection = "name: \"#{found.name}\", dpid: #{found.dpid.to_hex}"
+        raise "a Vswitch (#{inspection}) already exists"
+      end
+      new(*args).tap(&:start)
+    end
 
     def self.all
       list_br.map do |name, dpid|
         tcp_port = Vsctl.new(name: name, name_prefix: prefix,
-                             dpid: dpid, bridge_name: prefix + name).tcp_port
+                             dpid: dpid, bridge: prefix + name).tcp_port
         if /^0x\h+/ =~ name && dpid == name.hex
           new(dpid: dpid, tcp_port: tcp_port)
         else
@@ -40,10 +45,6 @@ module Phut
       end
     end
 
-    def self.create(*args)
-      new(*args).tap(&:start)
-    end
-
     def self.dump_flows(name)
       find_by!(name: name).dump_flows
     end
@@ -54,6 +55,10 @@ module Phut
 
     def self.destroy_all
       all.each(&:stop)
+    end
+
+    def self.name_prefix(name)
+      self.prefix = name
     end
 
     include ShellRunner
@@ -67,7 +72,7 @@ module Phut
       @name = name
       @tcp_port = tcp_port
       @vsctl = Vsctl.new(name: default_name, name_prefix: self.class.prefix,
-                         dpid: @dpid, bridge_name: bridge_name)
+                         dpid: @dpid, bridge: bridge)
     end
 
     delegate :add_port, to: :@vsctl
@@ -86,6 +91,13 @@ module Phut
       "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
     end
 
+    def inspect
+      "#<Vswitch name: \"#{name}\", "\
+      "dpid: #{@dpid.to_hex}, "\
+      "openflow_version: \"#{openflow_version}\", "\
+      "bridge: \"#{bridge}\">"
+    end
+
     def start
       @vsctl.add_bridge
       @vsctl.set_openflow_version_and_dpid
@@ -100,22 +112,26 @@ module Phut
     end
     alias shutdown stop
 
+    def openflow_version
+      /OpenFlow(\d)(\d)/ =~ Pio::OpenFlow.version
+      Regexp.last_match(1) + '.' + Regexp.last_match(2)
+    end
+
     def dump_flows
-      sudo("ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}").
+      sudo("ovs-ofctl dump-flows #{bridge} -O #{Pio::OpenFlow.version}").
         split("\n").inject('') do |memo, each|
         memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip + "\n")
       end
     end
 
-    def <=>(other)
-      dpid <=> other.dpid
-    end
-
-    private
-
-    def bridge_name
+    def bridge
       raise 'DPID is not set' unless @dpid
       self.class.prefix + name
     end
+
+    def <=>(other)
+      dpid <=> other.dpid
+    end
   end
+  # rubocop:enable ClassLength
 end
