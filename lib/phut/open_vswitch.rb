@@ -24,6 +24,10 @@ module Phut
       new(*args).tap(&:start)
     end
 
+    def self.destroy(name)
+      find_by!(name: name).stop
+    end
+
     def self.all
       Vsctl.list_br(prefix).map do |name, dpid|
         tcp_port = Vsctl.new(name: name, name_prefix: prefix,
@@ -38,10 +42,6 @@ module Phut
 
     def self.dump_flows(name)
       find_by!(name: name).dump_flows
-    end
-
-    def self.shutdown(name)
-      find_by!(name: name).stop
     end
 
     def self.destroy_all
