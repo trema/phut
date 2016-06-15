@@ -2,6 +2,7 @@
 require 'active_support/core_ext/class/attribute'
 require 'active_support/core_ext/module/delegation'
 require 'phut/finder'
+require 'phut/link'
 require 'phut/shell_runner'
 require 'phut/vsctl'
 require 'pio'
@@ -42,6 +43,10 @@ module Phut
           new(name: name, dpid: dpid, tcp_port: tcp_port)
         end
       end
+    end
+
+    def self.select(&block)
+      all.select(&block)
     end
 
     def self.dump_flows(name)

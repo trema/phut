@@ -14,7 +14,11 @@ module Phut
 
     def parse
       Syntax.new(@netns).instance_eval IO.read(@file), @file
-      Vswitch.connect_link
+      Link.all.each do |link|
+        Vswitch.select { |each| link.connect_to?(each) }.each do |vswitch|
+          vswitch.add_port link.device(vswitch.name)
+        end
+      end
       Vhost.connect_link
       update_netns_interfaces
     end
