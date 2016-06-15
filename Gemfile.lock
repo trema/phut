@@ -3,7 +3,7 @@ PATH
   specs:
     phut (0.7.7)
       activesupport (~> 4.2.6)
-      gli (~> 2.14.0)
+      gli (~> 2.13.4)
       pio (~> 0.30.0)
       pry (~> 0.10.3)
 
@@ -35,7 +35,7 @@ GEM
       ffi (~> 1.0, >= 1.0.11)
     codeclimate-engine-rb (0.3.1)
       virtus (~> 1.0)
-    codeclimate-test-reporter (0.5.1)
+    codeclimate-test-reporter (0.5.2)
       simplecov (>= 0.7.1, < 1.0.0)
     coderay (1.1.1)
     coercible (1.0.0)
@@ -82,7 +82,7 @@ GEM
     gherkin (4.0.0)
     given_core (3.8.0)
       sorcerer (>= 0.3.7)
-    gli (2.14.0)
+    gli (2.13.4)
     guard (2.14.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
