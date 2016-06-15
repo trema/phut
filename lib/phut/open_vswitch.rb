@@ -78,7 +78,6 @@ module Phut
     delegate :ports, to: :@vsctl
     delegate :bring_port_up, to: :@vsctl
     delegate :bring_port_down, to: :@vsctl
-    delegate :running?, to: :@vsctl
 
     def name
       @name || format('%#x', @dpid)
@@ -97,7 +96,6 @@ module Phut
     end
 
     def destroy
-      raise "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
       @vsctl.del_bridge
     end
 

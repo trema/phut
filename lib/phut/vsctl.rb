@@ -78,11 +78,6 @@ module Phut
       sudo("ovs-vsctl list-ports #{@bridge}").split
     end
 
-    def running?
-      system("sudo ovs-vsctl br-exists #{@bridge}") &&
-        !sudo("ovs-vsctl get-controller #{@bridge}").empty?
-    end
-
     private
 
     def dpid_zero_filled

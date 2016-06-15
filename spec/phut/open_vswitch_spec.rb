@@ -34,7 +34,6 @@ module Phut
         context 'when there is no switch' do
           Then { switch.dpid == 0xc001 }
           Then { switch.name == '0xc001' }
-          Then { switch.running? == true }
         end
       end
 
@@ -44,7 +43,6 @@ module Phut
         context 'when there is no switch' do
           Then { switch.name == 'dadi' }
           Then { switch.dpid == 0xc001 }
-          Then { switch.running? == true }
         end
       end
     end
@@ -79,12 +77,6 @@ module Phut
         When { switch.add_port 'port1' }
         Then { switch.ports == ['port1'] }
       end
-    end
-
-    describe '#destroy' do
-      Given(:switch) { OpenVswitch.create dpid: 0xc001 }
-      When { switch.destroy }
-      Then { switch.running? == false }
     end
   end
 end
