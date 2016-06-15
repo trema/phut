@@ -56,12 +56,14 @@ module Phut
 
     def add_port(device)
       sudo "ovs-vsctl add-port #{@bridge} #{device}"
+      nil
     end
 
     def add_numbered_port(port_number, device)
       add_port device
       sudo "ovs-vsctl set Port #{device} "\
            "other_config:rstp-port-num=#{port_number}"
+      nil
     end
 
     def bring_port_up(port_number)

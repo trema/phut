@@ -70,9 +70,9 @@ module Phut
 
     delegate :add_port, to: :@vsctl
     delegate :add_numbered_port, to: :@vsctl
+    delegate :ports, to: :@vsctl
     delegate :bring_port_up, to: :@vsctl
     delegate :bring_port_down, to: :@vsctl
-    delegate :ports, to: :@vsctl
     delegate :running?, to: :@vsctl
 
     def name
