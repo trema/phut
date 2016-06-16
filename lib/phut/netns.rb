@@ -2,6 +2,7 @@
 require 'phut/finder'
 require 'phut/route'
 require 'phut/shell_runner'
+require 'phut/veth'
 
 module Phut
   # `ip netns ...` command runner
@@ -62,8 +63,8 @@ module Phut
     end
 
     def device
-      if /^\d+: ([^@]+)@/ =~
-         sudo("ip netns exec #{name} ip -o link show type veth")
+      if /^\d+: (#{Phut::Veth::PREFIX}[^@\.]+)@/ =~
+         sudo("ip netns exec #{name} ip -o link show")
         Regexp.last_match(1)
       end
     end
