@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.description = 'A simple network emulator '\
                     'with capabilities similar to mininet.'
 
-  gem.license = 'GPL3'
+  gem.licenses = %w(GPLv2 MIT)
 
   gem.authors = ['Yasuhito Takamiya']
   gem.email = ['yasuhito@gmail.com']
