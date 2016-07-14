@@ -68,6 +68,12 @@ module Phut
       end
     end
 
+    def mac_address
+      if %r{link/ether (\S+)}=~ sudo("ip netns exec #{name} ip -o link show")
+        Regexp.last_match(1)
+      end
+    end
+
     def device=(device_name)
       return unless device_name
       sudo "ip link set dev #{device_name} netns #{@name}"
