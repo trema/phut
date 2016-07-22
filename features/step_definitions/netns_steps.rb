@@ -20,3 +20,7 @@ Then(/^the netns "([^"]*)" have the following route:$/) do |name, table|
   expect(netns.route.net).to eq table.hashes.first['net']
   expect(netns.route.gateway).to eq table.hashes.first['gateway']
 end
+
+Then(/^the VLAN of the netns "([^"]*)" should be "([^"]*)"$/) do |name, vlan|
+  expect(Phut::Netns.find_by!(name: name).vlan).to eq vlan
+end

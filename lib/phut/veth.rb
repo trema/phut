@@ -11,8 +11,8 @@ module Phut
 
     def self.all
       Netns.all.map(&:device).compact +
-        sh('ip -o link show type veth').split("\n").map do |each|
-          /^\d+: (#{PREFIX}\d+_[^@]+)@/ =~ each ? Regexp.last_match(1) : nil
+        sh('ip -o link show').split("\n").map do |each|
+          /^\d+: (#{PREFIX}\d+_[^:]*?)[@:]/ =~ each ? Regexp.last_match(1) : nil
         end.compact
     end
 
