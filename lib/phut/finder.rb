@@ -12,7 +12,7 @@ module Phut
 
     def find_by!(queries)
       name = to_s.demodulize
-      find_by(queries) || raise("#{name} not found: #{queries.inspect}")
+      find_by(queries) || raise("#{name} #{queries.inspect} not found")
     end
   end
 end

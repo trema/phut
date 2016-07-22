@@ -34,15 +34,6 @@ module Phut
         context 'when there is no switch' do
           Then { switch.dpid == 0xc001 }
           Then { switch.name == '0xc001' }
-          Then { switch.running? == true }
-        end
-
-        context 'when there is a switch (dpid = 0xc001)' do
-          Given { OpenVswitch.create dpid: 0xc001 }
-          Then do
-            switch == Failure(RuntimeError,
-                              /cannot create a bridge named 0xc001/)
-          end
         end
       end
 
@@ -52,7 +43,6 @@ module Phut
         context 'when there is no switch' do
           Then { switch.name == 'dadi' }
           Then { switch.dpid == 0xc001 }
-          Then { switch.running? == true }
         end
       end
     end
@@ -75,6 +65,11 @@ module Phut
       Then { OpenVswitch.all == [] }
     end
 
+    describe '.new' do
+      When(:result) { OpenVswitch.new }
+      Then { result == Failure(NoMethodError) }
+    end
+
     describe '#add_port' do
       Given(:switch) { OpenVswitch.create dpid: 0xc001 }
 
@@ -82,12 +77,6 @@ module Phut
         When { switch.add_port 'port1' }
         Then { switch.ports == ['port1'] }
       end
-    end
-
-    describe '#stop' do
-      Given(:switch) { OpenVswitch.create dpid: 0xc001 }
-      When { switch.stop }
-      Then { switch.running? == false }
     end
   end
 end
