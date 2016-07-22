@@ -63,7 +63,7 @@ module Phut
     end
 
     def device
-      if /^\d+: (#{Phut::Veth::PREFIX}[^@\.]+)@/ =~
+      if /^\d+: (#{Phut::Veth::PREFIX}[^:\.]*?)[:@]/ =~
          sudo("ip netns exec #{name} ip -o link show")
         Regexp.last_match(1)
       end
