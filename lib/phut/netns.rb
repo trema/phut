@@ -44,10 +44,14 @@ module Phut
     attr_reader :ip_address
 
     def initialize(name:,
-                   ip_address: nil, netmask: '255.255.255.255',
-                   route: {}, vlan: nil)
+                   ip_address: nil,
+                   mac_address: nil,
+                   netmask: '255.255.255.255',
+                   route: {},
+                   vlan: nil)
       @name = name
       @ip_address = ip_address
+      @mac_address = mac_address
       @netmask = netmask
       @route = Route.new(net: route[:net], gateway: route[:gateway])
       @vlan = vlan
@@ -80,6 +84,10 @@ module Phut
         sudo "ip netns exec #{name} "\
              "ip link add link #{device_name} name "\
              "#{device_name}#{vlan_suffix} type vlan id #{@vlan}"
+      end
+      if @mac_address
+        sudo "ip netns exec #{name} "\
+             "ip link set #{device_name}#{vlan_suffix} address #{@mac_address}"
       end
       sudo "ip netns exec #{name} ip link set #{device_name}#{vlan_suffix} up"
       sudo "ip netns exec #{name} "\
