@@ -66,6 +66,10 @@ module Phut
       sudo "ip netns delete #{name}"
     end
 
+    def exec(command)
+      sudo "ip netns exec #{name} #{command}"
+    end
+
     def device
       if /^\d+: (#{Phut::Veth::PREFIX}[^:\.]*?)[:@]/ =~
          sudo("ip netns exec #{name} ip -o link show")
