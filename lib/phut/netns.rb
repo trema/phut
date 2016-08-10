@@ -43,6 +43,8 @@ module Phut
     attr_reader :name
     attr_reader :ip_address
 
+    # rubocop:disable MethodLength
+    # rubocop:disable ParameterLists
     def initialize(name:,
                    ip_address: nil,
                    mac_address: nil,
@@ -56,6 +58,8 @@ module Phut
       @route = Route.new(net: route[:net], gateway: route[:gateway])
       @vlan = vlan
     end
+    # rubocop:enable MethodLength
+    # rubocop:enable ParameterLists
 
     def run
       sudo "ip netns add #{name}"
@@ -78,6 +82,7 @@ module Phut
     end
 
     # rubocop:disable MethodLength
+    # rubocop:disable AbcSize
     def device=(device_name)
       return unless device_name
       sudo "ip link set dev #{device_name} netns #{name}"
@@ -103,6 +108,7 @@ module Phut
       @route.add name
     end
     # rubocop:enable MethodLength
+    # rubocop:enable AbcSize
 
     def netmask
       if %r{inet [^/]+/(\d+) } =~
