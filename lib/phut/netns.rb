@@ -42,6 +42,7 @@ module Phut
 
     attr_reader :name
     attr_reader :ip_address
+    attr_reader :mac_address
 
     # rubocop:disable MethodLength
     # rubocop:disable ParameterLists
