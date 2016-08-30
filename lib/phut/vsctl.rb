@@ -61,8 +61,8 @@ module Phut
 
     def add_numbered_port(port_number, device)
       add_port device
-      sudo "ovs-vsctl set Port #{device} "\
-           "other_config:rstp-port-num=#{port_number}"
+      sudo "ovs-vsctl set Interface #{device} "\
+           "ofport_request=#{port_number}"
       nil
     end
 
