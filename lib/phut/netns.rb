@@ -68,6 +68,9 @@ module Phut
     end
 
     def stop
+      sudo("ip netns pids #{name}").split("\n").each do |each|
+        exec "kill #{each}"
+      end
       sudo "ip netns delete #{name}"
     end
 
