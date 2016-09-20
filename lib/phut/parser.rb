@@ -31,7 +31,7 @@ module Phut
           Netns.create(name: each[:name],
                        ip_address: each[:ip], netmask: each[:netmask],
                        route: { net: each[:net], gateway: each[:gateway] },
-                       vlan: each[:vlan])
+                       mac_address: each[:mac_address], vlan: each[:vlan])
         netns.device = find_network_device(each.name)
       end
     end
