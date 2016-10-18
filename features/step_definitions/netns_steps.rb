@@ -11,6 +11,10 @@ Then(/^the IP address of the netns "([^"]*)" should be "([^"]*)"$/) do |name, ip
   expect(Phut::Netns.find_by!(name: name).ip_address).to eq ip
 end
 
+Then(/^the MAC address of the netns "([^"]*)" should be "([^"]*)"$/) do |name, mac|
+  expect(Phut::Netns.find_by!(name: name).mac_address).to eq mac
+end
+
 Then(/^the netmask of the netns "([^"]*)" should be "([^"]*)"$/) do |name, netmask|
   expect(Phut::Netns.find_by!(name: name).netmask).to eq netmask
 end

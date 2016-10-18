@@ -15,13 +15,18 @@ module Phut
     def self.all
       sh('ip netns list').split("\n").map do |each|
         name = each.split.first
-        addr_list = sudo("ip netns exec #{name} ip -4 -o addr list").split("\n")
-        if addr_list.size > 1
-          %r{inet ([^/]+)/(\d+)} =~ addr_list[1]
-          new(name: name,
-              ip_address: Regexp.last_match(1),
-              netmask: IPAddr.new('255.255.255.255').
-                       mask(Regexp.last_match(2).to_i).to_s)
+        ip_addr_list =
+          sudo("ip netns exec #{name} ip -4 -o addr list").split("\n")
+        mac_addr_list =
+          sudo("ip netns exec #{name} ip -4 -o link list").split("\n")
+        if ip_addr_list.size > 1
+          %r{inet ([^/]+)/(\d+)} =~ ip_addr_list[1]
+          ip_address = Regexp.last_match(1)
+          mask_length = Regexp.last_match(2).to_i
+          netmask = IPAddr.new('255.255.255.255').mask(mask_length).to_s
+          %r{link/ether ((?:[a-f\d]{2}:){5}[a-f\d]{2})}i =~ mac_addr_list[1]
+          new(name: name, ip_address: ip_address, netmask: netmask,
+              mac_address: Regexp.last_match(1))
         else
           new(name: name)
         end
@@ -106,7 +111,6 @@ module Phut
       sudo "ip netns exec #{name} "\
            "ip addr replace #{@ip_address}/#{@netmask} "\
            "dev #{device_name}#{vlan_suffix}"
-
       sudo "ip netns exec #{name} ip link set #{device_name}#{vlan_suffix} up"
 
       @route.add name

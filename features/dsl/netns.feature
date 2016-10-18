@@ -55,6 +55,24 @@ Feature: The netns DSL directive.
     And the netmask of the netns "host2" should be "255.255.255.128"
 
   @sudo
+  Scenario: mac option
+    Given a file named "phut.conf" with:
+      """
+      netns('host1') {
+        ip '192.168.0.1'
+        mac '00:00:ba:dc:ab:1e'
+      }
+      netns('host2') {
+        ip '192.168.0.2'
+        mac '00:ac:ce:55:1b:1e'
+      }
+      link 'host1', 'host2'
+      """
+    When I do phut run "phut.conf"
+    Then the MAC address of the netns "host1" should be "00:00:ba:dc:ab:1e"
+    And the MAC address of the netns "host2" should be "00:ac:ce:55:1b:1e"
+
+  @sudo
   Scenario: route option
     Given a file named "phut.conf" with:
       """
