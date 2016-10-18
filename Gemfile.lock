@@ -1,20 +1,27 @@
+GIT
+  remote: https://github.com/trema/pio.git
+  revision: a64e9a0a25b4719588ff9b9555458ab8c49cfa85
+  branch: develop
+  specs:
+    pio (0.30.0)
+      activesupport (~> 5.0.0.1)
+      bindata (~> 2.1.0)
+
 PATH
   remote: .
   specs:
     phut (0.7.7)
-      activesupport (~> 4.2.6)
+      activesupport (~> 5.0.0.1)
       gli (~> 2.13.4)
-      pio (~> 0.30.0)
       pry (~> 0.10.3)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.2.6)
+    activesupport (5.0.0.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
-      thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     archive-tar-minitar (0.5.2)
     aruba (0.14.1)
@@ -40,6 +47,7 @@ GEM
     coderay (1.1.1)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
+    concurrent-ruby (1.0.2)
     contracts (0.14.0)
     coveralls (0.8.13)
       json (~> 1.8)
@@ -119,7 +127,7 @@ GEM
     lumberjack (1.0.10)
     method_source (0.8.2)
     mime-types (2.99.2)
-    minitest (5.9.0)
+    minitest (5.9.1)
     multi_json (1.12.1)
     multi_test (0.1.2)
     nenv (0.3.0)
@@ -130,9 +138,6 @@ GEM
     parser (2.3.1.2)
       ast (~> 2.2)
     path_expander (1.0.0)
-    pio (0.30.0)
-      activesupport (~> 4.2, >= 4.2.4)
-      bindata (~> 2.1.0)
     powerpack (0.1.1)
     pry (0.10.3)
       coderay (~> 1.1.0)
@@ -225,6 +230,7 @@ DEPENDENCIES
   guard-rubocop
   listen (< 3.1.0)
   phut!
+  pio!
   rake
   reek
   relish
@@ -234,4 +240,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.11.2
+   1.13.2
