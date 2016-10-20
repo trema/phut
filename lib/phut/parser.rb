@@ -19,6 +19,7 @@ module Phut
           vswitch.add_port link.device(vswitch.name)
         end
       end
+      Vhost.all.each(&:set_default_arp_table)
       Vhost.connect_link
       update_netns_interfaces
     end

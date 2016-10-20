@@ -79,6 +79,10 @@ module Phut
       @packets_received = []
     end
 
+    def arp_table=(arp_table)
+      @options[:arp_table] = arp_table
+    end
+
     private
 
     def start_logging

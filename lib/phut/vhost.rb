@@ -6,6 +6,7 @@ require 'phut/vhost_daemon'
 
 module Phut
   # Virtual host for NetTester
+  # rubocop:disable ClassLength
   class Vhost
     extend Finder
 
@@ -36,7 +37,7 @@ module Phut
     def self.connect_link
       all.each do |each|
         Link.all.each do |link|
-          device = link.device(each)
+          device = link.device(each.name)
           each.device = device if device
         end
       end
@@ -107,6 +108,13 @@ module Phut
       end
     end
 
+    def set_default_arp_table
+      arp_table = Vhost.all.each_with_object({}) do |each, hash|
+        hash[each.ip_address] = each.mac_address
+      end
+      VhostDaemon.process(name, Phut.socket_dir).arp_table = arp_table
+    end
+
     def to_s
       "vhost (name = #{name}, IP address = #{@ip_address})"
     end
@@ -124,4 +132,5 @@ module Phut
        "-S #{Phut.socket_dir}"].compact.join(' ')
     end
   end
+  # rubocop:enable ClassLength
 end
