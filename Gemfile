@@ -16,8 +16,7 @@ group :guard do
   gem 'guard-cucumber', require: false
   gem 'guard-rspec', require: false
   gem 'guard-rubocop', require: false
-  # To support Ruby 2.1; Listen 3.1.0 or later does not run on Ruby 2.1
-  gem 'listen', '< 3.1.0'
+  gem 'listen', require: false
 end
 
 group :test do
