@@ -6,12 +6,6 @@ require 'phut/vhost'
 
 module Phut
   describe Vhost do
-    def destroy_all_host
-      ::Dir.glob(File.join('./tmp/sockets', 'vhost.*.ctl')).each do |each|
-        DRbObject.new_with_uri("drbunix:#{each}").stop
-      end
-    end
-
     before(:each) do
       FileUtils.mkdir_p('./log') unless File.exist?('./log')
       FileUtils.mkdir_p('./tmp/pids') unless File.exist?('./tmp/pids')
@@ -21,11 +15,11 @@ module Phut
       Phut.pid_dir = './tmp/pids'
       Phut.socket_dir = './tmp/sockets'
 
-      destroy_all_host
+      Vhost.all.each(&:stop)
     end
 
     after(:each) do
-      destroy_all_host
+      Vhost.all.each(&:stop)
       Phut::Link.destroy_all
     end
 
