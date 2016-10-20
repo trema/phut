@@ -60,8 +60,10 @@ module Phut
   SettingSingleton = Setting.new
 
   class << self
+    # rubocop:disable MethodMissing
     def method_missing(method, *args)
       SettingSingleton.__send__ method, *args
     end
+    # rubocop:enable MethodMissing
   end
 end

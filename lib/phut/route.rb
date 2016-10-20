@@ -26,9 +26,8 @@ module Phut
     include ShellRunner
 
     def add(netns)
-      if @net && @gateway
-        sudo "ip netns exec #{netns} route add -net #{@net} gw #{@gateway}"
-      end
+      return unless @net && @gateway
+      sudo "ip netns exec #{netns} route add -net #{@net} gw #{@gateway}"
     end
   end
 end

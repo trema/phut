@@ -11,6 +11,7 @@ require 'phut'
 module Phut
   class VhostDaemon
     # /bin/vhost command
+    # rubocop:disable BlockLength
     module App
       extend GLI::App
 
@@ -85,5 +86,6 @@ module Phut
 
       exit run(ARGV)
     end
+    # rubocop:enable BlockLength
   end
 end

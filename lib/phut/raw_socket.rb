@@ -20,8 +20,10 @@ module Phut
         end
     end
 
+    # rubocop:disable MethodMissing
     def method_missing(method, *args)
       @socket.__send__ method, *args
     end
+    # rubocop:enable MethodMissing
   end
 end

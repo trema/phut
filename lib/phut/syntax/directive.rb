@@ -13,9 +13,11 @@ module Phut
         @attributes[key]
       end
 
+      # rubocop:disable MethodMissing
       def method_missing(name)
         @attributes.fetch name.to_sym
       end
+      # rubocop:enable MethodMissing
     end
   end
 end

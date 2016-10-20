@@ -23,21 +23,18 @@ module Phut
       end
     end
 
-    # rubocop:disable MethodLength
     def self.parse(veth_name)
-      if /^#{PREFIX}(\d+)_(\S+)/ =~ veth_name
-        link_id = Regexp.last_match(1).to_i
-        name = Regexp.last_match(2)
-        if /^\h{8}$/ =~ name
-          { name: IPAddr.new(name.hex, Socket::AF_INET).to_s, link_id: link_id }
-        else
-          { name: name, link_id: link_id }
-        end
-      else
+      unless /^#{PREFIX}(\d+)_(\S+)/ =~ veth_name
         raise "Failed to parse veth name: #{veth_name}"
       end
+      link_id = Regexp.last_match(1).to_i
+      name = Regexp.last_match(2)
+      if /^\h{8}$/ =~ name
+        { name: IPAddr.new(name.hex, Socket::AF_INET).to_s, link_id: link_id }
+      else
+        { name: name, link_id: link_id }
+      end
     end
-    # rubocop:enable MethodLength
 
     attr_reader :name
 

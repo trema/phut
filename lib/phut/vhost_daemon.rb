@@ -155,7 +155,7 @@ module Phut
       unix_domain_socket =
         self.class.unix_domain_socket(@options.fetch(:name),
                                       @options.fetch(:socket_dir))
-      DRb.start_service(unix_domain_socket, self, UNIXFileMode: 0666)
+      DRb.start_service(unix_domain_socket, self, UNIXFileMode: 0o666)
       Thread.start { read_loop }.abort_on_exception = true
       DRb.thread.join
     end
