@@ -13,12 +13,25 @@ module Phut
       @netns = netns
     end
 
+    # rubocop:disable MethodLength
+    # rubocop:disable LineLength
     def vswitch(alias_name = nil, &block)
       attrs = VswitchDirective.new(alias_name, &block)
+      openflow_version = case Pio::OpenFlow.version
+                         when :OpenFlow10
+                           1.0
+                         when :OpenFlow13
+                           1.3
+                         else
+                           raise "Unknown OpenFlow version: #{Pio::OpenFlow.version}"
+                         end
       Vswitch.create(dpid: attrs[:dpid],
                      name: attrs[:name],
-                     tcp_port: attrs[:port])
+                     tcp_port: attrs[:port],
+                     openflow_version: openflow_version)
     end
+    # rubocop:enable MethodLength
+    # rubocop:enable LineLength
 
     def vhost(name = nil, &block)
       attrs = VhostDirective.new(name, &block)

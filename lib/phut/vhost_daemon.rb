@@ -49,6 +49,7 @@ module Phut
       start_logging
       create_pid_file
       start_daemon
+      @stop = false
     rescue
       shutdown
     end
@@ -59,6 +60,10 @@ module Phut
 
     def stop
       @stop = true
+    end
+
+    def kill
+      @kill = true
     end
 
     def send_packets(dest, npackets)
@@ -122,6 +127,7 @@ module Phut
     end
 
     # rubocop:disable MethodLength
+    # rubocop:disable AbcSize
     def read_loop
       loop do
         unless @options.fetch(:device)
@@ -131,6 +137,7 @@ module Phut
         begin
           raw_data, = raw_socket.recvfrom(8192)
           udp = Pio::Udp.read(raw_data)
+          next if @stop
           unless @options[:promisc]
             next if udp.destination_ip_address != @options.fetch(:ip_address)
           end
@@ -143,6 +150,7 @@ module Phut
       end
     end
     # rubocop:enable MethodLength
+    # rubocop:enable AbcSize
 
     def start_daemon
       Process.daemon
@@ -175,7 +183,7 @@ module Phut
 
     def shutdown_loop
       loop do
-        break if @stop
+        break if @kill
         sleep 0.1
       end
       shutdown

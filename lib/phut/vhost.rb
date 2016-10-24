@@ -30,7 +30,7 @@ module Phut
     def self.destroy_all
       ::Dir.glob(File.join(Phut.socket_dir, 'vhost.*.ctl')).each do |each|
         /vhost\.(\S+)\.ctl/=~ each
-        VhostDaemon.process(Regexp.last_match(1), Phut.socket_dir).stop
+        VhostDaemon.process(Regexp.last_match(1), Phut.socket_dir).kill
       end
     end
 
@@ -78,6 +78,10 @@ module Phut
     end
 
     def stop
+      VhostDaemon.process(name, Phut.socket_dir).stop
+    end
+
+    def kill
       sh "bundle exec vhost stop -n #{name} -S #{Phut.socket_dir}"
       sleep 1
     end

@@ -26,5 +26,5 @@ Feature: Vswitch.create
     When I type "Vswitch.create(dpid: 0xabc)"
     Then the output should contain:
      """
-     a Vswitch (name: "firewall", dpid: 0xabc) already exists
+     a Vswitch #<Vswitch name: "firewall", dpid: 0xabc, openflow_version: 1.0, tcp_port: 6653> already exists
      """

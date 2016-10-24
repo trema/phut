@@ -10,7 +10,7 @@ Feature: DSL parser
     Then the exit status should not be 0
     And the stderr should contain:
       """
-      a Vswitch (name: "0xabc", dpid: 0xabc) already exists
+      a Vswitch #<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: 1.0, tcp_port: 6653> already exists
       """
 
   @sudo

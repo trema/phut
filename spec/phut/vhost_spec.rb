@@ -15,11 +15,11 @@ module Phut
       Phut.pid_dir = './tmp/pids'
       Phut.socket_dir = './tmp/sockets'
 
-      Vhost.all.each(&:stop)
+      Vhost.all.each(&:kill)
     end
 
     after(:each) do
-      Vhost.all.each(&:stop)
+      Vhost.all.each(&:kill)
       Phut::Link.destroy_all
     end
 
@@ -46,8 +46,8 @@ module Phut
         Then { host.name == 'myhost' }
         Then { host.device == device }
 
-        describe '#stop' do
-          When { host.stop }
+        describe '#kill' do
+          When { host.kill }
           Then { Vhost.all.empty? }
         end
       end

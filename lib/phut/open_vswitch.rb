@@ -9,20 +9,18 @@ require 'pio'
 
 module Phut
   # Open vSwitch controller
+  # rubocop:disable ClassLength
   class OpenVswitch
     extend ShellRunner
     extend Finder
 
-    class_attribute :prefix
-    self.prefix = ''
+    class_attribute :bridge_prefix
+    self.bridge_prefix = ''
 
-    def self.create(*args)
-      found = find_by(dpid: args.first[:dpid])
-      if found
-        inspection = "name: \"#{found.name}\", dpid: #{found.dpid.to_hex}"
-        raise "a Vswitch (#{inspection}) already exists"
-      end
-      new(*args).__send__ :start
+    def self.create(args)
+      found = find_by(name: args[:name]) || find_by(dpid: args[:dpid])
+      raise "a Vswitch #{found.inspect} already exists" if found
+      new(args).__send__ :start
     end
 
     def self.destroy(name)
@@ -34,15 +32,9 @@ module Phut
     end
 
     def self.all
-      Vsctl.list_br(prefix).map do |name, dpid|
-        tcp_port = Vsctl.new(name: name, name_prefix: prefix,
-                             dpid: dpid, bridge: prefix + name).tcp_port
-        if /^0x\h+/ =~ name && dpid == name.hex
-          new(dpid: dpid, tcp_port: tcp_port)
-        else
-          new(name: name, dpid: dpid, tcp_port: tcp_port)
-        end
-      end
+      Vsctl.list_br(bridge_prefix).map do |bridge_attrs|
+        new(bridge_attrs)
+      end.sort_by(&:dpid)
     end
 
     def self.select(&block)
@@ -53,36 +45,17 @@ module Phut
       find_by!(name: name).dump_flows
     end
 
-    def self.name_prefix(name)
-      self.prefix = name
-    end
-
     include ShellRunner
-
-    attr_reader :dpid
-    alias datapath_id dpid
-    attr_reader :tcp_port
 
     private_class_method :new
 
-    def initialize(dpid:, name: nil, tcp_port: 6653)
+    def initialize(dpid:, openflow_version: 1.0, name: nil, tcp_port: 6653)
       @dpid = dpid
       @name = name
+      @openflow_version = openflow_version
       @tcp_port = tcp_port
-      @vsctl = Vsctl.new(name: default_name, name_prefix: self.class.prefix,
-                         dpid: @dpid, bridge: bridge)
+      @vsctl = Vsctl.new(name: default_name, bridge: default_bridge)
     end
-
-    delegate :add_port, to: :@vsctl
-    delegate :add_numbered_port, to: :@vsctl
-    delegate :ports, to: :@vsctl
-    delegate :bring_port_up, to: :@vsctl
-    delegate :bring_port_down, to: :@vsctl
-
-    def name
-      @name || format('%#x', @dpid)
-    end
-    alias default_name name
 
     def to_s
       "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
@@ -91,30 +64,55 @@ module Phut
     def inspect
       "#<Vswitch name: \"#{name}\", "\
       "dpid: #{@dpid.to_hex}, "\
-      "openflow_version: \"#{openflow_version}\", "\
-      "bridge: \"#{bridge}\">"
+      "openflow_version: #{openflow_version}, "\
+      "tcp_port: #{tcp_port}>"
     end
 
-    def destroy
-      @vsctl.del_bridge
+    def name
+      /^#{bridge_prefix}(\S+)$/ =~ bridge
+      Regexp.last_match(1)
     end
 
-    def openflow_version
-      /OpenFlow(\d)(\d)/ =~ Pio::OpenFlow.version
-      Regexp.last_match(1) + '.' + Regexp.last_match(2)
+    delegate :bridge_prefix, to: 'self.class'
+    delegate :bridge, to: :@vsctl
+    delegate :dpid, to: :@vsctl
+    alias datapath_id dpid
+    delegate :openflow_version, to: :@vsctl
+    delegate :tcp_port, to: :@vsctl
+
+    delegate :add_numbered_port, to: :@vsctl
+    delegate :add_port, to: :@vsctl
+    delegate :bring_port_down, to: :@vsctl
+    delegate :bring_port_up, to: :@vsctl
+    delegate :ports, to: :@vsctl
+    delegate :delete_bridge, to: :@vsctl
+    alias destroy delete_bridge
+    delegate :delete_controller, to: :@vsctl
+    alias stop delete_controller
+
+    def run(port)
+      raise "An Open vSwitch #{inspect} is already running" if @vsctl.tcp_port
+      @vsctl.tcp_port = port
     end
 
+    # rubocop:disable MethodLength
+    # rubocop:disable LineLength
     def dump_flows
-      sudo("ovs-ofctl dump-flows #{bridge} -O #{Pio::OpenFlow.version}").
+      openflow_version = case @vsctl.openflow_version
+                         when 1.0
+                           :OpenFlow10
+                         when 1.3
+                           :OpenFlow13
+                         else
+                           raise "Unknown OpenFlow version: #{@vsctl.openflow_version}"
+                         end
+      sudo("ovs-ofctl dump-flows #{bridge} -O #{openflow_version}").
         split("\n").inject('') do |memo, each|
         memo + (/^(NXST|OFPST)_FLOW reply/=~ each ? '' : each.lstrip + "\n")
       end
     end
-
-    def bridge
-      raise 'DPID is not set' unless @dpid
-      self.class.prefix + name
-    end
+    # rubocop:enable MethodLength
+    # rubocop:enable LineLength
 
     def <=>(other)
       dpid <=> other.dpid
@@ -122,12 +120,31 @@ module Phut
 
     private
 
+    # rubocop:disable LineLength
+    def default_name
+      if @name
+        if (bridge_prefix + @name).length > Vsctl::MAX_BRIDGE_NAME_LENGTH
+          raise "Name '#{@name}' is too long (should be <= #{Vsctl::MAX_BRIDGE_NAME_LENGTH - bridge_prefix.length} chars)"
+        end
+        return @name
+      end
+      raise 'DPID is not set' unless @dpid
+      format('%#x', @dpid)
+    end
+    # rubocop:enable LineLength
+
+    def default_bridge
+      bridge_prefix + default_name
+    end
+
     def start
       @vsctl.add_bridge
-      @vsctl.set_openflow_version_and_dpid
-      @vsctl.controller_tcp_port = @tcp_port
+      @vsctl.openflow_version = @openflow_version
+      @vsctl.dpid = @dpid
+      @vsctl.tcp_port = @tcp_port
       @vsctl.set_fail_mode_secure
       self
     end
   end
+  # rubocop:enable ClassLength
 end

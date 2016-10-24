@@ -63,7 +63,7 @@ module Phut
         c.action do |_global_opts, opts, _args|
           raise '--name option is mandatory' if opts[:name].nil?
           begin
-            VhostDaemon.process(opts[:name], opts[:socket_dir]).stop
+            VhostDaemon.process(opts[:name], opts[:socket_dir]).kill
           rescue DRb::DRbConnError
             true # OK
           end

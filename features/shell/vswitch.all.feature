@@ -13,7 +13,7 @@ Feature: Vswitch.all
     When I type "Vswitch.all"
     Then the output should contain:
      """
-     [#<Vswitch name: "firewall", dpid: 0xabc, openflow_version: "1.0", bridge: "vsw_firewall">]
+     [#<Vswitch name: "firewall", dpid: 0xabc, openflow_version: 1.0, tcp_port: 6653>]
      """
 
   @sudo
@@ -22,5 +22,5 @@ Feature: Vswitch.all
     When I type "Vswitch.all"
     Then the output should contain:
      """
-     [#<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: "1.0", bridge: "vsw_0xabc">]
+     [#<Vswitch name: "0xabc", dpid: 0xabc, openflow_version: 1.0, tcp_port: 6653>]
      """
