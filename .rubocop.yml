@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.4
   Include:
     - Gemfile
     - Guardfile
@@ -8,21 +8,20 @@ AllCops:
     - features/**/*.rb
     - lib/**/*.rb
     - phut.gemspec
-    - spec/**/*.rb
     - tasks/*.rake
 
 Metrics/LineLength:
   Exclude:
     - features/step_definitions/*_steps.rb
-    - spec/**/*_spec.rb
+    - test/**/*_test.rb
 
-Metrics/BlockLength:
+Metrics/MethodLength:
   Exclude:
-    - spec/**/*_spec.rb
+    - test/**/*_test.rb
 
-Metrics/ModuleLength:
+Metrics/AbcSize:
   Exclude:
-    - spec/**/*_spec.rb
+    - test/**/*_test.rb
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 Then(/^a netns named "(.*?)" should be started$/) do |name|
   expect(Phut::Netns.find_by!(name: name)).not_to be_nil
 end

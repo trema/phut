@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 guard :rspec, cmd: 'bundle exec rspec' do
   watch(%r{^spec/phut/.+_spec\.rb$})
   watch(%r{^lib/phut/(.+)\.rb$}) { |m| "spec/phut/#{m[1]}_spec.rb" }

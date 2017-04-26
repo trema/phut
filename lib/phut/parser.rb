@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'phut/link'
 require 'phut/syntax'
 require 'phut/vhost'
@@ -15,8 +16,9 @@ module Phut
     def parse
       Syntax.new(@netns).instance_eval IO.read(@file), @file
       Link.all.each do |link|
-        Vswitch.select { |each| link.connect_to?(each) }.each do |vswitch|
-          vswitch.add_port link.device(vswitch.name)
+        Vswitch.all.each do |vswitch|
+          device = link.device(vswitch.name)
+          vswitch.add_port device if device
         end
       end
       Vhost.all.each(&:set_default_arp_table)

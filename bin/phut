@@ -19,15 +19,15 @@ module Phut
     version Phut::VERSION
 
     desc 'Be verbose'
-    switch [:v, :verbose], negatable: false
+    switch %i[v verbose], negatable: false
 
     command :shell do |c|
       c.desc 'Location to put pid files'
-      c.flag [:P, :pid_dir], default_value: Phut.pid_dir
+      c.flag %i[P pid_dir], default_value: Phut.pid_dir
       c.desc 'Location to put log files'
-      c.flag [:L, :log_dir], default_value: Phut.log_dir
+      c.flag %i[L log_dir], default_value: Phut.log_dir
       c.desc 'Location to put socket files'
-      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+      c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
       c.action do |_global_options, options, _args|
         Phut.pid_dir = options.fetch(:pid_dir)
@@ -46,11 +46,11 @@ module Phut
     arg_name 'FILE'
     command :run do |c|
       c.desc 'Location to put pid files'
-      c.flag [:P, :pid_dir], default_value: Phut.pid_dir
+      c.flag %i[P pid_dir], default_value: Phut.pid_dir
       c.desc 'Location to put log files'
-      c.flag [:L, :log_dir], default_value: Phut.log_dir
+      c.flag %i[L log_dir], default_value: Phut.log_dir
       c.desc 'Location to put socket files'
-      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+      c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
       c.action do |_global_options, options, args|
         Phut.pid_dir = options.fetch(:pid_dir)
@@ -64,7 +64,7 @@ module Phut
     desc 'Stops a virtual network'
     command :stop do |c|
       c.desc 'Location to put socket files'
-      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+      c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
       c.action do |_global_options, options, _args|
         Phut.socket_dir = options.fetch(:socket_dir)

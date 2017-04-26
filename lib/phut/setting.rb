@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'logger'
 require 'tmpdir'
 
@@ -27,6 +28,10 @@ module Phut
 
     def logger
       @options.fetch :logger
+    end
+
+    def logger=(logger)
+      @options[:logger] = logger
     end
 
     def pid_dir

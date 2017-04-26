@@ -20,24 +20,24 @@ module Phut
       desc 'Runs a vhost process'
       command :run do |c|
         desc 'Host name'
-        c.flag [:n, :name]
+        c.flag %i[n name]
         desc 'Network interface'
-        c.flag [:I, :interface]
+        c.flag %i[I interface]
         desc 'IP address'
-        c.flag [:i, :ip_address]
+        c.flag %i[i ip_address]
         desc 'MAC address'
-        c.flag [:m, :mac_address]
+        c.flag %i[m mac_address]
         c.desc 'ARP entries'
-        c.flag [:a, :arp_entries], negatable: false
+        c.flag %i[a arp_entries], negatable: false
         c.desc 'Promisc mode'
-        c.switch [:p, :promisc], negatable: false
+        c.switch %i[p promisc], negatable: false
 
         c.desc 'Location to put pid files'
-        c.flag [:P, :pid_dir], default_value: Phut.pid_dir
+        c.flag %i[P pid_dir], default_value: Phut.pid_dir
         c.desc 'Location to put log files'
-        c.flag [:L, :log_dir], default_value: Phut.log_dir
+        c.flag %i[L log_dir], default_value: Phut.log_dir
         c.desc 'Location to put socket files'
-        c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+        c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
         c.action do |_global_opts, opts, _args|
           raise '--name option is mandatory' if opts[:name].nil?
@@ -56,9 +56,9 @@ module Phut
       desc 'Terminates a vhost process'
       command :stop do |c|
         desc 'Host name'
-        c.flag [:n, :name]
+        c.flag %i[n name]
         c.desc 'Location to put socket files'
-        c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+        c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
         c.action do |_global_opts, opts, _args|
           raise '--name option is mandatory' if opts[:name].nil?
@@ -73,7 +73,7 @@ module Phut
       desc 'Sends UDP packets to destination host'
       command :send_packets do |c|
         desc 'Source host name'
-        c.flag [:s,  :source]
+        c.flag %i[s source]
 
         c.action do |_global_opts, opts, _args|
           raise '--source option is mandatory' if opts[:source].nil?

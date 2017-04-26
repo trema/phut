@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Phut
   class Syntax
     # Common DSL directive

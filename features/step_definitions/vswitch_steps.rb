@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 Then(/^a vswitch named "([^"]*)" should be running$/) do |name|
   expect(Phut::Vswitch.find_by(name: name)).not_to be_nil
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'phut/open_vswitch'
 require 'phut/parser'
 require 'phut/setting'

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'phut/shell_runner'
 require 'pio'
 
@@ -11,8 +12,9 @@ module Phut
 
     def self.list_br(prefix)
       sudo('ovs-vsctl list-br').split.each_with_object([]) do |each, list|
-        next unless /^#{prefix}(\S+)/ =~ each
-        name = Regexp.last_match(1)
+        match = /^#{prefix}(\S+)/.match(each)
+        next unless match
+        name = match[1]
         vsctl = new(name: name, bridge: prefix + name)
         list << { name: vsctl.name,
                   dpid: vsctl.dpid,

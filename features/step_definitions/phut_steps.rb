@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 When(/^I do phut run "(.*?)"$/) do |config_file|
   run_opts = "-P #{@pid_dir} -L #{@log_dir} -S #{@socket_dir}"
   step %(I run `phut -v run #{run_opts} #{config_file}`)

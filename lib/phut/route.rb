@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'phut/shell_runner'
 
 module Phut
@@ -8,9 +9,9 @@ module Phut
 
     def self.read(netns)
       sudo("ip netns exec #{netns} route -n").split("\n").each do |each|
-        next unless /^(\S+)\s+(\S+)\s+\S+\s+UG\s+/ =~ each
-        return new(net: Regexp.last_match(1),
-                   gateway: Regexp.last_match(2))
+        match = /^(\S+)\s+(\S+)\s+\S+\s+UG\s+/.match(each)
+        next unless match
+        return new(net: match[1], gateway: match[2])
       end
       nil
     end

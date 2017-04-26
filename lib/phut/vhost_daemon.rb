@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'drb'
 require 'logger'
 require 'phut/raw_socket'

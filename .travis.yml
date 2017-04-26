@@ -6,8 +6,9 @@ cache: bundler
 script: bundle exec rake travis
 
 rvm:
-  - 2.2
-  - 2.3.1
+  - 2.2.7
+  - 2.3.4
+  - 2.4.1
   - ruby-head
 
 before_install:
