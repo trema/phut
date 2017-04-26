@@ -37,6 +37,5 @@ group :metrics do
 end
 
 group :doc do
-  gem 'relish', require: false
   gem 'yard', require: false
 end
