@@ -11,14 +11,6 @@ end
 
 gem 'pio', github: 'trema/pio', branch: 'develop'
 
-group :guard do
-  gem 'guard', require: false
-  gem 'guard-bundler', require: false
-  gem 'guard-cucumber', require: false
-  gem 'guard-rubocop', require: false
-  gem 'listen', require: false
-end
-
 group :test do
   gem 'aruba', require: false
   gem 'cucumber', require: false

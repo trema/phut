@@ -21,7 +21,7 @@ Gem::Specification.new do |gem|
   gem.files = `git ls-files`.split("\n")
 
   gem.extra_rdoc_files = ['README.md']
-  gem.test_files = `git ls-files -- {spec,features}/*`.split("\n")
+  gem.test_files = `git ls-files -- {test,features}/*`.split("\n")
 
   gem.required_ruby_version = '>= 2.0.0'
 
