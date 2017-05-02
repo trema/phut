@@ -10,7 +10,7 @@ GIT
 PATH
   remote: .
   specs:
-    phut (0.7.7)
+    phut (0.7.8)
       activesupport (~> 5.1.0)
       gli (~> 2.16.0)
       pio (~> 0.30.2)
