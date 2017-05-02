@@ -1,36 +1,53 @@
+# frozen_string_literal: true
+
+require 'phut/link'
 require 'phut/netns'
 require 'phut/syntax/netns_directive'
 require 'phut/syntax/vhost_directive'
 require 'phut/syntax/vswitch_directive'
 require 'phut/vhost'
-require 'phut/virtual_link'
 
 module Phut
   # DSL syntax definitions.
   class Syntax
-    def initialize(config, logger)
-      @config = config
-      @logger = logger
+    def initialize(netns)
+      @netns = netns
     end
 
+    # rubocop:disable MethodLength
+    # rubocop:disable LineLength
     def vswitch(alias_name = nil, &block)
       attrs = VswitchDirective.new(alias_name, &block)
-      OpenVswitch.create(attrs[:dpid], attrs[:port], attrs[:name], @logger)
+      openflow_version = case Pio::OpenFlow.version
+                         when :OpenFlow10
+                           1.0
+                         when :OpenFlow13
+                           1.3
+                         else
+                           raise "Unknown OpenFlow version: #{Pio::OpenFlow.version}"
+                         end
+      Vswitch.create(dpid: attrs[:dpid],
+                     name: attrs[:name],
+                     tcp_port: attrs[:port],
+                     openflow_version: openflow_version)
     end
+    # rubocop:enable MethodLength
+    # rubocop:enable LineLength
 
-    def vhost(alias_name = nil, &block)
-      attrs = VhostDirective.new(alias_name, &block)
-      Vhost.create(attrs[:ip], attrs[:mac], attrs[:promisc], attrs[:name],
-                   @logger)
-    end
-
-    def netns(name, &block)
-      attrs = NetnsDirective.new(name, &block)
-      Netns.create(attrs, attrs[:name], @logger)
+    def vhost(name = nil, &block)
+      attrs = VhostDirective.new(name, &block)
+      Vhost.create(name: attrs[:name],
+                   ip_address: attrs[:ip],
+                   mac_address: attrs[:mac],
+                   promisc: attrs[:promisc])
     end
 
     def link(name_a, name_b)
-      VirtualLink.create(name_a, name_b, @logger)
+      Link.create(name_a, name_b)
+    end
+
+    def netns(name, &block)
+      @netns << NetnsDirective.new(name, &block)
     end
   end
 end

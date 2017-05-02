@@ -1,4 +1,4 @@
-require 'aruba/cucumber'
+# frozen_string_literal: true
 
-require 'coveralls'
-Coveralls.wear_merged!
+require 'aruba/cucumber'
+require 'phut'

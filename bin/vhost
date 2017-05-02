@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'rubygems'
 require 'bundler'
@@ -10,6 +11,7 @@ require 'phut'
 module Phut
   class VhostDaemon
     # /bin/vhost command
+    # rubocop:disable BlockLength
     module App
       extend GLI::App
 
@@ -18,51 +20,50 @@ module Phut
       desc 'Runs a vhost process'
       command :run do |c|
         desc 'Host name'
-        c.flag [:n, :name]
+        c.flag %i[n name]
         desc 'Network interface'
-        c.flag [:I, :interface]
+        c.flag %i[I interface]
         desc 'IP address'
-        c.flag [:i, :ip_address]
+        c.flag %i[i ip_address]
         desc 'MAC address'
-        c.flag [:m, :mac_address]
+        c.flag %i[m mac_address]
         c.desc 'ARP entries'
-        c.flag [:a, :arp_entries], negatable: false
+        c.flag %i[a arp_entries], negatable: false
         c.desc 'Promisc mode'
-        c.switch [:p, :promisc], negatable: false
+        c.switch %i[p promisc], negatable: false
 
         c.desc 'Location to put pid files'
-        c.flag [:P, :pid_dir], default_value: Phut.pid_dir
+        c.flag %i[P pid_dir], default_value: Phut.pid_dir
         c.desc 'Location to put log files'
-        c.flag [:L, :log_dir], default_value: Phut.log_dir
+        c.flag %i[L log_dir], default_value: Phut.log_dir
         c.desc 'Location to put socket files'
-        c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+        c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
-        c.action do |_global_options, options, _args|
-          fail '--name option is mandatory' if options[:name].nil?
-          fail '--interface option is mandatory' if options[:interface].nil?
-          fail '--ip_address option is mandatory' if options[:ip_address].nil?
-          fail '--mac_address option is mandatory' if options[:mac_address].nil?
-          options[:arp_table] =
-            options[:arp_entries].split(',').
+        c.action do |_global_opts, opts, _args|
+          raise '--name option is mandatory' if opts[:name].nil?
+          raise '--ip_address option is mandatory' if opts[:ip_address].nil?
+          raise '--mac_address option is mandatory' if opts[:mac_address].nil?
+          opts[:arp_table] =
+            (opts[:arp_entries] || '').split(',').
             each_with_object({}) do |each, table|
               ip_address, mac_address = each.split('/')
               table[ip_address] = mac_address
             end
-          VhostDaemon.new(options).run
+          VhostDaemon.new(opts).run
         end
       end
 
       desc 'Terminates a vhost process'
       command :stop do |c|
         desc 'Host name'
-        c.flag [:n, :name]
+        c.flag %i[n name]
         c.desc 'Location to put socket files'
-        c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+        c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
-        c.action do |_global_options, options, _args|
-          fail '--name option is mandatory' if options[:name].nil?
+        c.action do |_global_opts, opts, _args|
+          raise '--name option is mandatory' if opts[:name].nil?
           begin
-            VhostDaemon.process(options[:name], options[:socket_dir]).stop
+            VhostDaemon.process(opts[:name], opts[:socket_dir]).kill
           rescue DRb::DRbConnError
             true # OK
           end
@@ -72,11 +73,11 @@ module Phut
       desc 'Sends UDP packets to destination host'
       command :send_packets do |c|
         desc 'Source host name'
-        c.flag [:s,  :source]
+        c.flag %i[s source]
 
-        c.action do |_global_options, options, _args|
-          fail '--source option is mandatory' if options[:source].nil?
-          VhostDaemon.process(options[:source], options[:socket_dir]).
+        c.action do |_global_opts, opts, _args|
+          raise '--source option is mandatory' if opts[:source].nil?
+          VhostDaemon.process(opts[:source], opts[:socket_dir]).
             send_packets
         end
       end
@@ -85,5 +86,6 @@ module Phut
 
       exit run(ARGV)
     end
+    # rubocop:enable BlockLength
   end
 end

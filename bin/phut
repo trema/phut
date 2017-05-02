@@ -1,19 +1,16 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'rubygems'
 require 'bundler'
 Bundler.setup :default
 
 require 'gli'
-require 'logger'
 require 'phut'
 require 'pry'
 
-$stdout.sync = true
-
 module Phut
   # /bin/phut command
-  # rubocop:disable ModuleLength
   module App
     extend GLI::App
 
@@ -22,37 +19,25 @@ module Phut
     version Phut::VERSION
 
     desc 'Be verbose'
-    switch [:v, :verbose], negatable: false
+    switch %i[v verbose], negatable: false
 
     command :shell do |c|
-      c.action do |_global_options, _options, _args|
-        Pry.prompt =
-          [
-            proc { 'phut> ' },
-            proc { 'phut* ' }
-          ]
-        Pry::Commands.block_command 'pid_dir' do |dir|
-          Phut.pid_dir = dir
-        end
-        Pry::Commands.block_command 'log_dir' do |dir|
-          Phut.log_dir = dir
-        end
-        Pry::Commands.block_command 'socket_dir' do |dir|
-          Phut.socket_dir = dir
-        end
-        Pry::Commands.block_command 'vswitch' do |dpid|
-          if Phut::OpenVswitch.find_by(name: dpid)
-            fail(Phut::OpenVswitch::AlreadyRunning,
-                 "Open vSwitch (dpid = #{dpid}) is already running!")
-          end
-          Phut::OpenVswitch.create(dpid).run
-        end
-        Pry::Commands.block_command 'dump_flows' do |dpid|
-          puts Phut::OpenVswitch.dump_flows(dpid)
-        end
-        Pry::Commands.block_command 'kill' do |dpid|
-          Phut::OpenVswitch.shutdown(dpid)
-        end
+      c.desc 'Location to put pid files'
+      c.flag %i[P pid_dir], default_value: Phut.pid_dir
+      c.desc 'Location to put log files'
+      c.flag %i[L log_dir], default_value: Phut.log_dir
+      c.desc 'Location to put socket files'
+      c.flag %i[S socket_dir], default_value: Phut.socket_dir
+
+      c.action do |_global_options, options, _args|
+        Phut.pid_dir = options.fetch(:pid_dir)
+        Phut.log_dir = options.fetch(:log_dir)
+        Phut.socket_dir = options.fetch(:socket_dir)
+
+        Pry.prompt = [proc { 'phut> ' },
+                      proc { 'phut* ' }]
+
+        include Phut
         pry
       end
     end
@@ -61,67 +46,33 @@ module Phut
     arg_name 'FILE'
     command :run do |c|
       c.desc 'Location to put pid files'
-      c.flag [:P, :pid_dir], default_value: Phut.pid_dir
+      c.flag %i[P pid_dir], default_value: Phut.pid_dir
       c.desc 'Location to put log files'
-      c.flag [:L, :log_dir], default_value: Phut.log_dir
+      c.flag %i[L log_dir], default_value: Phut.log_dir
       c.desc 'Location to put socket files'
-      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+      c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
-      c.action do |global_options, options, args|
-        stdout_logger = Logger.new($stderr).tap do |logger|
-          logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
-          logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
-        end
+      c.action do |_global_options, options, args|
         Phut.pid_dir = options.fetch(:pid_dir)
         Phut.log_dir = options.fetch(:log_dir)
         Phut.socket_dir = options.fetch(:socket_dir)
-        Phut::Parser.new(stdout_logger).parse(args[0]).run
-      end
-    end
 
-    desc 'Shows information on switch'
-    arg_name 'SWITCH'
-    command :show do |c|
-      c.action do |_global_options, _options, args|
-        system "sudo ovs-ofctl show br#{args[0]}"
+        Phut::Parser.new(args[0]).parse
       end
     end
 
     desc 'Stops a virtual network'
-    arg_name 'FILE'
     command :stop do |c|
-      c.desc 'Location to put pid files'
-      c.flag [:P, :pid_dir], default_value: Phut.pid_dir
-      c.desc 'Location to put log files'
-      c.flag [:L, :log_dir], default_value: Phut.log_dir
       c.desc 'Location to put socket files'
-      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
+      c.flag %i[S socket_dir], default_value: Phut.socket_dir
 
-      c.action do |global_options, options, args|
-        stdout_logger = Logger.new($stderr).tap do |logger|
-          logger.formatter = proc { |_sev, _dtm, _name, msg| msg + "\n" }
-          logger.level = global_options[:verbose] ? Logger::DEBUG : Logger::INFO
-        end
-        Phut.pid_dir = options.fetch(:pid_dir)
-        Phut.log_dir = options.fetch(:log_dir)
+      c.action do |_global_options, options, _args|
         Phut.socket_dir = options.fetch(:socket_dir)
-        Phut::Parser.new(stdout_logger).parse(args[0]).stop
-      end
-    end
 
-    desc 'Kills a vswitch or a vhost'
-    arg_name 'NAME'
-    command :kill do |c|
-      c.desc 'Location to find socket files'
-      c.flag [:S, :socket_dir], default_value: Phut.socket_dir
-
-      c.action do |_global_options, options, args|
-        help_now! if args.size != 1
-        begin
-          Phut::VhostDaemon.process(args[0], options[:socket_dir]).stop
-        rescue
-          Phut::OpenVswitch.shutdown(args[0])
-        end
+        Phut::Vswitch.destroy_all
+        Phut::Vhost.destroy_all
+        Phut::Netns.destroy_all
+        Phut::Link.destroy_all
       end
     end
 
@@ -130,16 +81,17 @@ module Phut
         puts "#{exe_name} version #{version_string}"
         exit_now! nil, 0
       end
+
+      if global[:verbose]
+        ENV['GLI_DEBUG'] = 'true'
+        Phut.logger.level = Logger::DEBUG
+      end
+
       true
     end
 
     default_command :shell
 
-    on_error do |e|
-      fail e
-    end
-
     exit run(ARGV)
   end
-  # rubocop:enable ModuleLength
 end

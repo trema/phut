@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'phut/syntax/directive'
 
 module Phut
@@ -20,7 +22,7 @@ module Phut
         @attributes[:dpid] = dpid
         @attributes[:name] ||= format('%#x', @attributes[:dpid])
       end
-      alias_method :datapath_id, :dpid
+      alias datapath_id dpid
     end
   end
 end

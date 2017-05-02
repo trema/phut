@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'phut/syntax/directive'
 
 module Phut
@@ -7,8 +9,9 @@ module Phut
       attribute :netmask
 
       def initialize(alias_name, &block)
-        @attributes = { name: alias_name }
-        instance_eval(&block)
+        @attributes = { name: alias_name,
+                        netmask: '255.255.255.255' }
+        instance_eval(&block) if block
       end
 
       def ip(value)
@@ -19,6 +22,14 @@ module Phut
       def route(options)
         @attributes[:net] = options.fetch(:net)
         @attributes[:gateway] = options.fetch(:gateway)
+      end
+
+      def mac(value)
+        @attributes[:mac_address] = value
+      end
+
+      def vlan(value)
+        @attributes[:vlan] = value
       end
     end
   end

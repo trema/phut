@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Phut
   class Syntax
     # Common DSL directive
@@ -9,8 +11,14 @@ module Phut
       end
 
       def [](key)
-        @attributes.fetch(key)
+        @attributes[key]
       end
+
+      # rubocop:disable MethodMissing
+      def method_missing(name)
+        @attributes.fetch name.to_sym
+      end
+      # rubocop:enable MethodMissing
     end
   end
 end

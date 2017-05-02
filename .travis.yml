@@ -1,5 +1,3 @@
-sudo: false
-
 language: ruby
 
 bundler_args: --without development
@@ -8,9 +6,8 @@ cache: bundler
 script: bundle exec rake travis
 
 rvm:
-  - 2.0
-  - 2.1
-  - 2.2
+  - 2.3.4
+  - 2.4.1
   - ruby-head
 
 before_install:
@@ -32,4 +29,3 @@ notifications:
 env:
   global:
     - secure: ZQeasm+7jSVYKsEKp34hxA65cObvmSFWvRuOkRVmmbHRkPyopWOc2U1NIvhYfeAZiUzKscKL4ABXL5uiLtUR2+tmLWSGK8NgKzY/xQcGksN7jQKFanbGYbizg6dVnVlTZ9A3INbp8VIr3HmBmYdjs/vTdX5mfDzZgia9ToNxZlw=
-    - secure: iBrnaPXgLJrebRBgs3hrWvMjcB80OUt0XT38DpvgEP/YliELJBQ9qVW/2mcUkSwwsApS6zzgCpfFeWrIxDffwKqLk+BToDWA2FRNQ78gfIunvhEUMJYkxKBm6dBQ0w8kQOuT4dFr/8zQjjfuyQbMJrB3CI+6VNhNnJjIzxTthoQ=

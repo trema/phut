@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'drb'
 require 'logger'
 require 'phut/raw_socket'
@@ -16,20 +18,53 @@ module Phut
     end
 
     def initialize(options)
-      @options = options
+      @options = options.dup
+      @options[:device] = @options.fetch(:interface)
+      @options[:log_dir] = File.expand_path(@options[:log_dir])
+      @options[:pid_dir] = File.expand_path(@options[:pid_dir])
+      @options[:socket_dir] = File.expand_path(@options[:socket_dir])
       reset_stats
+    end
+
+    def name
+      @options.fetch :name
+    end
+
+    def ip_address
+      @options.fetch :ip_address
+    end
+
+    def mac_address
+      @options.fetch :mac_address
+    end
+
+    def device
+      @options[:device]
+    end
+
+    def device=(name)
+      @options[:device] = name
     end
 
     def run
       start_logging
       create_pid_file
       start_daemon
+      @stop = false
     rescue
       shutdown
     end
 
+    def running?
+      FileTest.exists?(pid_file)
+    end
+
     def stop
       @stop = true
+    end
+
+    def kill
+      @kill = true
     end
 
     def send_packets(dest, npackets)
@@ -50,19 +85,23 @@ module Phut
       @packets_received = []
     end
 
+    def arp_table=(arp_table)
+      @options[:arp_table] = arp_table
+    end
+
     private
 
     def start_logging
       @logger = Logger.new(File.open(log_file, 'a'))
       @logger.info("#{@options.fetch(:name)} started " \
-                   "(interface = #{@options.fetch(:interface)}," \
+                   "(interface = #{@options.fetch(:device)}," \
                    " IP address = #{@options.fetch(:ip_address)}," \
                    " MAC address = #{@options.fetch(:mac_address)}," \
                    " arp_entries = #{@options.fetch(:arp_entries)})")
     end
 
     def raw_socket
-      @raw_socket ||= RawSocket.new(@options.fetch(:interface))
+      @raw_socket ||= RawSocket.new(@options.fetch(:device))
     end
 
     def lookup_arp_table(ip_address)
@@ -89,11 +128,17 @@ module Phut
     end
 
     # rubocop:disable MethodLength
+    # rubocop:disable AbcSize
     def read_loop
       loop do
+        unless @options.fetch(:device)
+          sleep 0.1
+          next
+        end
         begin
           raw_data, = raw_socket.recvfrom(8192)
           udp = Pio::Udp.read(raw_data)
+          next if @stop
           unless @options[:promisc]
             next if udp.destination_ip_address != @options.fetch(:ip_address)
           end
@@ -106,6 +151,7 @@ module Phut
       end
     end
     # rubocop:enable MethodLength
+    # rubocop:enable AbcSize
 
     def start_daemon
       Process.daemon
@@ -118,7 +164,7 @@ module Phut
       unix_domain_socket =
         self.class.unix_domain_socket(@options.fetch(:name),
                                       @options.fetch(:socket_dir))
-      DRb.start_service(unix_domain_socket, self, UNIXFileMode: 0666)
+      DRb.start_service(unix_domain_socket, self, UNIXFileMode: 0o666)
       Thread.start { read_loop }.abort_on_exception = true
       DRb.thread.join
     end
@@ -128,7 +174,7 @@ module Phut
       @logger.info 'Shutting down...'
       FileUtils.rm pid_file if running?
       DRb.stop_service
-      fail $ERROR_INFO if $ERROR_INFO
+      raise $ERROR_INFO if $ERROR_INFO
     end
 
     def trap_sigint
@@ -138,23 +184,19 @@ module Phut
 
     def shutdown_loop
       loop do
-        break if @stop
+        break if @kill
         sleep 0.1
       end
       shutdown
     end
 
     def create_pid_file
-      fail "#{@options.fetch(:name)} is already running." if running?
+      raise "#{@options.fetch(:name)} is already running." if running?
       update_pid_file
     end
 
     def update_pid_file
       File.open(pid_file, 'w') { |file| file << Process.pid }
-    end
-
-    def running?
-      FileTest.exists?(pid_file)
     end
 
     def pid_file

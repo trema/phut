@@ -1,148 +1,150 @@
-require 'active_support/core_ext/class/attribute_accessors'
-require 'pio'
-require 'phut/null_logger'
-require 'phut/setting'
+# frozen_string_literal: true
+
+require 'active_support/core_ext/class/attribute'
+require 'active_support/core_ext/module/delegation'
+require 'phut/finder'
+require 'phut/link'
 require 'phut/shell_runner'
+require 'phut/vsctl'
+require 'pio'
 
 module Phut
-  # Open vSwitch controller.
+  # Open vSwitch controller
   # rubocop:disable ClassLength
   class OpenVswitch
-    cattr_accessor(:all, instance_reader: false) { [] }
+    extend ShellRunner
+    extend Finder
 
-    def self.create(dpid, port_number = 6653, name = nil,
-                    logger = NullLogger.new)
-      new(dpid, port_number, name, logger).tap do |vswitch|
-        conflict = find_by(name: vswitch.name)
-        fail "The name #{vswitch.name} conflicts with #{conflict}." if conflict
-        all << vswitch
-      end
+    class_attribute :bridge_prefix
+    self.bridge_prefix = ''
+
+    def self.create(args)
+      found = find_by(name: args[:name]) || find_by(dpid: args[:dpid])
+      raise "a Vswitch #{found.inspect} already exists" if found
+      new(args).__send__ :start
     end
 
-    def self.dump_flows(dpid, port_number = 6653, name = nil,
-                        logger = NullLogger.new)
-      OpenVswitch.new(dpid, port_number, name, logger).dump_flows
+    def self.destroy(name)
+      find_by!(name: name).destroy
     end
 
-    def self.shutdown(dpid, port_number = 6653, name = nil,
-                      logger = NullLogger.new)
-      OpenVswitch.new(dpid, port_number, name, logger).stop!
+    def self.destroy_all
+      all.each(&:destroy)
     end
 
-    def self.find_by(queries)
-      queries.inject(all) do |memo, (attr, value)|
-        memo.find_all { |vswitch| vswitch.__send__(attr) == value }
-      end.first
-    end
-
-    def self.each(&block)
-      all.each(&block)
+    def self.all
+      Vsctl.list_br(bridge_prefix).map do |bridge_attrs|
+        new(bridge_attrs)
+      end.sort_by(&:dpid)
     end
 
     def self.select(&block)
       all.select(&block)
     end
 
-    class AlreadyRunning < StandardError; end
+    def self.dump_flows(name)
+      find_by!(name: name).dump_flows
+    end
 
     include ShellRunner
 
-    attr_reader :dpid
-    alias_method :datapath_id, :dpid
-    attr_reader :network_devices
+    private_class_method :new
 
-    def initialize(dpid, port_number, name, logger)
+    def initialize(dpid:, openflow_version: 1.0, name: nil, tcp_port: 6653)
       @dpid = dpid
-      @port_number = port_number
       @name = name
-      @network_devices = []
-      @logger = logger
-    end
-
-    def name
-      @name || format('%#x', @dpid)
+      @openflow_version = openflow_version
+      @tcp_port = tcp_port
+      @vsctl = Vsctl.new(name: default_name, bridge: default_bridge)
     end
 
     def to_s
       "vswitch (name = #{name}, dpid = #{format('%#x', @dpid)})"
     end
 
+    def inspect
+      "#<Vswitch name: \"#{name}\", "\
+      "dpid: #{@dpid.to_hex}, "\
+      "openflow_version: #{openflow_version}, "\
+      "tcp_port: #{tcp_port}>"
+    end
+
+    def name
+      /^#{bridge_prefix}(\S+)$/ =~ bridge
+      Regexp.last_match(1)
+    end
+
+    delegate :bridge_prefix, to: 'self.class'
+    delegate :bridge, to: :@vsctl
+    delegate :dpid, to: :@vsctl
+    alias datapath_id dpid
+    delegate :openflow_version, to: :@vsctl
+    delegate :tcp_port, to: :@vsctl
+
+    delegate :add_numbered_port, to: :@vsctl
+    delegate :add_port, to: :@vsctl
+    delegate :bring_port_down, to: :@vsctl
+    delegate :bring_port_up, to: :@vsctl
+    delegate :ports, to: :@vsctl
+    delegate :delete_bridge, to: :@vsctl
+    alias destroy delete_bridge
+    delegate :delete_controller, to: :@vsctl
+    alias stop delete_controller
+
+    def run(port)
+      raise "An Open vSwitch #{inspect} is already running" if @vsctl.tcp_port
+      @vsctl.tcp_port = port
+    end
+
     # rubocop:disable MethodLength
-    # rubocop:disable AbcSize
-    def run
-      sh "sudo ovs-vsctl add-br #{bridge_name}"
-      sh "sudo /sbin/sysctl -w net.ipv6.conf.#{bridge_name}.disable_ipv6=1 -q"
-      @network_devices.each do |each|
-        sh "sudo ovs-vsctl add-port #{bridge_name} #{each}"
-      end
-      sh "sudo ovs-vsctl set bridge #{bridge_name}" \
-         " protocols=#{Pio::OpenFlow.version}" \
-         " other-config:datapath-id=#{dpid_zero_filled}"
-      sh "sudo ovs-vsctl set-controller #{bridge_name} "\
-         "tcp:127.0.0.1:#{@port_number} "\
-         "-- set controller #{bridge_name} connection-mode=out-of-band"
-      sh "sudo ovs-vsctl set-fail-mode #{bridge_name} secure"
-    rescue
-      raise AlreadyRunning, "Open vSwitch (dpid = #{@dpid}) is already running!"
-    end
-    alias_method :start, :run
-    # rubocop:enable MethodLength
-    # rubocop:enable AbcSize
-
-    def stop
-      return unless running?
-      stop!
-    end
-
-    def stop!
-      fail "Open vSwitch (dpid = #{@dpid}) is not running!" unless running?
-      sh "sudo ovs-vsctl del-br #{bridge_name}"
-    end
-    alias_method :shutdown, :stop!
-
-    def bring_port_up(port_number)
-      sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} up"
-    end
-
-    def bring_port_down(port_number)
-      sh "sudo ovs-ofctl mod-port #{bridge_name} #{port_number} down"
-    end
-
+    # rubocop:disable LineLength
     def dump_flows
-      output =
-        `sudo ovs-ofctl dump-flows #{bridge_name} -O #{Pio::OpenFlow.version}`
-      output.split("\n").inject('') do |memo, each|
-        memo + ((/^(NXST|OFPST)_FLOW reply/=~ each) ? '' : each.lstrip + "\n")
+      openflow_version = case @vsctl.openflow_version
+                         when 1.0
+                           :OpenFlow10
+                         when 1.3
+                           :OpenFlow13
+                         else
+                           raise "Unknown OpenFlow version: #{@vsctl.openflow_version}"
+                         end
+      sudo("ovs-ofctl dump-flows #{bridge} -O #{openflow_version}").
+        split("\n").inject('') do |memo, each|
+        memo + (/^(NXST|OFPST)_FLOW reply/ =~ each ? '' : each.lstrip + "\n")
       end
     end
+    # rubocop:enable MethodLength
+    # rubocop:enable LineLength
 
-    def running?
-      system "sudo ovs-vsctl br-exists #{bridge_name}"
-    end
-
-    def add_network_device(network_device)
-      network_device.port_number = @network_devices.size + 1
-      @network_devices << network_device
+    def <=>(other)
+      dpid <=> other.dpid
     end
 
     private
 
-    def bridge_name
-      'br' + name
+    # rubocop:disable LineLength
+    def default_name
+      if @name
+        if (bridge_prefix + @name).length > Vsctl::MAX_BRIDGE_NAME_LENGTH
+          raise "Name '#{@name}' is too long (should be <= #{Vsctl::MAX_BRIDGE_NAME_LENGTH - bridge_prefix.length} chars)"
+        end
+        return @name
+      end
+      raise 'DPID is not set' unless @dpid
+      format('%#x', @dpid)
+    end
+    # rubocop:enable LineLength
+
+    def default_bridge
+      bridge_prefix + default_name
     end
 
-    def restart
-      stop
-      start
-    end
-
-    def network_device
-      "vsw_#{name}"
-    end
-
-    def dpid_zero_filled
-      hex = format('%x', @dpid)
-      '0' * (16 - hex.length) + hex
+    def start
+      @vsctl.add_bridge
+      @vsctl.openflow_version = @openflow_version
+      @vsctl.dpid = @dpid
+      @vsctl.tcp_port = @tcp_port
+      @vsctl.set_fail_mode_secure
+      self
     end
   end
   # rubocop:enable ClassLength
