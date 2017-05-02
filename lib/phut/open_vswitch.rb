@@ -109,7 +109,7 @@ module Phut
                          end
       sudo("ovs-ofctl dump-flows #{bridge} -O #{openflow_version}").
         split("\n").inject('') do |memo, each|
-        memo + (/^(NXST|OFPST)_FLOW reply/.match?(each) ? '' : each.lstrip + "\n")
+        memo + (/^(NXST|OFPST)_FLOW reply/ =~ each ? '' : each.lstrip + "\n")
       end
     end
     # rubocop:enable MethodLength

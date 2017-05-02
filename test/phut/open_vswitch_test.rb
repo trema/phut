@@ -117,7 +117,7 @@ module Phut
 
     def teardown
       `sudo ovs-vsctl list-br`.chomp.split.each do |each|
-        next unless /^#{OpenVswitch.bridge_prefix}/.match?(each)
+        next unless /^#{OpenVswitch.bridge_prefix}/ =~ each
         system "sudo ovs-vsctl del-br #{each}"
       end
     end
